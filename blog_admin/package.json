@@ -1,0 +1,49 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@mdi/font": "^7.4.47",
+    "@pinia/nuxt": "^0.5.1",
+    "@toast-ui/editor": "^3.2.2",
+    "@toast-ui/editor-plugin-chart": "^3.0.1",
+    "@toast-ui/editor-plugin-code-syntax-highlight": "^3.1.0",
+    "@toast-ui/editor-plugin-color-syntax": "^3.1.0",
+    "@toast-ui/editor-plugin-table-merged-cell": "^3.1.0",
+    "@toast-ui/editor-plugin-uml": "^3.0.1",
+    "@vavt/cm-extension": "^1.4.4",
+    "codemirror": "5.62.0",
+    "default-passive-events": "^2.0.0",
+    "echarts": "^5.5.1",
+    "echarts-wordcloud": "^2.1.0",
+    "github-markdown-css": "^5.5.1",
+    "lucide-vue-next": "^0.364.0",
+    "markdown-it": "^14.1.0",
+    "md-editor-v3": "^4.17.3",
+    "nuxt": "^3.11.1",
+    "pinia": "^2.1.7",
+    "pnpm": "^9.6.0",
+    "prismjs": "^1.29.0",
+    "shiki": "^1.14.1",
+    "showdown": "^2.1.0",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0",
+    "vue-sonner": "^1.1.2"
+  },
+  "devDependencies": {
+    "@pinia-plugin-persistedstate/nuxt": "^1.2.0",
+    "@types/prismjs": "^1.26.3",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "vite-plugin-vuetify": "^2.0.3",
+    "vuetify": "^3.5.14"
+  }
+}

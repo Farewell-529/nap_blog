@@ -1,0 +1,138 @@
+
+/* 样式化 TOC 容器 */
+.article-container {
+    display: grid;
+    grid-template-columns: 90% 10%;
+    width: 1000px;
+    margin-left: 60px;
+}
+
+.slide-container {
+    /* 对 WebKit 浏览器的兼容 */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+    margin-left: 20px;
+    width: max-content;
+    /* 根据内容自动调整宽度 */
+    font-weight: 600;
+}
+
+.toc-container {
+    /* color: #7a7a7a;
+    font-size: 14px; */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: max-content;
+    /* 根据内容自动调整宽度 */
+    color: #7a7a7a;
+    font-size: 14px;
+    white-space: nowrap;
+    /* 防止文字换行 */
+}
+
+.toc-container a.active {
+    position: relative;
+    padding-left: .4rem;
+    color: black;
+    transition: padding-left 0.3s ease;
+}
+
+.toc-container a.active::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: black;
+    transition: top 0.3s ease, height 0.3s ease;
+    /* 使用 transition 让竖线的移动和变化更加丝滑 */
+}
+
+/* 样式化 TOC 列表 */
+.toc-list {
+    list-style-type: none;
+    padding-left: 1rem;
+    margin: 0;
+    width: 100%;
+}
+
+.toc-list a {
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.toc-list a:hover {
+    color: #000000;
+}
+
+
+.markdown-body {
+    box-sizing: border-box;
+    /* max-width: 920px; */
+    width: 100%;
+    margin-right: 20px;
+
+}
+
+@media (max-width: 767px) {
+    .markdown-body {
+        padding: 15px;
+    }
+}
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+    padding: 10px;
+}
+
+.shiki {
+    position: relative;
+}
+
+.code-lang {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    color: white;
+    width: auto;
+    z-index: 1;
+}
+
+.copy-button {
+    background-color: wheat;
+}
+
+.copy-button-svg path {
+    fill: white;
+    background-color: rgb(87, 35, 193);
+    padding: 3px;
+}
+
+.copy-button-svg {
+    user-select: none;
+    fill: white;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    background-color: rgb(89, 44, 178);
+    padding: 5px;
+    border-radius: 7px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+
+
+/* 鼠标移入时显示按钮 */
+.shiki:hover .copy-button-svg {
+    opacity: 1;
+}

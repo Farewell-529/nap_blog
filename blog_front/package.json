@@ -1,0 +1,41 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@agoose77/markdown-it-mermaid": "^1.1.0",
+    "@jamescoyle/vue-icon": "^0.1.2",
+    "@mdi/font": "^7.4.47",
+    "@mdi/js": "^7.4.47",
+    "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
+    "@pinia/nuxt": "^0.5.4",
+    "github-markdown-css": "^5.6.1",
+    "markdown-it": "^14.1.0",
+    "markdown-it-anchor": "^9.0.1",
+    "markdown-it-mathjax3": "^4.3.2",
+    "markdown-it-toc-done-right": "^4.2.0",
+    "medium-zoom": "^1.1.0",
+    "mermaid": "^10.9.1",
+    "nuxt": "^3.12.3",
+    "pinia": "^2.2.2",
+    "pnpm": "^9.7.1",
+    "vue": "latest",
+    "vue-sonner": "^1.1.4"
+  },
+  "devDependencies": {
+    "@shikijs/markdown-it": "^1.14.1",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.39",
+    "shiki": "^1.14.1",
+    "tailwindcss": "^3.4.4",
+    "vite-plugin-vuetify": "^2.0.4",
+    "vuetify": "^3.7.0"
+  }
+}

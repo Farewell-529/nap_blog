@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    width: 100vw;
+}
+
+html {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #ffffff;
+    /* 滚动条轨道背景色 */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #9c9b9b;
+    /* 滚动条手柄颜色 */
+    border-radius: 5px;
+    /* 圆角 */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #9c9b9b;
+    /* 鼠标悬停时手柄颜色 */
+}
+html {
+    scroll-behavior: smooth;
+}
