@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Nap_Blog.iml" filepath="$PROJECT_DIR$/.idea/Nap_Blog.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Nap_Blog.iml" filepath="$PROJECT_DIR$/Nap_Blog.iml" />
     </modules>
   </component>
 </project>

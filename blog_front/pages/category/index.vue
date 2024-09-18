@@ -23,7 +23,7 @@ onMounted(() => {
 </script>
 <template>
     <div class="flex flex-col items-center  mt-15">
-        <span class="text-xl font-semibold mb-5">
+        <span class="text-2xl font-semibold mb-5">
             目前共有{{ total }}个分类~
         </span>
         <div class="max-w-[920px] flex gap-8">

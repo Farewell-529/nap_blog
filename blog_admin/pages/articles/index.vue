@@ -176,7 +176,7 @@ watch((selectedArticleIds), (val) => {
     <div class="w-full">
         <div class="text-2xl font-semibold mt-10 hover:cursor-pointer ">文章</div>
         <!-- headers中的key对应items中item的属性 -->
-        <v-data-table-server :headers="headers" :items="showArticleVoList" @update:options="loadingItem" :search
+        <v-data-table-server :headers="headers as any" :items="showArticleVoList" @update:options="loadingItem" :search
             :items-per-page="itemsPerPage" :items-length="total" :show-current-page="false" :loading show-select
             v-model="selectedArticleIds" item-value="id">
             <template v-slot:top>

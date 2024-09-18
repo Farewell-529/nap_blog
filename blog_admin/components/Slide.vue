@@ -31,7 +31,7 @@ const list = [
     },
     {
         name: '评论',
-        url: '/comment',
+        url: '/comments',
         icon: MessageSquareMore
     },
     {

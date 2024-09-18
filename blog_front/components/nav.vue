@@ -103,7 +103,6 @@ onMounted(() => {
 }
 
 .router:hover::after {
-
     /* 悬停时，元素扩展到原始宽度 */
     transform: scaleX(1);
     /* 扩展的起点在左下角 */

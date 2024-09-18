@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.nap_blog.entity.Article;
 import com.nap_blog.vo.query.ArticleQuery;
 import com.nap_blog.vo.PageResult;
-import com.nap_blog.vo.response.ArticleBackRes;
-import com.nap_blog.vo.response.ArticleBackInfoRes;
-import com.nap_blog.vo.response.ArticleInfoRes;
-import com.nap_blog.vo.response.ArticleRes;
+import com.nap_blog.vo.response.*;
 
 import java.util.List;
 
@@ -22,6 +19,9 @@ public interface ArticleService extends IService<Article> {
 
     PageResult<ArticleBackRes> listArticleBackVO(ArticleQuery articleQuery);
 
+    List<ArticleSelectRes> listArticleAllBackVO( );
+
+
     PageResult<ArticleRes> listArticleVO(ArticleQuery articleQuery);
 
     void updateArticle(Article article);
@@ -32,7 +32,7 @@ public interface ArticleService extends IService<Article> {
 
     void draftToPublishById(Long id);
 
-    void articleListToDraft( List<Integer> articleIds);
+    void articleToDraft( Integer articleId);
     ArticleInfoRes getArticleByIdFont(Long id);
 
 }

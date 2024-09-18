@@ -8,6 +8,11 @@ export function articleListApi(params:ArticleQuery): Promise<Result> {
         params
     })
 }
+export function articleAllListApi(): Promise<Result> {
+    return request(`/admin/articles/all/list`, {
+        method: 'get'
+    })
+}
 export function articleDraftListApi(params:ArticleQuery): Promise<Result> {
     return request(`/admin/articles/draft/list`, {
         method: 'get',

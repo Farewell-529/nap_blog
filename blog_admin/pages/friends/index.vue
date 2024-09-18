@@ -45,11 +45,10 @@ const headers = [
         sortable: false
     },
 ]
-const showFriendList = ref()
+const showFriendList = ref<Friend[]>()
 const dialog = ref(false)
 const whichOne = ref('')
 const dialogTitle = ref('')
-
 const itemsPerPage = ref(10)
 const loading = ref(true)
 const total = ref(0)
@@ -164,7 +163,7 @@ watch((selectedFriendsIds), (val) => {
 <template>
     <div class="w-full">
         <div class="text-2xl font-semibold mt-10 hover:cursor-pointer ">朋友圈</div>
-        <v-data-table-server :headers="headers" :items="showFriendList" @update:options="loadingItem"
+        <v-data-table-server :headers="headers as any" :items="showFriendList" @update:options="loadingItem"
             :items-per-page="itemsPerPage" :items-length="total" :show-current-page="false" :loading
             v-model="selectedFriendsIds" show-select item-value="id">
             <template v-slot:top>
@@ -175,7 +174,7 @@ watch((selectedFriendsIds), (val) => {
                     </div>
                     <v-btn size="small" icon="mdi-magnify" @click="searchHandle"></v-btn>
                     <v-btn size="small" icon="mdi-refresh" @click="clearHandle"></v-btn>
-                    <div class="ml-auto pr-2">
+                    <div class="ml-auto pr-3">
                         <v-btn @click="saveBtn">
                             添加友链
                         </v-btn>
@@ -192,7 +191,7 @@ watch((selectedFriendsIds), (val) => {
             </template>
             <template v-slot:item.avatarUrl="{ item }">
                 <div class="w-[100%] flex justify-center">
-                    <img class="max-w-14 object-contain my-2" :src="item.avatarUrl" alt="">
+                    <img class="size-14 object-contain my-2" :src="item.avatarUrl" alt="">
                 </div>
             </template>
 

@@ -7,7 +7,7 @@ const headers = [
         title: '分类名',
         key: 'categoryName',
         width: '50px',
-        align: 'center',
+        align: 'center' ,
         sortable: false
     },
     {
@@ -137,7 +137,7 @@ watch((selectedCategoryIds), (val) => {
 <template>
     <div class="w-full">
         <div class="text-2xl font-semibold mt-10 hover:cursor-pointer ">分类</div>
-        <v-data-table-server :headers="headers" :items="showCategoryList" @update:options="loadingItem"
+        <v-data-table-server :headers="headers as any" :items="showCategoryList" @update:options="loadingItem"
             :items-per-page="itemsPerPage" :items-length="total" :show-current-page="false" :loading
             v-model="selectedCategoryIds" show-select item-value="id">
             <template v-slot:top>
@@ -148,7 +148,7 @@ watch((selectedCategoryIds), (val) => {
                     </div>
                     <v-btn size="small" icon="mdi-magnify" @click="searchHandle"></v-btn>
                     <v-btn size="small" icon="mdi-refresh" @click="clearHandle"></v-btn>
-                    <div class="ml-auto pr-2">
+                    <div class="ml-auto pr-3">
                         <v-btn @click="saveBtn">
                             添加分类
                         </v-btn>

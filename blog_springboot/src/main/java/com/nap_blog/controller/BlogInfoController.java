@@ -15,4 +15,10 @@ public class BlogInfoController {
     public Result getBlogBackInfo() {
         return Result.success(blogInfoService.getBlogBackInfo());
     }
+
+    @GetMapping("/api/archive")
+    public Result getBlogArchive() {
+        return Result.success(blogInfoService.getArchiveArticle());
+    }
+
 }

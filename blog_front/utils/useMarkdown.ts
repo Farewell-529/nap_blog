@@ -9,11 +9,15 @@ import tocDoneRight from 'markdown-it-toc-done-right';
 import { toast } from 'vue-sonner'
 export const useMarkdown = () => {
     let md: any;
+    let highlighter: any = null; // 缓存 Shiki 实例
+
     const initializeMarkdown = async () => {
-        const highlighter = await createHighlighter({
-            langs: ['javascript', 'typescript', 'vue', 'java', 'go', 'mermaid'],
-            themes: ['tokyo-night']
-        });
+        if (!highlighter) {
+            highlighter = await createHighlighter({
+                langs: ['javascript', 'typescript', 'vue', 'java', 'go', 'mermaid'],
+                themes: ['tokyo-night']
+            });
+        }
 
         const slugify = (s: string) => {
             return s.trim()
@@ -69,9 +73,9 @@ export const useMarkdown = () => {
                 containerClass: 'toc-container',
                 includeLevel: [1, 2, 3]
             });
-
         return md;
     }
+
 
     const encodeBase64 = (text: string): string => {
         return btoa(unescape(encodeURIComponent(text)));

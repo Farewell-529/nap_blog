@@ -6,14 +6,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nap_blog.entity.*;
 import com.nap_blog.vo.query.ArticleQuery;
 import com.nap_blog.vo.PageResult;
-import com.nap_blog.vo.response.ArticleBackRes;
-import com.nap_blog.vo.response.ArticleBackInfoRes;
+import com.nap_blog.vo.response.*;
 import com.nap_blog.mapper.ArticleMapper;
 import com.nap_blog.mapper.ArticleTagsMapper;
 import com.nap_blog.mapper.ImgMapper;
 import com.nap_blog.service.*;
-import com.nap_blog.vo.response.ArticleInfoRes;
-import com.nap_blog.vo.response.ArticleRes;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -21,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Lazy
 @Slf4j
@@ -61,6 +57,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                         .build()).toList();
 
         return new PageResult<>(articleBackListVOList, total);
+    }
+
+    @Override
+    public List<ArticleSelectRes> listArticleAllBackVO() {
+        List<Article> articles = articleMapper.selectList(null);
+        return articles.stream().map(item -> {
+            ArticleSelectRes articleSelectRes = new ArticleSelectRes();
+            articleSelectRes.setId(item.getId());
+            articleSelectRes.setTitle(item.getTitle());
+            return articleSelectRes;
+        }).toList();
     }
 
     @Override
@@ -212,8 +219,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public void articleListToDraft(List<Integer> articleIds) {
-        articleMapper.setStatusBatchByIds(articleIds, 0);
+    public void articleToDraft(Integer articleId) {
+        Article article = new Article();
+        article.setStatus(0);
+        articleMapper.update(article, new LambdaQueryWrapper<Article>()
+                .eq(Article::getId, articleId));
     }
 
     @Override
@@ -221,7 +231,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Article articleById = articleMapper.selectById(id);
         //查询文章对应的分类名
         Category category = categoryService.getOne(new LambdaQueryWrapper<Category>()
-                        .eq(Category::getId, articleById.getCategoryId()));
+                .eq(Category::getId, articleById.getCategoryId()));
         //查询文章对应的标签
         List<Long> tagsId = articleTagsService.list(new LambdaQueryWrapper<ArticleTags>()
                 .in(ArticleTags::getArticleId, id)).stream().map(ArticleTags::getTagsId).toList();
@@ -291,7 +301,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return articleMapper.selectPage(page, lqw);
     }
 
-    public Map<Long, List<Tags>> getArticleAndTagsMap(){
+    public Map<Long, List<Tags>> getArticleAndTagsMap() {
         List<ArticleTags> articleTags = articleTagsService.list();
         List<Tags> tagsList = tagsService.list();
         // 构建标签 ID 到标签对象的映射

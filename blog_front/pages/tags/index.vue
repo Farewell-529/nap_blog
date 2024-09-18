@@ -16,14 +16,13 @@ const getCountsList = async () => {
     countsList.value = data.recordList
     total.value = data.total
 }
-
 onMounted(() => {
     getCountsList()
 })
 </script>
 <template>
     <div class="flex flex-col items-center  mt-15">
-        <span class="text-xl font-semibold mb-5">
+        <span class="text-2xl font-semibold mb-5">
             目前共有{{ total }}个标签~
         </span>
         <div class="max-w-[920px] flex gap-5 flex-wrap">

@@ -21,6 +21,11 @@ public class ArticleController {
         return Result.success(articleService.listArticleBackVO(articleQuery));
     }
 
+    @GetMapping("/admin/articles/all/list")
+    public Result listArticleAllBackVO() {
+        return Result.success(articleService.listArticleAllBackVO());
+    }
+
     @GetMapping("/admin/articles/{id}")
     public Result getArticleByIdVO(@PathVariable("id") Long id) {
         return Result.success(articleService.getArticleByIdVO(id));
@@ -62,10 +67,9 @@ public class ArticleController {
     }
 
     @PutMapping("/admin/articles/list/draft")
-    public Result articleListToDraft(@RequestBody List<Integer> articleIds) {
-        articleService.articleListToDraft(articleIds);
+    public Result articleListToDraft(@RequestBody Integer articleId) {
+        articleService.articleToDraft(articleId);
         return Result.success();
-
     }
 
     @PutMapping("/admin/articles/draft/{id}")

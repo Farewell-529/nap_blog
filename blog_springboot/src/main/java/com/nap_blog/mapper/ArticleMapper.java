@@ -15,6 +15,6 @@ public interface ArticleMapper extends BaseMapper<Article> {
     boolean draftToPublishById(Long id);
 
     void setStatusBatchByIds(@Param("articleIds") List<Integer> articleIds,@Param("status") int status);
-//    List<ArticleBackListVO> selectArticleBackListVO(@Param("param") ArticleQuery articleQuery);
+
 
 }
