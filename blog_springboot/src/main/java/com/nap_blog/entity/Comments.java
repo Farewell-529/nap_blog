@@ -17,25 +17,16 @@ import java.util.List;
 public class Comments {
     @TableId(type = IdType.AUTO)
     private Long id;
-
-    private Integer articleId;
-
+    private String targetType;
+    private Integer targetId;
     private Integer userId;
-
     private Integer pid;
-
-    private String target;
-
+    private Integer replyId;
     private String name;
-
     private String content;
-
     private String email;
-
     private String avatar;
-
     private String url;
-
     private Date createDate;
     @TableField(exist = false)
     private List<Comments> childComments;

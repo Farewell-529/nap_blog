@@ -1,5 +1,6 @@
 package com.nap_blog.vo.response;
 
+import com.nap_blog.entity.Comments;
 import com.nap_blog.entity.Tags;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +21,6 @@ public class ArticleInfoRes {
     private String content;
     //所属分类名
     private String categoryName;
-
     //所属标签
     private List<Tags> tags;
     //创建日期
@@ -29,4 +29,6 @@ public class ArticleInfoRes {
     private Date updateDate;
     //浏览量
     private Integer viewCount;
+    //评论
+    private List<CommentsRes> commentsList;
 }

@@ -13,42 +13,47 @@ import java.util.List;
 public class TagsController {
     @Autowired
     TagsService tagsService;
+
     @GetMapping("/admin/tags/list")
-    public Result tagsList(TagsQuery tagsQuery){
+    public Result tagsList(TagsQuery tagsQuery) {
         return Result.success(tagsService.listTags(tagsQuery));
     }
+
     @GetMapping("/tags/list")
-    public Result tagsAllList(){
+    public Result tagsAllList() {
         return Result.success(tagsService.list());
     }
+
     @GetMapping("/admin/tags/{id}")
-    public Result getTagsById(@PathVariable("id") Long id){
+    public Result getTagsById(@PathVariable("id") Long id) {
         return Result.success(tagsService.getById(id));
     }
 
     @PostMapping("/admin/tags")
-    public Result saveTags(@RequestBody Tags tags){
+    public Result saveTags(@RequestBody Tags tags) {
         tagsService.saveTags(tags);
         return Result.success();
     }
+
     @PutMapping("/admin/tags")
-    public Result updateTags(@RequestBody Tags tags){
+    public Result updateTags(@RequestBody Tags tags) {
         tagsService.updateTags(tags);
         return Result.success();
     }
 
     @DeleteMapping("/admin/tags/delete")
-    public Result deleteTags(@RequestBody List<Integer> ids){
+    public Result deleteTags(@RequestBody List<Integer> ids) {
         tagsService.deleteTags(ids);
         return Result.success();
     }
+
     @GetMapping("/tags/admin/list/{articleId}")
     public Result tagsListByArticleId(@PathVariable("articleId") Long articleId) {
         return Result.success(tagsService.getTagListByArticleId(articleId));
     }
 
     @GetMapping("/api/tags/countsList")
-    public Result getTagsCountsList(){
+    public Result getTagsCountsList() {
         return Result.success(tagsService.getTagsCountsList());
     }
 }

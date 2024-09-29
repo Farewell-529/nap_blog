@@ -137,7 +137,7 @@ onMounted(() => {
         </div>
 
         <div class="fixed right-20 top-5">
-            <v-btn color="#000000" @click="logoutDialog = true">
+            <v-btn color="#000000" @click="logoutHandler">
                 退出登录
             </v-btn>
         </div>

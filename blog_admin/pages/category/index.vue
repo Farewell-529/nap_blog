@@ -91,6 +91,7 @@ const handlerOption = async () => {
     let res: Result = { code: 200, msg: '', data: null }
     if (option == 'delete') {
         res = await deletecategoryApi(currentItem)
+        selectedCategoryIds.value = []
     } if (option == 'edit') {
         res = await updatecategoryApi(form.value)
     } if (option == 'save') {

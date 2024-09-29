@@ -8,6 +8,7 @@ import com.nap_blog.vo.PageResult;
 import com.nap_blog.vo.query.FriendQuery;
 import com.nap_blog.mapper.FriendMapper;
 import com.nap_blog.service.FriendService;
+import com.nap_blog.vo.response.FriendInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,5 +53,19 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     @Override
     public void deleteFriend(List<Integer> ids) {
         friendMapper.deleteBatchIds(ids);
+    }
+
+    @Override
+    public List<FriendInfo> listFriendFront() {
+        List<Friend> friends = friendMapper.selectList(null);
+        return friends.stream().map(friend ->
+                FriendInfo.builder()
+                        .id(friend.getId())
+                        .friendName(friend.getFriendName())
+                        .description(friend.getDescription())
+                        .avatarUrl(friend.getAvatarUrl())
+                        .url(friend.getUrl())
+                        .build()
+        ).toList();
     }
 }

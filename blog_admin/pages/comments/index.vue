@@ -7,7 +7,7 @@ const headers = [
     {
         title: '头像',
         key: 'avatar',
-        width: '50px',
+        width: '80px',
         align: 'center',
         sortable: false
     },
@@ -20,37 +20,46 @@ const headers = [
     },
     {
         title: '内容',
-        align: 'center',
         key: 'content',
-        width: '100px',
+        width: '150',
+        sortable: false
     },
     {
         title: '邮箱',
-        align: 'center',
         key: 'email',
         width: '100px',
+        sortable: false
     },
     {
         title: '网址',
-        align: 'center',
         key: 'url',
         width: '100px',
+        sortable: false
     },
     {
         title: '回复的文章',
         align: 'center',
         key: 'articleName',
+        width: '120px',
+        sortable: false
+    },
+    {
+        title: '回复的人',
+        align: 'center',
+        key: 'replyName',
         width: '100px',
+        sortable: false
     },
     {
         title: '评论日期',
         align: 'center',
         key: 'createDate',
         width: '100px',
+        sortable: false
     },
     {
         title: '操作',
-        width: '100px',
+        width: '50px',
         align: 'center',
         key: 'handler',
         sortable: false
@@ -63,7 +72,7 @@ const dialogTitle = ref('')
 const itemsPerPage = ref(10)
 const loading = ref(true)
 const total = ref(0)
-const selectedCategoryIds = ref([])
+const selectedCommentsIds = ref([])
 const disabled = ref(true)
 const tipsText = ref('?')
 const selectedArticle = ref<any>({
@@ -73,15 +82,19 @@ const selectedArticle = ref<any>({
 const articlkNameArr = ref<any>([])
 const queryParams = ref<CommentsQuery>({
     current: 1,
-    size: 10
+    size: 10,
+    targetType:'article'
 })
 const { $toast } = useNuxtApp()
 const form = ref<Comments>({
-    articleId: 0,
+    targetType:'article',
+    targetId: 0,
     name: '',
     email: '',
     url: '',
     content: '',
+    pid:-1,
+    replytId:-1
 })
 let currentItem: number[] = []
 const keyword = ref()
@@ -106,6 +119,8 @@ const editBtn = (item: any) => {
         name: item.name,
         email: item.email,
         url: item.url,
+        pid:item.pid,
+        targetId:item.targetId
     }
     selectedArticle.value.title = item.articleName
     dialog.value = true
@@ -121,7 +136,9 @@ const saveBtn = async () => {
     whichOne.value = 'save'
     dialogTitle.value = '添加评论'
     dialog.value = true
-    form.value = {}
+    form.value = {
+        targetType:'article'
+    }
     getArticleList()
 }
 const handlerOption = async () => {
@@ -129,11 +146,12 @@ const handlerOption = async () => {
     let res: Result = { code: 200, msg: '', data: null }
     if (option == 'delete') {
         res = await deleteCommentsApi(currentItem)
+        selectedCommentsIds.value = []
     } if (option == 'edit') {
-        form.value.articleId = selectedArticle.value.id
+        form.value.targetId = selectedArticle.value.id
         res = await updateCommentsApi(form.value)
     } if (option == 'save') {
-        form.value.articleId = selectedArticle.value.id
+        form.value.targetId = selectedArticle.value.id
         res = await saveCommentsApi(form.value)
     }
 
@@ -178,7 +196,7 @@ const getArticleList = async () => {
     articlkNameArr.value = data
     selectedArticle.value = articlkNameArr.value.find((article: any) => article.title == selectedArticle.value.title)
 }
-watch((selectedCategoryIds), (val) => {
+watch((selectedCommentsIds), (val) => {
     if (val.length > 0) {
         disabled.value = false
         currentItem = val
@@ -193,7 +211,7 @@ watch((selectedCategoryIds), (val) => {
         <div class="text-2xl font-semibold mt-10 hover:cursor-pointer ">评论</div>
         <v-data-table-server :headers="headers as any" :items="showCommentsList" @update:options="loadingItem"
             :items-per-page="itemsPerPage" :items-length="total" :show-current-page="false" :loading
-            v-model="selectedCategoryIds" show-select item-value="id">
+            v-model="selectedCommentsIds" show-select item-value="id" width="600">
             <template v-slot:top>
                 <div class="flex w-[100%] gap-4 mt-4">
                     <div class="w-40">
@@ -217,7 +235,11 @@ watch((selectedCategoryIds), (val) => {
                     </div>
                 </div>
             </template>
-
+            <template v-slot:item.avatar="{ item }">
+                <div class="w-[100%] flex justify-center">
+                    <img class="size-11 my-2 rounded-lg" :src="'https://www.gravatar.com/avatar/' + item.avatar" alt="">
+                </div>
+            </template>
             <template v-slot:item.handler="{ item }">
                 <div class="flex gap-4 justify-center">
                     <v-icon size="small" @click="editBtn(item)">
@@ -267,8 +289,8 @@ watch((selectedCategoryIds), (val) => {
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn text="Close" variant="plain" @click="closeHandle"></v-btn>
-                    <v-btn color="primary" text="Save" variant="tonal" @click="handlerOption"></v-btn>
+                    <v-btn text="关闭" variant="plain" @click="closeHandle"></v-btn>
+                    <v-btn color="primary" text="保存" variant="tonal" @click="handlerOption"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

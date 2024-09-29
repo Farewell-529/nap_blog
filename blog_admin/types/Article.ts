@@ -25,8 +25,8 @@ export interface ArticleInfoRes{
     id?: number;
     title?: string;
     content?: string;
-    selectedCategory?: string;
-    selectedTags?: Tags[];
+    categoryName?: string;
+    tags?: Tags[];
     createDate?: string;
     updateDate?: string;
     viewCount?: number;

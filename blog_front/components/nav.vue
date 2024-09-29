@@ -2,7 +2,7 @@
 
 // @ts-ignore
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiCardAccountDetails, mdiHome, mdiTagMultiple, mdiTableLarge, mdiArchive } from '@mdi/js';
+import { mdiCardAccountDetails, mdiHome, mdiTagMultiple, mdiTableLarge, mdiArchive, mdiAccountMultiple } from '@mdi/js';
 import { userInfoApi } from "~/api/user";
 import { type User } from "~/types/User";
 import { userStore } from "~/store/userInfo";
@@ -36,6 +36,11 @@ const list = [
         icon: mdiTableLarge
     },
     {
+        name: '友链',
+        url: '/friend',
+        icon: mdiAccountMultiple
+    },
+    {
         name: '归档',
         url: '/archive',
         icon: mdiArchive
@@ -44,7 +49,7 @@ const list = [
 const getUserInfo = async () => {
     const { data } = await userInfoApi()
     store.setUser(data)
-    userInfo.value = {...store.user!}
+    userInfo.value = { ...store.user! }
 }
 onMounted(() => {
     getUserInfo()

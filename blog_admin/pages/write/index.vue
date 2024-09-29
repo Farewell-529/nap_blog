@@ -100,12 +100,12 @@ const getArticleById = async () => {
     showArticleVO.value = data
     content.value = showArticleVO.value?.content as string
     titleInput.value = showArticleVO.value.title
-    selectedCategoryName.value = showArticleVO.value.selectedCategory
-    selectTagsArr.value = showArticleVO.value.selectedTags!.map(item => item.tagsName!)
+    selectedCategoryName.value = showArticleVO.value.categoryName
+    selectTagsArr.value = showArticleVO.value.tags!.map(item => item.tagsName!)
     originalTitle = titleInput.value || ''
     originalText = content.value
     originalCategory = selectedCategoryName.value
-    originalTags = selectTagsArr.value.map(item => item)
+    originalTags = selectTagsArr.value
 }
 
 const saveBtn = () => {
@@ -192,7 +192,7 @@ const callbackFn = () => {
     useRouter().back()
 }
 const checkEmptiy = () => {
-    if (!content.value || titleInput.value == '' || selectTagsArr.value.length == 0 || !selectedCategoryName.value) {
+    if (content.value=='' || titleInput.value == '') {
         $toast.error("内容不能为空~")
         dialog.value = false
         return true

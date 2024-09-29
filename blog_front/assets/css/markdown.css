@@ -3,8 +3,8 @@
 .article-container {
     display: grid;
     grid-template-columns: 90% 10%;
-    width: 1000px;
-    margin-left: 60px;
+    width: 60rem;
+    margin-left: 3.75rem;
 }
 
 .slide-container {
@@ -15,7 +15,7 @@
     height: fit-content;
     margin-left: 20px;
     width: max-content;
-    /* 根据内容自动调整宽度 */
+    font-size: 14px;
     font-weight: 600;
 }
 

@@ -93,6 +93,7 @@ const handlerOption = async () => {
     let res: Result = { code: 200, msg: '', data: null }
     if (option == 'delete') {
         res = await deleteTagsApi(currentItem)
+        selectedTagsIds.value=[]
     } else if (option == 'edit') {
         res = await updateTagsApi(form.value)
     } else if (option == 'save') {

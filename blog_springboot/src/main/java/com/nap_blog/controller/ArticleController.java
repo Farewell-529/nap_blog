@@ -78,11 +78,11 @@ public class ArticleController {
         return Result.success();
 
     }
-    @GetMapping("/articles/list")
+    @GetMapping("/api/articles/list")
     public Result listArticleFont(ArticleQuery articleQuery) {
         return Result.success(articleService.listArticleVO(articleQuery));
     }
-    @GetMapping("/articles/{id}")
+    @GetMapping("/api/articles/{id}")
     public Result getArticleByIdFont(@PathVariable("id") Long id) {
         return Result.success(articleService.getArticleByIdFont(id));
     }

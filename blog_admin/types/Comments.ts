@@ -2,10 +2,11 @@ import { type PageQuery } from '~/types/PageQuery'
 
 export interface Comments{
   id?:number,
-  articleId?:number,
+  targetType?:string,
+  targetId?:number,
   userId?:number,
   pid?:number,
-  target?:string,
+  replytId?:number,
   name?:string,
   content?:string,
   url?:string,
@@ -15,10 +16,10 @@ export interface Comments{
 }
 export interface CommentsRes{
   id?:number,
-  articleId?:number,
+  targetId?:number,
   userId?:number,
   pid?:number,
-  target?:string,
+  targetName?:string,
   name?:string,
   content?:string,
   url?:string,
@@ -29,4 +30,5 @@ export interface CommentsRes{
 }
 export interface CommentsQuery extends PageQuery{
     keyword?:string,
+    targetType:string
   }

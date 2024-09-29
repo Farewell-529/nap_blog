@@ -12,6 +12,9 @@ export const useMarkdown = () => {
     let highlighter: any = null; // 缓存 Shiki 实例
 
     const initializeMarkdown = async () => {
+        if (md) {
+            return md;  // 如果已经初始化过 md，直接返回
+        }
         if (!highlighter) {
             highlighter = await createHighlighter({
                 langs: ['javascript', 'typescript', 'vue', 'java', 'go', 'mermaid'],

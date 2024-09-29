@@ -53,13 +53,13 @@ const initHandle = async (content: string) => {
 
 watch(() => props.content, (newContent) => {
     if (newContent) {
-        initHandle(newContent);  // 当 content 变化时重新初始化
+        initHandle(newContent);  
     }
 });
 const topHandle = () => {
     window.scrollTo({
         top: 0,
-        behavior: 'smooth' // 平滑滚动
+        behavior: 'smooth' 
     });
 }
 onMounted(() => {
@@ -74,27 +74,26 @@ onBeforeUnmount(() => {
 </script>
 <template>
     <div>
-        <div class="article-container">
-            <div v-html="renderContent" class="markdown-body"></div>
+        <div class="article-container ">
+            <div v-html="renderContent" class="markdown-body "></div>
             <div class="slide-container" v-show="isToc">
                 <div v-html="toc"></div>
                 <hr class="mt-2 mb-1 h-[0.5px] border-0 bg-black ">
-                <div class="flex items-center text-[14px] gap-1">
+                <div class="flex items-center text-sm gap-1">
                     <svg-icon type="mdi" :path="mdiCheckboxMarkedCircleOutline" class="w-4"></svg-icon>
                     <span> {{ scrollPercent }}%</span>
                 </div>
-                <button class="text-[14px] flex gap-1 transition-all duration-200 ease-in-out" :class="{
-                'opacity-0 ': !isTop,
-                'opacity-100 ': isTop
-            }" @click="topHandle">
+                <button class="text-[14px] flex gap-1 transition-all duration-200 ease-in-out " :class="{
+                    'opacity-0 ': !isTop,
+                    'opacity-100 ': isTop
+                }" @click="topHandle">
                     <svg-icon type="mdi" :path="mdiArrowUpDropCircleOutline" class="w-4" />
                     <span>回到顶部</span>
                 </button>
             </div>
-            <slot>
-           
-            </slot>
         </div>
+        <slot>
+        </slot>
     </div>
 </template>
 <style scoped></style>

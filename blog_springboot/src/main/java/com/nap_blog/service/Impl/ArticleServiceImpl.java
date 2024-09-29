@@ -37,6 +37,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     ImgMapper imgMapper;
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    CommentsService commentsService;
 
     @Override
     public PageResult<ArticleBackRes> listArticleBackVO(ArticleQuery articleQuery) {
@@ -104,9 +106,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         String categoryName = categoryService.getOne(categoryLQW).getCategoryName();
         //查询文章对应的标签
         articleTagsLQW.in(ArticleTags::getArticleId, id);
-        List<Long> tagsId = articleTagsService.list(articleTagsLQW).stream().map(ArticleTags::getTagsId).toList();
-        tagsLQW.in(Tags::getId, tagsId);
-        List<Tags> tagsList = tagsService.list(tagsLQW);
+        List<Long> tagsIds = articleTagsService.list(articleTagsLQW)
+                .stream()
+                .map(ArticleTags::getTagsId)
+                .toList();
+
+        List<Tags> tagsList = new ArrayList<>();
+        // 只有当 tagsId 非空时才进行标签查询
+        if (!tagsIds.isEmpty()) {
+            tagsLQW.in(Tags::getId, tagsIds);
+            tagsList = tagsService.list(tagsLQW);
+        }
         // 构建返回的 VO 对象
         return ArticleBackInfoRes.builder()
                 .id(id)
@@ -238,6 +248,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
         List<Tags> tagsList = tagsService.list(new LambdaQueryWrapper<Tags>()
                 .in(Tags::getId, tagsId));
+        //文章对应评论
+        List<CommentsRes> commentsList = commentsService.getCommentsList("article",id.intValue());
         // 构建返回的 VO 对象
         return ArticleInfoRes.builder()
                 .id(id)
@@ -247,6 +259,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .updateDate(articleById.getUpdateDate())
                 .tags(tagsList)
                 .categoryName(category.getCategoryName())
+                .commentsList(commentsList)
                 .build();
     }
 

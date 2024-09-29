@@ -105,6 +105,7 @@ const switchHandler = async () => {
     let res;
     if (isDelete) {
         res = await deleteArticleApi(currentItem)
+        selectedArticleIds.value=[]
     } else {
         res = await articleListToDraftApi(currentItem)
     }

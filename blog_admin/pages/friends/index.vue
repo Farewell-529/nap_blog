@@ -191,7 +191,7 @@ watch((selectedFriendsIds), (val) => {
             </template>
             <template v-slot:item.avatarUrl="{ item }">
                 <div class="w-[100%] flex justify-center">
-                    <img class="size-14 object-contain my-2" :src="item.avatarUrl" alt="">
+                    <img class="size-11 object-contain my-2 rounded-lg" :src="item.avatarUrl" alt="">
                 </div>
             </template>
 

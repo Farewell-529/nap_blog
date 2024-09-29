@@ -80,10 +80,9 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
 
     @Override
     public void deleteTags(List<Integer> ids) {
-        LambdaQueryWrapper<ArticleTags> lawArticleTags = new LambdaQueryWrapper<>();
-        lawArticleTags.in(ArticleTags::getTagsId, ids);
-        articleTagsMapper.delete(lawArticleTags);
-        tagsMapper.deleteBatchIds(ids);
+       articleTagsMapper.delete(new LambdaQueryWrapper<ArticleTags>()
+               .in(ArticleTags::getTagsId,ids));
+       tagsMapper.deleteBatchIds(ids);
     }
 
 

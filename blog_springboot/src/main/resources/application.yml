@@ -16,6 +16,10 @@ spring:
     resources:
       static-locations:
         file:C:\\Users\\Farewell\\Desktop\\Nap_Blog\\upload\\avatar\\,file:C:\\Users\\Farewell\\Desktop\\Nap_Blog\\upload\\
+  mail:
+    username: nap_zzz@126.com
+    password: HUXxzNpqpp94ymM9
+    host: smtp.126.com
 mybatis-plus:
   configuration:
     #??

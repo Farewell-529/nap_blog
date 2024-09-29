@@ -212,7 +212,7 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <div class="flex gap-10">
+        <div class="flex gap-10 ">
             <div id="category" class="w-[400px] h-[300px] "></div>
             <div id="tagsCloud" class="w-[750px] h-[300px] "></div>
         </div>

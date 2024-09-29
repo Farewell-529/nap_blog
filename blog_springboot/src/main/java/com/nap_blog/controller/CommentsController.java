@@ -4,6 +4,7 @@ import com.nap_blog.entity.Comments;
 import com.nap_blog.service.CommentsService;
 import com.nap_blog.vo.Result;
 import com.nap_blog.vo.query.CommentsQuery;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,14 +16,13 @@ public class CommentsController {
     CommentsService commentsService;
 
     @GetMapping("/api/comments/list")
-    public Result commentsList(@RequestParam Integer articleId){
-        return Result.success(commentsService.getCommentsList(articleId));
+    public Result commentsList(@RequestParam String targetType,Integer targetId){
+        return Result.success(commentsService.getCommentsList(targetType,targetId));
     }
 
     @PostMapping("/api/comments/save")
-    public Result saveComments(@RequestBody Comments comments){
-        commentsService.saveComments(comments);
-        return Result.success();
+    public Result saveComments(@RequestBody Comments comments) throws MessagingException {
+        return commentsService.saveComments(comments)?Result.success():Result.error("数据不匹配");
     }
 
     @GetMapping("/admin/comments/list")
@@ -31,7 +31,7 @@ public class CommentsController {
     }
 
     @PostMapping("/admin/comments/save")
-    public Result saveCommentsAdmin(@RequestBody Comments comments){
+    public Result saveCommentsAdmin(@RequestBody Comments comments) throws MessagingException {
         return commentsService.saveComments(comments)?Result.success():Result.error("数据不匹配");
     }
     @PutMapping("/admin/comments/update")

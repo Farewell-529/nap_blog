@@ -2,18 +2,22 @@
 import 'github-markdown-css/github-markdown.css';
 // @ts-ignore
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiCalendarCheckOutline, mdiUpdate, mdiPound, mdiEyeOutline, mdiCheckboxMarkedCircleOutline, mdiArrowUpDropCircleOutline } from '@mdi/js';
+import { mdiCalendarCheckOutline, mdiUpdate, mdiPound, mdiEyeOutline, mdiFolderOutline, mdiArrowUpDropCircleOutline } from '@mdi/js';
 import { articleByIdApi } from "~/api/article";
 import { useMarkdown } from '~/utils/useMarkdown';
 const { initializeMarkdown } = useMarkdown();
 const route = useRoute()
 const articleId = parseInt(route.query.id as string)
-
+const target={
+    targetType:'article',
+    targetId:articleId
+}
 const articleInfo = ref<any>({
     title: '',
     createDate: '',
     updateDate: '',
     content: '',
+    commentsList:[]
 })
 const getArticleInfo = async () => {
     const md = await initializeMarkdown();
@@ -72,14 +76,22 @@ onMounted(() => {
                     <span v-if="index < articleInfo.tags.length - 1" class="mx-[2px]">/</span>
                 </div>
             </div>
+             <div class="flex items-center  ">
+                    <svg-icon type="mdi" :path="mdiFolderOutline" class="w-5 mr-1" />
+                    <span>
+                        分类
+                     <NuxtLink :to="{path: '/category/categoryArticle', query: { id: articleInfo.id,categoryName: articleInfo.categoryName}}" class="border-b-[1px] border-b-black pb-1 text-black">
+                            {{ articleInfo.categoryName }}
+                     </NuxtLink>
+                    </span>
+                </div>
             <div class="flex items-center ">
                 <svg-icon type="mdi" :path="mdiEyeOutline" class="w-3 mr-1" />
                 <span>{{ articleInfo.viewCount ? articleInfo.viewCount : 0 }}</span>
             </div>
         </div>
         <Article :content="articleInfo.content">
-            <Comments :articleId>
-
+            <Comments :target :commentsList="articleInfo.commentsList" >
             </Comments>
         </Article>
         <div class="min-h-[60vh]">

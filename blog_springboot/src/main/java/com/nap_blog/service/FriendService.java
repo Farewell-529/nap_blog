@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.nap_blog.entity.Friend;
 import com.nap_blog.vo.PageResult;
 import com.nap_blog.vo.query.FriendQuery;
+import com.nap_blog.vo.response.FriendInfo;
 
 import java.util.List;
 
@@ -15,4 +16,6 @@ public interface FriendService extends IService<Friend> {
     void updateFriend(Friend friend);
 
     void deleteFriend(List<Integer> ids);
+
+    List<FriendInfo> listFriendFront();
 }

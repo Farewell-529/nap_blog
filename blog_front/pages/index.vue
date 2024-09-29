@@ -49,7 +49,7 @@ onMounted(() => {
 <template>
     <div class="pb-10">
         <div v-for="item in showArticleList" class=" flex flex-col items-center mt-20">
-            <div class="text-3xl font-normal cursor-pointer mb-3">
+            <div class="text-3xl font-bold cursor-pointer mb-3">
                 {{ item.title }}
             </div>
 

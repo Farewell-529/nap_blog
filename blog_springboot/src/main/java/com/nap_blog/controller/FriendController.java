@@ -36,4 +36,8 @@ public class FriendController {
         friendService.deleteFriend(ids);
         return Result.success();
     }
+    @GetMapping("/api/friend/list")
+    public Result listFriendFront( ){
+        return Result.success(friendService.listFriendFront());
+    }
 }
