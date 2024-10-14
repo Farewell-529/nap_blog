@@ -1,15 +1,15 @@
 export interface Comments {
     id?: number,
-    targetId?:number,
+    targetId:number,
     userId?:number,
-    pid?:number,
-    replyId?:number,
-    targetType?:string,
-    name?:string,
-    content?:string,
-    email?:string,
+    pid:number,
+    replyId:number,
+    targetType:string,
+    name:string,
+    content:string,
+    email:string,
     avatar?:string,
-    url?:string,
+    url:string,
     createDate?: string,
     childComments?:Array<Comments>
 }

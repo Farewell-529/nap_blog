@@ -2,10 +2,9 @@
 import 'github-markdown-css/github-markdown.css';
 // @ts-ignore
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiCalendarCheckOutline, mdiUpdate, mdiPound, mdiEyeOutline, mdiFolderOutline, mdiArrowUpDropCircleOutline } from '@mdi/js';
+import { mdiCalendarCheckOutline, mdiUpdate, mdiPound, mdiEyeOutline, mdiFolderOutline } from '@mdi/js';
 import { articleByIdApi } from "~/api/article";
-import { useMarkdown } from '~/utils/useMarkdown';
-const { initializeMarkdown } = useMarkdown();
+
 const route = useRoute()
 const articleId = parseInt(route.query.id as string)
 const target={
@@ -20,7 +19,6 @@ const articleInfo = ref<any>({
     commentsList:[]
 })
 const getArticleInfo = async () => {
-    const md = await initializeMarkdown();
     const { data } = await articleByIdApi(articleId)
     //属性覆盖
     articleInfo.value = {

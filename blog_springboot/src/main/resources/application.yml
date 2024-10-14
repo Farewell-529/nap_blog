@@ -20,10 +20,37 @@ spring:
     username: nap_zzz@126.com
     password: HUXxzNpqpp94ymM9
     host: smtp.126.com
+  data:
+    redis:
+      host: localhost
+      port: 6379
 mybatis-plus:
   configuration:
     #??
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   mapper-locations: classpath:mapper/*.xml
+#邮件格式模板
+email:
+  from: nap_zzz@126.com
+  subject:
+    defaultSubject: 标题:《%s》有新评论
+    replySubject: 你在nap博客评论的标题为:《%s》的文章有回复
+  content:
+    defaultContent: |
+      文章标题:%s<br>
+      昵称:%s<br>
+      评论内容:%s<br>
+      邮箱:%s<br>
+      网址：%s<br>
+    replyContent: |
+      文章标题:%s<br>
+      昵称:%s<br>
+      回复你说:%s<br>
+      博客网址：http://localhost:3000/
+    parentContent: |
+      文章标题:%s<br>
+      昵称:%s<br>
+      有回复说:%s<br>
+      博客网址：http://localhost:3000/
 
 

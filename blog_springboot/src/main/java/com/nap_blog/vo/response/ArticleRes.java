@@ -29,5 +29,6 @@ public class ArticleRes {
     private Date updateDate;
     //内容
     private String content;
-
+    //浏览量
+    private Integer viewCount;
 }

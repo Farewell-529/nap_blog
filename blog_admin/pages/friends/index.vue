@@ -71,7 +71,7 @@ const form = ref<Friend>({
 const keyword = ref()
 const getFriendList = async () => {
     const { data } = await FriendListApi(queryParams.value)
-    total.value = data.total
+    total.value = data.total||0
     showFriendList.value = data.recordList.map((item: Friend) => {
         const date = new Date(item.createDate!)
         return {

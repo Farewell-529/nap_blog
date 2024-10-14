@@ -5,6 +5,7 @@ import com.nap_blog.entity.Article;
 import com.nap_blog.vo.query.ArticleQuery;
 import com.nap_blog.vo.PageResult;
 import com.nap_blog.vo.response.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -33,6 +34,6 @@ public interface ArticleService extends IService<Article> {
     void draftToPublishById(Long id);
 
     void articleToDraft( Integer articleId);
-    ArticleInfoRes getArticleByIdFont(Long id);
+    ArticleInfoRes getArticleByIdFont(Long id, HttpServletRequest request);
 
 }

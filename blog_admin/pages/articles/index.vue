@@ -24,7 +24,7 @@ const headers = [
         align: 'center',
         width: '100px',
         key: 'createDate',
-        sortable: false
+        sortable: true
     },
     {
         title: '最后更新',
@@ -42,7 +42,6 @@ const headers = [
     },
 ]
 const dialog = ref(false)
-const articleVoList = ref()
 const showArticleVoList = ref<Array<ArticleBackRes>>([])
 let currentItem: number[] = []
 const { $toast } = useNuxtApp()
@@ -67,10 +66,10 @@ let isCategoryListFetched = false;
 
 const getArticleList = async () => {
     const { data } = await articleListApi(queryParams.value)
-    articleVoList.value = data.recordList || []
+    showArticleVoList.value = data.recordList || []
     total.value = data.total || 0
     // Promise.all()等待所有Promise对象都resolve后再进行处理
-    showArticleVoList.value = await Promise.all(articleVoList.value.map((item: ArticleBackRes) => {
+    showArticleVoList.value = await Promise.all(showArticleVoList.value.map((item: ArticleBackRes) => {
         return {
             id: item.id,
             title: item.title,
@@ -78,7 +77,7 @@ const getArticleList = async () => {
             categoryName: item.categoryName,
             updateDate: new Date(item.updateDate!).toLocaleDateString('zh-CN')
         }
-    }))
+    }).sort((a:any, b:any) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime()))
     loading.value = false
 }
 
@@ -105,7 +104,7 @@ const switchHandler = async () => {
     let res;
     if (isDelete) {
         res = await deleteArticleApi(currentItem)
-        selectedArticleIds.value=[]
+        selectedArticleIds.value = []
     } else {
         res = await articleListToDraftApi(currentItem)
     }
@@ -179,7 +178,7 @@ watch((selectedArticleIds), (val) => {
         <!-- headers中的key对应items中item的属性 -->
         <v-data-table-server :headers="headers as any" :items="showArticleVoList" @update:options="loadingItem" :search
             :items-per-page="itemsPerPage" :items-length="total" :show-current-page="false" :loading show-select
-            v-model="selectedArticleIds" item-value="id">
+            v-model="selectedArticleIds" item-value="id" >
             <template v-slot:top>
                 <div class="flex w-[100%] gap-4 mt-4">
                     <div class="w-40">

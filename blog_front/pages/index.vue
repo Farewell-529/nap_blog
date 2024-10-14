@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // @ts-ignore
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiCalendarCheckOutline, mdiFolderOutline, mdiChevronDoubleRight, mdiUpdate, mdiPound } from '@mdi/js';
+import { mdiCalendarCheckOutline, mdiFolderOutline, mdiChevronDoubleRight, mdiUpdate, mdiPound,mdiEyeOutline } from '@mdi/js';
 import { articleListApi } from '~/api/article'
 import { type Article, type ArticleRes, type ArticleQuery } from '~/types/Article'
 const showArticleList = ref()
@@ -21,22 +21,18 @@ const getArticleList = async () => {
             updateDate = item.updateDate
         }
         return {
-            id: item.id,
-            title: item.title,
+            ...item,
             createDate: new Date(item.createDate!).toLocaleDateString('zh-CN'),
             updateDate: item.updateDate !== item.createDate
                 ? new Date(item.updateDate!).toLocaleDateString('zh-CN')
                 : null,
-            categoryName: item.categoryName,
-            categoryId:item.categoryId,
-            tagsList: item.tagsList,
-            content: item.content,
             calenderIcon: mdiCalendarCheckOutline,
             fileIcon: mdiFolderOutline,
             updateIcon: mdiUpdate,
+            viewCountIcon:mdiEyeOutline,
             detailUrl: `posts/` + item.id
         }
-    })
+    }).sort((a:any, b:any) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime());
 }
 const updateModelValue = (currentPage: number) => {
     query.value.current = currentPage
@@ -85,6 +81,12 @@ onMounted(() => {
                      </NuxtLink>
                     </span>
                 </div>
+                <div class="flex items-center pl-2 ml-2 border-l-2 border-gray-500" >
+                    <svg-icon type="mdi" :path="item.viewCountIcon" class="w-4 mr-1" />
+                    <span>
+                        {{ item.viewCount }}
+                    </span>
+                </div>
             </div>
 
             <div class="w-[800px]  line-clamp-5  mb-8">
@@ -97,8 +99,6 @@ onMounted(() => {
         </div>
         <v-pagination class="mt-10" v-model="page" :length="pagelength" :total-visible="pageVisible"
             @update:modelValue="updateModelValue" density="compact" />
-
-
     </div>
 </template>
 <style scoped>

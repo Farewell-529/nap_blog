@@ -4,10 +4,12 @@ import com.nap_blog.entity.Article;
 import com.nap_blog.vo.Result;
 import com.nap_blog.vo.query.ArticleQuery;
 import com.nap_blog.service.ArticleService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpRequest;
 import java.util.List;
 
 @RestController
@@ -83,8 +85,8 @@ public class ArticleController {
         return Result.success(articleService.listArticleVO(articleQuery));
     }
     @GetMapping("/api/articles/{id}")
-    public Result getArticleByIdFont(@PathVariable("id") Long id) {
-        return Result.success(articleService.getArticleByIdFont(id));
+    public Result getArticleByIdFont(@PathVariable("id") Long id, HttpServletRequest request) {
+        return Result.success(articleService.getArticleByIdFont(id,request));
     }
 
 }

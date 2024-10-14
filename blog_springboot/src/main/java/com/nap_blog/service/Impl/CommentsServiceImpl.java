@@ -17,6 +17,7 @@ import com.nap_blog.vo.response.CommentsRes;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
@@ -35,6 +36,23 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
     ArticleMapper articleMapper;
     @Autowired
     EmailService emailService;
+    @Value("${email.from}")
+    private String fromEmail;
+
+    @Value("${email.subject.defaultSubject}")
+    private String defaultSubject;
+
+    @Value("${email.subject.replySubject}")
+    private String replySubject;
+
+    @Value("${email.content.defaultContent}")
+    private String defaultContentTemplate;
+
+    @Value("${email.content.replyContent}")
+    private String replyContentTemplate;
+
+    @Value("${email.content.parentContent}")
+    private String parentContentTemplate;
 
     @Override
     public List<CommentsRes> getCommentsList(String targetType, Integer articleId) {
@@ -109,36 +127,6 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
     }
 
     @Override
-    public boolean saveComments(Comments comments) throws MessagingException {
-        //检查评论信息是否有空
-        if (isInvalidComment(comments)) {
-            return false;
-        }
-        //初始化添加评论的信息
-        initializeComment(comments);
-        commentsMapper.insert(comments);
-
-        String articleTitle = articleMapper.selectById(comments.getTargetId()).getTitle();
-        String emailContent = buildEmailContent(comments, articleTitle);
-        //给被回复者发送邮箱
-        if (comments.getReplyId() != -1) {
-            sendReplyEmail(comments, articleTitle);
-        }
-        //给父评论发送邮箱
-        if (comments.getPid() != -1) {
-            sendParentCommentEmail(comments, articleTitle);
-        }
-        //给自己发送邮箱
-        emailService.sendEmail("nap_zzz@126.com",
-                "标题:《" + articleTitle + "》有新评论",
-                emailContent,
-                "nap_zzz@126.com");
-        return true;
-    }
-
-
-
-    @Override
     public void updateComments(Comments comments) {
         List<Comments> childComments = commentsMapper.selectList(new LambdaQueryWrapper<Comments>()
                 .eq(Comments::getPid, comments.getId()));
@@ -191,6 +179,37 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         commentsMapper.deleteBatchIds(ids);
     }
 
+    @Override
+    public boolean saveComments(Comments comments) throws MessagingException {
+        //检查评论信息是否有空
+        if (isInvalidComment(comments)) {
+            return false;
+        }
+        //初始化添加评论的信息
+        initializeComment(comments);
+        commentsMapper.insert(comments);
+        String articleTitle = articleMapper.selectById(comments.getTargetId()).getTitle();
+        //给自己发送邮箱
+        sendDefaultEmail(comments, articleTitle);
+        //被回复者的信息
+        Comments replyComment = commentsMapper.selectOne(new LambdaQueryWrapper<Comments>()
+                .eq(Comments::getId, comments.getReplyId()));
+        //父评论信息
+        Comments parentComment = commentsMapper.selectOne(new LambdaQueryWrapper<Comments>()
+                .eq(Comments::getId, comments.getPid()));
+        if (replyComment != null) {
+            sendReplyEmail(replyComment.getEmail(), comments, articleTitle);
+        }
+
+        if (parentComment != null) {
+            // 确保不重复发送给同一个人
+            if (replyComment == null || !replyComment.getEmail().equals(parentComment.getEmail())) {
+                sendParentCommentEmail(parentComment.getEmail(), comments, articleTitle);
+            }
+        }
+        return true;
+    }
+
     private void initializeComment(Comments comments) {
         comments.setCreateDate(new Date());
         try {
@@ -203,41 +222,35 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         comments.setReplyId(Optional.ofNullable(comments.getReplyId()).orElse(-1));
     }
 
-    private String buildEmailContent(Comments comments, String articleTitle) {
-        return "文章标题:" + articleTitle + "<br>" +
-                "昵称:" + comments.getName() + "<br>" +
-                "评论内容：" + comments.getContent() + "<br>" +
-                "邮箱：" + comments.getEmail() + "<br>" +
-                "网址：" + comments.getUrl();
+    private void sendDefaultEmail(Comments comments, String articleTitle) throws MessagingException {
+        String defaultContent = String.format(defaultContentTemplate, articleTitle,
+                comments.getName(), comments.getContent(), comments.getEmail(), comments.getUrl());
+        emailService.sendEmail(fromEmail,
+                String.format(defaultSubject, articleTitle),
+                defaultContent, fromEmail);
+
     }
 
-    private void sendReplyEmail(Comments comments, String articleTitle) throws MessagingException {
-        Comments replyComment = commentsMapper.selectOne(new LambdaQueryWrapper<Comments>()
-                .eq(Comments::getId, comments.getReplyId()));
+    private void sendReplyEmail(String replyCommentEmail, Comments comments, String articleTitle) throws MessagingException {
 
-        String replyContent = "文章标题:" + articleTitle + "<br>" +
-                "昵称:" + comments.getName() + "<br>" +
-                "回复" + replyComment.getName() + "说:" + comments.getContent() + "<br>" +
-                "博客网址：http://localhost:3000/";
+        String replyContent = String.format(replyContentTemplate, articleTitle,
+                comments.getName(), comments.getContent());
 
-        emailService.sendEmail(replyComment.getEmail(),
-                "你在nap博客评论的标题为:《" + articleTitle + "》的文章有回复",
+        emailService.sendEmail(replyCommentEmail,
+                String.format(replySubject, articleTitle),
                 replyContent,
-                "nap_zzz@126.com");
+                fromEmail);
     }
 
-    private void sendParentCommentEmail(Comments comments, String articleTitle) throws MessagingException {
-        Comments replyComment = commentsMapper.selectOne(new LambdaQueryWrapper<Comments>()
-                .eq(Comments::getId, comments.getPid()));
+    private void sendParentCommentEmail(String parentCommentEmail, Comments comments, String articleTitle) throws MessagingException {
 
-        String replyContent = "文章标题:" + articleTitle + "<br>" +
-                "昵称:" + comments.getName() + "<br>" +
-                "有回复说:" + comments.getContent() + "<br>" +
-                "博客网址：http://localhost:3000/";
 
-        emailService.sendEmail(replyComment.getEmail(),
-                "你在nap博客评论的标题为:《" + articleTitle + "》的文章有回复",
-                replyContent,
-                "nap_zzz@126.com");
+        String parentContent = String.format(parentContentTemplate, articleTitle,
+                comments.getName(), comments.getContent());
+
+        emailService.sendEmail(parentCommentEmail,
+                String.format(replySubject, articleTitle),
+                parentContent,
+                fromEmail);
     }
 }

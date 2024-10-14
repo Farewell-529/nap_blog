@@ -18,6 +18,7 @@ const props = defineProps({
 })
 const isReply = ref<number>(0)
 const isSend = ref(false)
+const replyName = ref('')
 const commentsShowList = ref<Array<CommentsRes>>([])
 const commentsInfo = ref({
     targetId: props.target.targetId,
@@ -29,6 +30,16 @@ const commentsInfo = ref({
     url: '',
     content: ''
 });
+// 加载 localStorage 中的数据
+const loadCommentsInfo = () => {
+    const storedName = localStorage.getItem('comment-name') || '';
+    const storedEmail = localStorage.getItem('comment-email') || '';
+    const storedUrl = localStorage.getItem('comment-url') || '';
+    // 设置到 commentsInfo 对象
+    commentsInfo.value.name = storedName;
+    commentsInfo.value.email = storedEmail;
+    commentsInfo.value.url = storedUrl;
+};
 const mapComments = (comments: any[]) => {
     return comments.map((item: any) => {
         return {
@@ -72,15 +83,16 @@ const addComment = async () => {
     const { code, msg } = await saveCommentstApi(commentsInfo.value)
     if (code != 200) {
         toast.error(msg)
+        isSend.value = false
         return
     }
     toast.success("成功发布~")
     await fetchCommentsList()
     isReply.value = 0
-    isSend.value = false
     commentsInfo.value.content = ''
-    commentsInfo.value.targetId = -1
+    commentsInfo.value.replyId = -1
     commentsInfo.value.pid = -1
+    isSend.value = false
 }
 const validateRole = (name: string, email: string, url: string, content: string) => {
     if (name == '') {
@@ -113,7 +125,9 @@ const validateRole = (name: string, email: string, url: string, content: string)
     }
     return true
 }
-const replyHandle = (id: number, rootCommentId?: number, replyId?: number) => {
+
+
+const replyHandle = async (id: number, rootCommentId?: number, replyId?: number) => {
     // 如果当前回复框已经打开，点击同一个评论则收回回复框
     if (isReply.value === id) {
         isReply.value = 0;
@@ -121,54 +135,96 @@ const replyHandle = (id: number, rootCommentId?: number, replyId?: number) => {
         // 否则切换当前评论的回复状态
         isReply.value = id;
         commentsInfo.value.pid = rootCommentId !== undefined ? rootCommentId : -1;
-        commentsInfo.value.replyId = replyId || -1;
+        const target = document.getElementById(`CommentForm-${id}`)
+        setTimeout(() => {
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 100)
+
     }
+    // 查找被回复者的名字
+    if (!replyId) {
+        commentsInfo.value.replyId = -1
+        replyName.value = commentsShowList.value.find(comment => comment.id === rootCommentId)?.name || ''
+        return
+    }
+    commentsInfo.value.replyId = replyId
+    const comment = commentsShowList.value
+        .flatMap(comment => comment.childComments) // 先展平所有子评论
+        .find(childComment => childComment?.id === replyId);
+    replyName.value = comment!.name || '';
 };
 watch(() => props.commentsList, (newList) => {
     if (newList && Array.isArray(newList)) {
         getCommentsList();
     }
 })
+
+watch(() => isReply.value, (newVal) => {
+    if (newVal==0) {
+        setTimeout(() => {
+            const target = document.getElementById("defaultCommentForm")
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }, 100)
+    }
+});
+
 onMounted(() => {
     getCommentsList();
+    loadCommentsInfo();
+
 })
 </script>
 <template>
     <div class="w-[60rem] ml-[3.75rem] ">
-        <CommentForm @addComment="addComment" :isSend v-model:commentsInfo="commentsInfo"></CommentForm>
+        <CommentForm id="defaultCommentForm" v-show="isReply == 0" @addComment="addComment" :isSend
+            v-model:commentsInfo="commentsInfo">
+        </CommentForm>
+
         <div v-for="rootComment in commentsShowList">
             <div class="mt-5 flex items-center ">
-                <div class="size-9 ">
-                    <img class="rounded-lg" :src="'https://www.gravatar.com/avatar/' + rootComment.avatar" alt="">
+                <div class="size-10 ">
+                    <img class="rounded-lg"
+                        :src="'https://www.gravatar.com/avatar/' + rootComment.avatar + '?d=mysteryman'" alt="">
                 </div>
                 <div class="ml-3 flex flex-col">
                     <div>
-                        <span class="font-semibold text-[15px] mr-2 ">{{ rootComment.name }}</span>
-                        <span class="text-[10px] text-gray-500">{{ rootComment.createDate }}</span>
+                        <span
+                            class="font-semibold text-sm mr-2 inline-block max-w-52 whitespace-nowrap overflow-hidden text-ellipsis">
+                            {{ rootComment.name }}
+                        </span>
+                        <span class="text-[10px] text-gray-500">{{ rootComment.createDate }}
+                        </span>
                     </div>
-                    <span
-                        class="text-[14px] w-max  text-gray-100 bg-gray-800 rounded-tl-xl rounded-tr-lg rounded-br-lg px-3 py-1">
+                    <span class="text-sm w-max  text-gray-100 bg-gray-800 rounded-tl-lg rounded-tr-lg rounded-br-lg px-3 py-2 
+                         max-w-[50rem]">
                         {{ rootComment.content }}
                     </span>
                     <span class="text-[12px] cursor-pointer font-semibold mt-2 select-none"
                         @click="replyHandle(rootComment.id!, rootComment.id)">回复</span>
                 </div>
             </div>
-            <transition name="CommentForm">
-                <CommentForm class="CommentForm" v-show="isReply == rootComment.id" :isSend
-                    v-model:commentsInfo="commentsInfo" @addComment="addComment">
-                </CommentForm>
-            </transition>
+            <CommentForm :id="'CommentForm-' + rootComment.id" v-show="isReply == rootComment.id" :isSend :replyName
+                v-model:commentsInfo="commentsInfo" v-model:isReply="isReply" @addComment="addComment"
+                @replyHandle=replyHandle>
+            </CommentForm>
 
             <!-- 子评论 -->
             <div v-for="childComment in rootComment.childComments">
                 <div class="mt-3 flex items-center ml-10 ">
                     <div class="size-9">
-                        <img class="rounded-lg" :src="'https://www.gravatar.com/avatar/' + childComment.avatar" alt="">
+                        <img class="rounded-lg"
+                            :src="'https://www.gravatar.com/avatar/' + childComment.avatar + '?d=mysteryman'" alt="">
                     </div>
                     <div class="ml-3 flex flex-col">
                         <div>
-                            <span class="font-semibold text-[15px]">{{ childComment.name }}</span>
+                            <span
+                                class="font-semibold text-sm inline-block max-w-52 whitespace-nowrap overflow-hidden text-ellipsis">
+                                {{ childComment.name }}
+                            </span>
                             <span class="text-[10px] text-gray-500 ml-2">
                                 {{ formatDateWithDay(childComment.createDate!) }}
                             </span>
@@ -176,8 +232,8 @@ onMounted(() => {
                                 @{{ childComment.replyName }}
                             </span>
                         </div>
-                        <span
-                            class="text-[14px] w-max text-gray-100 bg-gray-800 rounded-tl-xl rounded-tr-lg rounded-br-lg px-3 py-1">
+                        <span class="text-sm w-max text-gray-100 bg-gray-800 rounded-tl-lg rounded-tr-lg rounded-br-lg px-3 py-2 
+                            max-w-[47rem]">
                             {{ childComment.content }}
                         </span>
                         <span class="text-[12px] cursor-pointer font-semibold mt-2 select-none"
@@ -186,34 +242,28 @@ onMounted(() => {
                         </span>
                     </div>
                 </div>
-                <transition name="CommentForm">
-                    <CommentForm class="CommentForm" v-show="isReply == childComment.id" :isSend
-                        v-model:commentsInfo="commentsInfo" @addComment="addComment">
-                    </CommentForm>
-                </transition>
+                <CommentForm :id="'CommentForm-' + childComment.id" v-show="isReply == childComment.id" :isSend
+                    :replyName v-model:commentsInfo="commentsInfo" v-model:isReply="isReply" @addComment="addComment"
+                    @replyHandle=replyHandle>
+                </CommentForm>
             </div>
         </div>
     </div>
 </template>
 <style scoped>
-.CommentForm {
-    max-height: 400px;
-    transition: height 0.3s ease-in;
-    overflow: hidden;
-}
-
-.CommentForm-enter-active,
+/* .CommentForm-enter-active,
 .CommentForm-leave-active {
-    transition: all 0.3s ease-in
+    transition: opacity 0.1s ease-in;
 }
 
 .CommentForm-leave-to,
 .CommentForm-enter-from {
-    max-height: 0px !important;
+    opacity: 0;
 }
 
-.CommentForm-leave-to,
+.CommentForm-leave-from,
 .CommentForm-enter-to {
-    max-height: 400px;
-}
+    opacity: 1;
+    overflow: hidden;
+} */
 </style>

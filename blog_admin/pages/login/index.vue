@@ -108,17 +108,17 @@ onMounted(() => {
                 </v-col>
 
                 <v-col cols="12">
-                    <v-btn :color="loginColor" class="my-8 text-white" :loading="loading" size="large" variant="elevated" block
+                    <v-btn :color="loginColor" class="mt-8 text-white" :loading="loading" size="large" variant="elevated" block
                         @click="loging">
                         Sign In
                     </v-btn>
 
                 </v-col>
-                <!-- <v-col cols="6">
+                <v-col cols="12">
                     <v-btn class="my-8" :loading="loading" size="large" variant="elevated" block @click="registerBtn">
                         Sign up
                     </v-btn>
-                </v-col> -->
+                </v-col>
             </v-row>
         </v-form>
 

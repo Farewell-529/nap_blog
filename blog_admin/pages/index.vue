@@ -7,21 +7,19 @@ if (process.client) {
     import('echarts-wordcloud')
 }
 // const router = useRouter();
-let res = ref()
 let categoryVOList = <any>[]
 let tagsVOList = <any>[]
 let countList = ref(<any>[])
 let contactList = ref(<any>[])
 const getBlogInfo = async () => {
     const { data } = await blogInfoApi()
-    res.value = data
-    categoryVOList = res.value.categoryVOList.map((item: any) => {
+    categoryVOList = data.categoryVOList.map((item: any) => {
         return {
             value: item.articleCount,
             name: item.categoryName
         }
     })
-    tagsVOList = res.value.tagsVOList.map((item: any) => {
+    tagsVOList = data.tagsVOList.map((item: any) => {
         return {
             value: item.articleCount,
             name: item.tagsName
@@ -30,29 +28,29 @@ const getBlogInfo = async () => {
     countList.value = [
         {
             title: '文章总数',
-            count: res.value.articleCount || 0
+            count: data.articleCount || 0
         },
         {
             title: '分类总数',
-            count: res.value.categoryCount || 0
+            count: data.categoryCount || 0
         },
         {
             title: '标签总数',
-            count: res.value.tagsCount || 0
+            count: data.tagsCount || 0
         }
     ]
     contactList.value = [
         {
             title: '朋友数量',
-            count: res.value.friendCount || 0
+            count: data.friendCount || 0
         },
         {
             title: '留言数量',
-            count: res.value.commentCount || 0
+            count: data.commentCount || 0
         },
         {
             title: '总浏览量',
-            count: res.value.viewCount || 0
+            count: data.viewCount || 0
         },
     ]
 }
@@ -191,7 +189,7 @@ onMounted(async () => {
             仪表盘
         </div>
 
-        <div class="bg-black rounded-lg w-full h-24 flex  items-center mb-12">
+        <div class="bg-black rounded-lg w-full h-24 flex  items-center mb-8">
             <div class="w-[30%] text-center border-r-4 border-solid border-gray-400 py-2 
             cursor-pointer hover:text-slate-300 last:border-r-0 " v-for="(item, index) in countList" :key="index">
                 <div>{{ item.title }}</div>
@@ -212,7 +210,7 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <div class="flex gap-10 ">
+        <div class="flex justify-between ">
             <div id="category" class="w-[400px] h-[300px] "></div>
             <div id="tagsCloud" class="w-[750px] h-[300px] "></div>
         </div>

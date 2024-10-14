@@ -11,12 +11,15 @@ import com.nap_blog.mapper.ArticleMapper;
 import com.nap_blog.mapper.ArticleTagsMapper;
 import com.nap_blog.mapper.ImgMapper;
 import com.nap_blog.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Lazy
@@ -39,7 +42,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     CategoryService categoryService;
     @Autowired
     CommentsService commentsService;
-
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
     @Override
     public PageResult<ArticleBackRes> listArticleBackVO(ArticleQuery articleQuery) {
         //创建page对象
@@ -90,6 +94,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                         .categoryId(item.getCategoryId())
                         .tagsList(articleAndTagsMap.get(item.getId()))
                         .content(item.getContent())
+                        .viewCount(item.getViewCount())
                         .build()).toList();
 
         return new PageResult<>(articleListVOList, total);
@@ -194,9 +199,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Override
     public void deleteArticle(List<Integer> articleIds) {
-        LambdaQueryWrapper<ArticleTags> lqwArticleTags = new LambdaQueryWrapper<>();
-        lqwArticleTags.in(ArticleTags::getArticleId, articleIds);
-        articleTagsMapper.delete(lqwArticleTags);
+        LambdaQueryWrapper<Comments> queryWrapper = new LambdaQueryWrapper<Comments>()
+                .eq(Comments::getTargetType, "article")
+                .in(Comments::getTargetId, articleIds);
+        commentsService.remove(queryWrapper);
+        articleTagsMapper.delete(new LambdaQueryWrapper<ArticleTags>()
+                .in(ArticleTags::getArticleId,articleIds));
         imgService.deleteImg(articleIds);
         articleMapper.deleteBatchIds(articleIds);
     }
@@ -237,8 +245,21 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     @Override
-    public ArticleInfoRes getArticleByIdFont(Long id) {
+    public ArticleInfoRes getArticleByIdFont(Long id, HttpServletRequest request) {
         Article articleById = articleMapper.selectById(id);
+        // 获取请求的 IP 地址
+        String ip = request.getRemoteAddr();
+        // 创建 Redis 的 key：文章ID + IP
+        String redisKey = "view_articleId:" + id + "_ip:" + ip;
+
+        // 检查 Redis 中是否存在该 IP 的访问记录
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(redisKey))) {
+            // 如果不存在，增加文章浏览量
+            articleById.setViewCount(articleById.getViewCount()+1);
+            articleMapper.updateById(articleById);
+            // 将 IP 存入 Redis，设置 30 分钟过期时间
+            redisTemplate.opsForValue().set(redisKey, "1", 30, TimeUnit.MINUTES);
+        }
         //查询文章对应的分类名
         Category category = categoryService.getOne(new LambdaQueryWrapper<Category>()
                 .eq(Category::getId, articleById.getCategoryId()));
@@ -260,6 +281,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .tags(tagsList)
                 .categoryName(category.getCategoryName())
                 .commentsList(commentsList)
+                .viewCount(articleById.getViewCount())
                 .build();
     }
 
@@ -287,6 +309,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 articleTags.setTagsId(selecedtTags.getId());
             }
             articleTags.setArticleId(article.getId());
+            article.setViewCount(article.getViewCount() != null ? article.getViewCount() : 0);
             articleTagsService.save(articleTags);
         }
     }

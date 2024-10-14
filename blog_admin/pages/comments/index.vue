@@ -14,14 +14,15 @@ const headers = [
     {
         title: '昵称',
         key: 'name',
-        width: '50px',
+        maxWidth:'140px',
+        nowrap:true,
         align: 'center',
         sortable: false
     },
     {
         title: '内容',
         key: 'content',
-        width: '150',
+        maxWidth:'450px',
         sortable: false
     },
     {
@@ -34,6 +35,8 @@ const headers = [
         title: '网址',
         key: 'url',
         width: '100px',
+        maxWidth: '220px',
+        nowrap:true,
         sortable: false
     },
     {
@@ -83,25 +86,25 @@ const articlkNameArr = ref<any>([])
 const queryParams = ref<CommentsQuery>({
     current: 1,
     size: 10,
-    targetType:'article'
+    targetType: 'article'
 })
 const { $toast } = useNuxtApp()
 const form = ref<Comments>({
-    targetType:'article',
+    targetType: 'article',
     targetId: 0,
     name: '',
     email: '',
     url: '',
     content: '',
-    pid:-1,
-    replytId:-1
+    pid: -1,
+    replytId: -1
 })
 let currentItem: number[] = []
 const keyword = ref()
 const getCommentsList = async () => {
     const { data } = await commentsListApi(queryParams.value)
-    total.value = data.total
-    showCommentsList.value = data.recordList.map((item: CommentsRes) => {
+    total.value = data.total || 0
+    showCommentsList.value = data.recordList?.map((item: CommentsRes) => {
         const date = new Date(item.createDate!)
         return {
             ...item,
@@ -119,8 +122,8 @@ const editBtn = (item: any) => {
         name: item.name,
         email: item.email,
         url: item.url,
-        pid:item.pid,
-        targetId:item.targetId
+        pid: item.pid,
+        targetId: item.targetId
     }
     selectedArticle.value.title = item.articleName
     dialog.value = true
@@ -137,7 +140,7 @@ const saveBtn = async () => {
     dialogTitle.value = '添加评论'
     dialog.value = true
     form.value = {
-        targetType:'article'
+        targetType: 'article'
     }
     getArticleList()
 }
@@ -237,7 +240,7 @@ watch((selectedCommentsIds), (val) => {
             </template>
             <template v-slot:item.avatar="{ item }">
                 <div class="w-[100%] flex justify-center">
-                    <img class="size-11 my-2 rounded-lg" :src="'https://www.gravatar.com/avatar/' + item.avatar" alt="">
+                    <img class="size-11 my-2 rounded-lg" :src="'https://www.gravatar.com/avatar/' + item.avatar+ '?d=mysteryman'" alt="">
                 </div>
             </template>
             <template v-slot:item.handler="{ item }">

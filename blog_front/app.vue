@@ -17,10 +17,6 @@ import { Toaster} from 'vue-sonner'
   transition: all 0.2s ease-in-out;
 }
 
-/* .page-leave-to {
-  display: none;
-} */
-
 .page-enter-from,
 .page-leave-to {
   opacity: 0;

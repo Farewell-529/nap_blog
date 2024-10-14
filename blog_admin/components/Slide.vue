@@ -65,46 +65,43 @@ onMounted(() => {
 <template>
     <div>
         <div class="fixed  top-4 z-[99] hover:cursor-pointer" @click="toggleOpen">
-            <ArrowLeft class="fixed left-44" :size="25" v-if="isOpen"/>
+            <ArrowLeft class="fixed left-44" :size="25" v-if="isOpen" />
             <ArrowRight class="fixed left-4" :size="25" v-else />
         </div>
-        <Transition name="slide" appear>
-            <div v-if="isOpen" class="w-60 h-[100%] ">
-                <div class="w-60 h-full fixed top-0 left-0 border-r-[3px] border-solid border-black ">
-                    <div class="flex justify-between p-3">
-                        <div class="text-xl font-semibold hover:cursor-pointer" @click="useRouter().push('/user')">
-                            <span v-if="store.user?.username">{{ store.user?.username }}</span>
-                            <span v-else>加载中...</span>
-                        </div>
+        <div class="slide" :class="{ closeSlide: !isOpen }">
+            <div
+                class=" w-60 h-full fixed top-0 left-0 border-r-[3px] border-solid border-black ">
+                <div class="flex justify-between p-3">
+                    <div class="text-xl font-semibold hover:cursor-pointer" @click="useRouter().push('/user')">
+                        <span v-if="store.user?.username">{{ store.user?.username }}</span>
+                        <span v-else>加载中...</span>
+                    </div>
 
-                    </div>
-                    <div v-for="(item, index) in list" :key="index">
-                        <NuxtLink :to="item.url" class=" flex gap-8 items-center my-6 text-l 
+                </div>
+                <div v-for="(item, index) in list" :key="index">
+                    <NuxtLink :to="item.url" class=" flex gap-8 items-center my-6 text-l 
             font-semibold  hover:bg-gray-200 transition-all duration-300 py-4 pl-3">
-                            <span>
-                                <component :is="item.icon" />
-                            </span>
-                            <span>{{ item.name }}</span>
-                        </NuxtLink>
-                    </div>
+                        <span>
+                            <component :is="item.icon" />
+                        </span>
+                        <span>{{ item.name }}</span>
+                    </NuxtLink>
                 </div>
             </div>
-        </Transition>
+        </div>
     </div>
 </template>
 <style scoped>
-.slide-enter-active,
-.slide-leave-active {
+.slide {
+    width: 15rem;
+    height: 100%;
     transition: all 0.2s ease;
 }
 
-.slide-enter-from,
-.slide-leave-to {
-    /* margin-right: 0; */
+.closeSlide {
     width: 0;
-    transform: translateX(calc(-100% - 18rem));
+    transform: translateX( -15rem);
 }
-
 
 /* 当前路径与 nuxt-link 对应的路径完全一致 */
 .router-link-exact-active {

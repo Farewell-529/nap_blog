@@ -44,6 +44,6 @@
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
     "vite-plugin-vuetify": "^2.0.3",
-    "vuetify": "^3.5.14"
+    "vuetify": "^3.7.2"
   }
 }

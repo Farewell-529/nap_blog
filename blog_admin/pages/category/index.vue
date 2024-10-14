@@ -53,7 +53,7 @@ let currentItem: number[] = []
 const keyword = ref()
 const getCategoryList = async () => {
     const { data } = await categoryListApi(queryParams.value)
-    total.value = data.total
+    total.value = data.total||0
     showCategoryList.value = data.recordList.map((item: any) => {
         const date = new Date(item.createDate!)
         return {

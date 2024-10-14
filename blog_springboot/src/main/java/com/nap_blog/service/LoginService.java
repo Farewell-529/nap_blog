@@ -1,10 +1,10 @@
 package com.nap_blog.service;
 
 import com.nap_blog.vo.Result;
-import com.nap_blog.entity.User;
+import com.nap_blog.entity.UserAuth;
 
 public interface LoginService {
-   User login (User user);
+   UserAuth login (UserAuth userAuth);
 
-   Result register(User user);
+   Result register(UserAuth userAuth);
 }

@@ -2,7 +2,7 @@ package com.nap_blog.controller;
 
 import com.nap_blog.utils.JwtUtils;
 import com.nap_blog.vo.Result;
-import com.nap_blog.entity.User;
+import com.nap_blog.entity.UserAuth;
 import com.nap_blog.service.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +16,8 @@ public class LoginController {
     LoginService loginService;
 
     @PostMapping("/login")
-    public Result login(@RequestBody User user) {
-        User e = loginService.login(user);
+    public Result login(@RequestBody UserAuth userAuth) {
+        UserAuth e = loginService.login(userAuth);
         //登录成功，返回下发令牌
         if (e != null) {
             String token = JwtUtils.createToken(e);//jwt包含了员工当前登录的信息
@@ -34,7 +34,7 @@ public class LoginController {
     }
 
     @PostMapping("/register")
-    public Result register(@RequestBody User user) {
-        return loginService.register(user);
+    public Result register(@RequestBody UserAuth userAuth) {
+        return loginService.register(userAuth);
     }
 }

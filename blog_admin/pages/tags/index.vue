@@ -55,7 +55,7 @@ const tipsText = ref('')
 let currentItem: number[] = []
 const getTagsList = async () => {
     const { data } = await tagsListApi(queryParams.value)
-    total.value = data.total
+    total.value = data.total||0
     showTagsList.value = data.recordList.map((item: any) => {
         const date = new Date(item.createDate!)
         return {

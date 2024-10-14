@@ -3,7 +3,6 @@ package com.nap_blog.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.nap_blog.entity.Article;
 import com.nap_blog.entity.Category;
-import com.nap_blog.entity.Tags;
 import com.nap_blog.vo.PageResult;
 import com.nap_blog.vo.response.ArchiveArticleRes;
 import com.nap_blog.vo.response.BlogBackInfoRes;
@@ -27,13 +26,25 @@ public class BlogBackInfoServiceImpl implements BlogInfoService {
     CategoryService categoryService;
     @Autowired
     ArticleTagsService articleTagsService;
+    @Autowired
+    CommentsService commentsService;
+    @Autowired
+    FriendService friendService;
 
 
     @Override
     public BlogBackInfoRes getBlogBackInfo() {
-        Long articleCount = articleService.count();
+        List<Article> articles = articleService.list();
+        Long articleCount=0L;
+        Long viewCount=0L;
+        for (Article article : articles) {
+            articleCount++;
+            viewCount += article.getViewCount();
+        }
         Long categoryCount = categoryService.count();
         Long tagsCount = tagsService.count();
+        Long commentsCount=commentsService.count();
+        Long friendCount=friendService.count();
         //查询每个分类的使用次数
         List<CategoryCountRes> categoryCountResList = categoryService.getCategoryCountsList().getRecordList();
         //查询每个标签的使用次数
@@ -42,6 +53,9 @@ public class BlogBackInfoServiceImpl implements BlogInfoService {
                 .articleCount(articleCount)
                 .categoryCount(categoryCount)
                 .tagsCount(tagsCount)
+                .commentCount(commentsCount)
+                .friendCount(friendCount)
+                .viewCount(viewCount)
                 .categoryVOList(categoryCountResList)
                 .tagsVOList(tagsCountResList)
                 .build();
@@ -49,7 +63,7 @@ public class BlogBackInfoServiceImpl implements BlogInfoService {
 
     @Override
     public PageResult<ArchiveArticleRes> getArchiveArticle() {
-        LambdaQueryWrapper<Article> lqw=new LambdaQueryWrapper<Article>();
+        LambdaQueryWrapper<Article> lqw=new LambdaQueryWrapper<>();
         lqw.eq(Article::getStatus,1);
         List<Category> categories = categoryService.list();
         Map<Long, String> categoryMap = categories.stream().collect(

@@ -14,14 +14,15 @@ export interface Article {
     tagsList?: Array<Tags>
 }
 export interface ArticleRes {
-    id?: number
-    title?: string,
-    content?:string,
-    categoryName?: string,
-    categoryId?: number,
-    tagsList?:Array<any>,
-    createDate?: string,
-    updateDate?:string,
+    id: number
+    title: string,
+    content:string,
+    categoryName: string,
+    categoryId: number,
+    tagsList:Array<any>,
+    viewCount:number,
+    createDate: string,
+    updateDate:string,
 }
 export interface ArticleQuery extends PageQuery {
     //关键字
