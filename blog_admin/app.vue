@@ -12,10 +12,10 @@ config({
 });
 </script>
 <template>
-  <div >
+  <div>
     <v-app>
      <div class="flex">
-      <Slide  class="mr-12"/>
+      <Slide/>
       <Toaster position="top-center" richColors  />
         <NuxtPage class="px-1"/>
      </div>

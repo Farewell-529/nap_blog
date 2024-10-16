@@ -6,10 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserAuth {
+public class User {
     @TableId(type = IdType.AUTO)
     private Long id;
 
@@ -23,11 +25,11 @@ public class UserAuth {
 
     private String bio;
 
-    private Long updateAt;
+    private Date createDate;
+
+    private Date updateDate;
 
     private String githubUrl;
-
-    private String tgUrl;
 
     private String xUrl;
 }

@@ -22,11 +22,11 @@ class MybatisTests {
     @Autowired
     CategoryService categoryService;
     @Autowired
-    ArticleTagsService articleTagsService;
+    UserService userService;
 
     @Test
     void test1() {
-        imgService.deleteImg(72L);
+        userService.getUserInfoBack(1L);
     }
 
 
@@ -34,7 +34,6 @@ class MybatisTests {
     void test2() {
         LambdaQueryWrapper<ArticleTags> lqw=new LambdaQueryWrapper<>();
         lqw.groupBy(ArticleTags::getTagsId);
-        articleTagsService.count(lqw);
     }
 
     @Test

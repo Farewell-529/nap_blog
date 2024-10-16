@@ -1,7 +1,7 @@
 package com.nap_blog.controller;
 
 import com.nap_blog.vo.Result;
-import com.nap_blog.entity.UserAuth;
+import com.nap_blog.entity.User;
 import com.nap_blog.service.ImgService;
 import com.nap_blog.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
 
 @RestController
@@ -39,8 +40,8 @@ public class FileController {
         String pre = "C:\\Users\\Farewell\\Desktop\\Blog\\upload\\user\\avatar\\";
         Long userId = (Long) request.getAttribute("userId");
         // 获取用户旧头像文件名
-        UserAuth userAuth = userService.getById(userId);
-        String oldAvatar = userAuth.getAvatar();
+        User user = userService.getById(userId);
+        String oldAvatar = user.getAvatar();
         if (oldAvatar != null) {
             String oldPath = pre + oldAvatar;
             File oldFile = new File(oldPath);
@@ -50,9 +51,9 @@ public class FileController {
         }
         String fileName = uploadFile(file, pre);
         //更新头像
-        userAuth.setAvatar(fileName);
-        userAuth.setUpdateAt(System.currentTimeMillis());
-        userService.updateById(userAuth);
+        user.setAvatar(fileName);
+        user.setCreateDate(new Date());
+        userService.updateById(user);
         return Result.success(fileName);
     }
 

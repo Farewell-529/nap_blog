@@ -110,11 +110,13 @@ onMounted(() => {
                 <v-btn size="large">修改</v-btn>
             </div>
         </div>
-        <client-only>
-            <md-editor v-model="form.bio" codeTheme="atom" :toolbarsExclude placeholder="请输入...."
-                @onUploadImg="onUploadImg" previewTheme="github">
-            </md-editor>
-        </client-only>
+        <div>
+            <client-only>
+                <md-editor v-model="form.bio" codeTheme="atom" :toolbarsExclude placeholder="请输入...."
+                    @onUploadImg="onUploadImg" previewTheme="github">
+                </md-editor>
+            </client-only>
+        </div>
         <v-dialog v-model="dialog" max-width="600" persistent>
             <v-card prepend-icon="mdi-account" title="个人信息编辑">
                 <v-card-text>
@@ -140,10 +142,7 @@ onMounted(() => {
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-spacer></v-spacer>
-
                     <v-btn text="Close" variant="plain" @click="close"></v-btn>
-
                     <v-btn color="primary" text="Save" variant="tonal" @click="save"></v-btn>
                 </v-card-actions>
             </v-card>

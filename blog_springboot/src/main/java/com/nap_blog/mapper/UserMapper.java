@@ -1,9 +1,7 @@
 package com.nap_blog.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.nap_blog.entity.UserAuth;
-import org.apache.ibatis.annotations.Mapper;
+import com.nap_blog.entity.User;
 
-@Mapper
-public interface UserMapper extends BaseMapper<UserAuth> {
+public interface UserMapper extends BaseMapper<User> {
 }

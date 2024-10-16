@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { userStore } from '../../store/userInfo'
-import { getUserInfoApi, editUser, uploadAvatarApi } from '~/api/user'
+import { getUserInfoApi, uploadAvatarApi } from '~/api/user'
 import { logout } from '~/api/user'
 import { type User } from '~/types/User'
 // @ts-ignore
@@ -10,10 +10,7 @@ import { createHighlighter } from 'shiki'
 import 'github-markdown-css/github-markdown.css';
 const store = userStore()
 const userInfo = ref<User>()
-const dialog = ref(false)
-const renderContent = ref()
 const logoutDialog = ref(false)
-const form = ref()
 const { $toast } = useNuxtApp()
 let md: any
 const initializeMarkdown = async () => {

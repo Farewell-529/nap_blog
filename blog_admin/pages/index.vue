@@ -1,58 +1,60 @@
 <script setup lang="ts">
-
-import { useRoute, useRouter } from 'vue-router';
 import { blogInfoApi } from '~/api/blog'
 import * as echarts from 'echarts';
 if (process.client) {
     import('echarts-wordcloud')
 }
-// const router = useRouter();
 let categoryVOList = <any>[]
 let tagsVOList = <any>[]
 let countList = ref(<any>[])
 let contactList = ref(<any>[])
 const getBlogInfo = async () => {
-    const { data } = await blogInfoApi()
-    categoryVOList = data.categoryVOList.map((item: any) => {
-        return {
-            value: item.articleCount,
-            name: item.categoryName
-        }
-    })
-    tagsVOList = data.tagsVOList.map((item: any) => {
-        return {
-            value: item.articleCount,
-            name: item.tagsName
-        }
-    })
-    countList.value = [
-        {
-            title: '文章总数',
-            count: data.articleCount || 0
-        },
-        {
-            title: '分类总数',
-            count: data.categoryCount || 0
-        },
-        {
-            title: '标签总数',
-            count: data.tagsCount || 0
-        }
-    ]
-    contactList.value = [
-        {
-            title: '朋友数量',
-            count: data.friendCount || 0
-        },
-        {
-            title: '留言数量',
-            count: data.commentCount || 0
-        },
-        {
-            title: '总浏览量',
-            count: data.viewCount || 0
-        },
-    ]
+    try {
+        const { data } = await blogInfoApi()
+        categoryVOList = data.categoryVOList.map((item: any) => {
+            return {
+                value: item.articleCount,
+                name: item.categoryName
+            }
+        })
+        tagsVOList = data.tagsVOList.map((item: any) => {
+            return {
+                value: item.articleCount,
+                name: item.tagsName
+            }
+        })
+        countList.value = [
+            {
+                title: '文章总数',
+                count: data.articleCount || 0
+            },
+            {
+                title: '分类总数',
+                count: data.categoryCount || 0
+            },
+            {
+                title: '标签总数',
+                count: data.tagsCount || 0
+            }
+        ]
+        contactList.value = [
+            {
+                title: '朋友数量',
+                count: data.friendCount || 0
+            },
+            {
+                title: '留言数量',
+                count: data.commentCount || 0
+            },
+            {
+                title: '总浏览量',
+                count: data.viewCount || 0
+            },
+        ]
+    } catch (error) {
+        console.error('获取博客信息失败:', error);
+    }
+
 }
 const generateCategoryChart = () => {
     const categoryChart = echarts.init(document.getElementById('category'), 'dark')
@@ -219,5 +221,4 @@ onMounted(async () => {
 
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

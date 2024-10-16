@@ -63,28 +63,31 @@ onMounted(() => {
 })
 </script>
 <template>
-    <div>
-        <div class="fixed  top-4 z-[99] hover:cursor-pointer" @click="toggleOpen">
-            <ArrowLeft class="fixed left-44" :size="25" v-if="isOpen" />
-            <ArrowRight class="fixed left-4" :size="25" v-else />
-        </div>
-        <div class="slide" :class="{ closeSlide: !isOpen }">
-            <div
-                class=" w-60 h-full fixed top-0 left-0 border-r-[3px] border-solid border-black ">
-                <div class="flex justify-between p-3">
-                    <div class="text-xl font-semibold hover:cursor-pointer" @click="useRouter().push('/user')">
+    <div class="mr-12 ">
+        <div class="w-56 h-full  transition-all duration-300 overflow-hidden" :class="{ closeSlide: !isOpen }">
+            <div class="w-56 h-full fixed  bg-[#1d1d1d] text-[#d2d2d2] transition-all duration-300 overflow-hidden"
+                :class="{ closeSlide: !isOpen }">
+                <div class="flex justify-between  p-3 ">
+                    <div v-if="isOpen" class="text-xl font-semibold cursor-pointer h-10" 
+                        @click="useRouter().push('/user')">
                         <span v-if="store.user?.username">{{ store.user?.username }}</span>
                         <span v-else>加载中...</span>
                     </div>
-
+                    <div class="text-xl font-semibold cursor-pointer h-10" @click="toggleOpen">
+                        <ArrowLeft v-if="isOpen" />
+                        <ArrowRight v-else />
+                    </div>
                 </div>
-                <div v-for="(item, index) in list" :key="index">
-                    <NuxtLink :to="item.url" class=" flex gap-8 items-center my-6 text-l 
-            font-semibold  hover:bg-gray-200 transition-all duration-300 py-4 pl-3">
+                <div v-for="(item, index) in list" :key="index" class="hover:text-black" v-ripple>
+                    <NuxtLink  :title="!isOpen ? item.name : ''" :to="item.url" class="flex gap-8 items-center  my-8 font-semibold text-sm hover:bg-gray-200  
+                     py-2 pl-2 rounded-md  max-h-10 overflow-hidden transition-all duration-300" 
+                        :class="isOpen ? 'opacity-100 w-48 ' : 'w-11'">
                         <span>
                             <component :is="item.icon" />
                         </span>
-                        <span>{{ item.name }}</span>
+                        <!-- 防止打开时文字抖动 -->
+                        <span v-show="isOpen" class="h-5 overflow-hidden">
+                            {{ item.name }}</span>
                     </NuxtLink>
                 </div>
             </div>
@@ -92,20 +95,15 @@ onMounted(() => {
     </div>
 </template>
 <style scoped>
-.slide {
-    width: 15rem;
-    height: 100%;
-    transition: all 0.2s ease;
-}
-
 .closeSlide {
-    width: 0;
-    transform: translateX( -15rem);
+    width: 3rem;
+    margin-right: -2rem;
+    /* transform: translateX(-15rem); */
 }
 
 /* 当前路径与 nuxt-link 对应的路径完全一致 */
 .router-link-exact-active {
-    background-color: rgb(55, 55, 55);
-    color: white;
+    background-color: rgb(224, 224, 224);
+    color: black;
 }
 </style>

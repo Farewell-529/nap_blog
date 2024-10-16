@@ -1,19 +1,32 @@
-package com.nap_blog.vo.response;
+package com.nap_blog.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-@Builder
+
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserInfoRes {
+public class BloggerInfo {
+    @TableId(type = IdType.AUTO)
     private Long id;
+
     private String username;
+
+
     private String avatar;
-    private String bio;
+
     private String motto;
+
+    private String bio;
+
+    private Date updateAt;
+
     private String githubUrl;
+
     private String xUrl;
 }
