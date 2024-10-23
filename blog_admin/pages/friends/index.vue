@@ -135,8 +135,10 @@ const loadingItem = ({ page, itemsPerPage }: any) => {
     loading.value = true
     queryParams.value.current = page
     queryParams.value.size = itemsPerPage
-    getFriendList()
     loading.value = false
+    if(process.client){
+        getFriendList()
+    }
 }
 const clearHandle = () => {
     keyword.value = ''

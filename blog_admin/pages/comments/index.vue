@@ -179,7 +179,9 @@ const loadingItem = ({ page, itemsPerPage }: any) => {
     loading.value = true
     queryParams.value.current = page
     queryParams.value.size = itemsPerPage
-    getCommentsList()
+    if(process.client){
+        getCommentsList()
+    }
 }
 const deleteBatchBtn = () => {
     dialog.value = true

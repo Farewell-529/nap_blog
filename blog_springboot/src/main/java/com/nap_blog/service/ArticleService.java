@@ -7,6 +7,7 @@ import com.nap_blog.vo.PageResult;
 import com.nap_blog.vo.response.*;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.text.ParseException;
 import java.util.List;
 
 public interface ArticleService extends IService<Article> {
@@ -23,7 +24,7 @@ public interface ArticleService extends IService<Article> {
     List<ArticleSelectRes> listArticleAllBackVO( );
 
 
-    PageResult<ArticleRes> listArticleVO(ArticleQuery articleQuery);
+    PageResult<ArticleRes> listArticleVO(ArticleQuery articleQuery,HttpServletRequest httpServletRequest) throws ParseException;
 
     void updateArticle(Article article);
 

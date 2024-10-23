@@ -14,6 +14,7 @@ import com.nap_blog.mapper.CategoryMapper;
 import com.nap_blog.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Date;
@@ -72,8 +73,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         categoryMapper.updateById(category);
     }
 
+    @Transactional
     @Override
     public void deleteCategory(List<Integer> ids) {
+        //将使用这个分类的文章的分类id改为-1
+        List<Long> articleIds = articleMapper.selectList(new LambdaQueryWrapper<Article>()
+                .in(Article::getCategoryId, ids)).stream().map(Article::getId).toList();
+        articleMapper.setCategoryIds(articleIds);
         categoryMapper.deleteBatchIds(ids);
     }
 
@@ -94,9 +100,10 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
     @Override
     public PageResult<CategoryCountRes> getCategoryCountsList() {
         List<Category> categoryList = categoryMapper.selectList(null);
-        List<Long> categoryIds=categoryList.stream().map(Category::getId).toList();
-        Map<Long, Integer> countMap = articleMapper.selectList(new LambdaQueryWrapper<Article>()
-                        .in(Article::getCategoryId, categoryIds))
+        List<Long> categoryIds = categoryList.stream().map(Category::getId).toList();
+        LambdaQueryWrapper<Article> lqw = new LambdaQueryWrapper<>();
+        lqw.eq(Article::getStatus, 1).in(Article::getCategoryId, categoryIds);
+        Map<Long, Integer> countMap = articleMapper.selectList(lqw)
                 .stream()
                 .collect(Collectors.groupingBy(
                         article -> article.getCategoryId().longValue(),

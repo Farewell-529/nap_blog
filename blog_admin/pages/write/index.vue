@@ -6,13 +6,13 @@ import { publishArticleApi, editArticleApi, articleByIdApi, saveArticleApi } fro
 import { categoryAllListApi, savecategoryApi } from '~/api/category'
 import { uploadImgApi } from '~/api/user'
 import { tagsAllListApi } from '~/api/tags'
-import { userStore } from '~/store/userInfo'
+import { blogInfoStore } from '~/store/blogInfo'
 import { type Article, type ArticleInfoRes } from '~/types/Article'
 import { type Category } from '~/types/Category'
 import { type Tags } from '~/types/Tags'
 
 import { Undo2 } from 'lucide-vue-next'
-const store = userStore()
+const store = blogInfoStore()
 const route = useRoute()
 const articleId = parseInt(route.query.id as string)
 const showArticleVO = ref<ArticleInfoRes>({})
@@ -37,7 +37,7 @@ const isSave = ref(false)
 const tipsText = ref()
 const btnText = ref(isAdd ? '发布' : '修改')
 const articleInfo = ref<Article>({
-    userId: store.user?.id || 0,
+    userId: 1,
 })
 let editArticle: Article = {
     id: 0,

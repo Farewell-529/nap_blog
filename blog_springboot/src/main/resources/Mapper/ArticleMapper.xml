@@ -10,4 +10,12 @@
             #{articleId}
         </foreach>
     </update>
+    <update id="setCategoryIds">
+        UPDATE article
+        SET category_id = -1
+        WHERE id IN
+        <foreach collection="articleIds" item="articleId" open="(" close=")" separator=",">
+            #{articleId}
+        </foreach>
+    </update>
 </mapper>

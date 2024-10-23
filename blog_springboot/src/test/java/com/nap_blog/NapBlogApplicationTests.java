@@ -1,8 +1,11 @@
 package com.nap_blog;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.jthinking.common.util.ip.IPInfo;
+import com.jthinking.common.util.ip.IPInfoUtils;
 import com.nap_blog.entity.ArticleTags;
 import com.nap_blog.service.*;
+import com.nap_blog.utils.IpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +41,9 @@ class MybatisTests {
 
     @Test
     void test3() {
-
+        String ip = "0:0:0:0:0:0:0:1";
+        String ipRegion = IpUtil.getIpRegion(ip);
+        log.info("ip:{}",IpUtil.getIpRegion("222.85.9.53"));
     }
 
 }

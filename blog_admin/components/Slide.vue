@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ArrowLeft, ArrowRight, Home, Newspaper, Tags, BookOpenCheck, MessageSquareMore, LayoutDashboard, Aperture, UserRound } from 'lucide-vue-next'
-import { userStore } from '~/store/userInfo'
-import { getUserInfoApi } from '~/api/user'
+import { blogInfoStore } from '~/store/blogInfo'
+import { getBloggerInfoApi } from '~/api/blog'
+import { type BlogInfo } from "~/types/BlogInfo";
+
 const list = [
     {
         name: '仪表盘',
@@ -41,7 +43,7 @@ const list = [
     },
     {
         name: '个人信息',
-        url: '/user',
+        url: '/blogger',
         icon: UserRound
     }
 ]
@@ -49,14 +51,16 @@ const isOpen = ref(true)
 const toggleOpen = () => {
     isOpen.value = !isOpen.value
 }
-const store = userStore()
+const store = blogInfoStore()
+const blogInfo = ref<any>({})
 const getUserInfo = async () => {
-    const res = await getUserInfoApi()
-    if (res.data == null) {
+    const {data,code} = await getBloggerInfoApi()
+    if (code!=200) {
         useRouter().push('/login/')
         return
     }
-    store.setUser(res.data)
+    blogInfo.value=data
+    store.setBlogInfo(blogInfo.value)
 };
 onMounted(() => {
     getUserInfo()
@@ -69,8 +73,8 @@ onMounted(() => {
                 :class="{ closeSlide: !isOpen }">
                 <div class="flex justify-between  p-3 ">
                     <div v-if="isOpen" class="text-xl font-semibold cursor-pointer h-10" 
-                        @click="useRouter().push('/user')">
-                        <span v-if="store.user?.username">{{ store.user?.username }}</span>
+                        @click="useRouter().push('/blogger')">
+                        <span v-if="store.blogInfo?.bloggerName">{{ store.blogInfo?.bloggerName }}</span>
                         <span v-else>加载中...</span>
                     </div>
                     <div class="text-xl font-semibold cursor-pointer h-10" @click="toggleOpen">
@@ -78,7 +82,7 @@ onMounted(() => {
                         <ArrowRight v-else />
                     </div>
                 </div>
-                <div v-for="(item, index) in list" :key="index" class="hover:text-black" v-ripple>
+                <div v-for="(item, index) in list" :key="index" class="hover:text-black w-48" v-ripple>
                     <NuxtLink  :title="!isOpen ? item.name : ''" :to="item.url" class="flex gap-8 items-center  my-8 font-semibold text-sm hover:bg-gray-200  
                      py-2 pl-2 rounded-md  max-h-10 overflow-hidden transition-all duration-300" 
                         :class="isOpen ? 'opacity-100 w-48 ' : 'w-11'">

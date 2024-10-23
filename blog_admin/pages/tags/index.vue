@@ -55,7 +55,7 @@ const tipsText = ref('')
 let currentItem: number[] = []
 const getTagsList = async () => {
     const { data } = await tagsListApi(queryParams.value)
-    total.value = data.total||0
+    total.value = data.total || 0
     showTagsList.value = data.recordList.map((item: any) => {
         const date = new Date(item.createDate!)
         return {
@@ -93,7 +93,7 @@ const handlerOption = async () => {
     let res: Result = { code: 200, msg: '', data: null }
     if (option == 'delete') {
         res = await deleteTagsApi(currentItem)
-        selectedTagsIds.value=[]
+        selectedTagsIds.value = []
     } else if (option == 'edit') {
         res = await updateTagsApi(form.value)
     } else if (option == 'save') {
@@ -126,7 +126,9 @@ const loadingItem = ({ page, itemsPerPage }: any) => {
     loading.value = true
     queryParams.value.current = page
     queryParams.value.size = itemsPerPage
-    getTagsList()
+    if (process.client) {
+        getTagsList()
+    }
 }
 watch((selectedTagsIds), (val) => {
     if (val.length > 0) {
@@ -136,11 +138,12 @@ watch((selectedTagsIds), (val) => {
     }
     disabled.value = true
 })
+
 </script>
 <template>
     <div class="w-full">
         <div class="text-2xl font-semibold mt-10 hover:cursor-pointer ">标签</div>
-        <v-data-table-server :headers="headers" :items="showTagsList" @update:options="loadingItem"
+        <v-data-table-server :headers="headers as any" :items="showTagsList" @update:options="loadingItem"
             :items-per-page="itemsPerPage" :items-length="total" :loading v-model="selectedTagsIds" show-select
             item-value="id">
             <template v-slot:top>
@@ -160,9 +163,9 @@ watch((selectedTagsIds), (val) => {
                 <div class="flex gap-2">
                     <div class=" hover:cursor-not-allowed">
                         <v-btn @click="deleteBatchBtn" variant="tonal" color="#d12e1f" prepend-icon="mdi-trash-can"
-                        :disabled>
-                        批量删除
-                    </v-btn>
+                            :disabled>
+                            批量删除
+                        </v-btn>
                     </div>
                 </div>
             </template>

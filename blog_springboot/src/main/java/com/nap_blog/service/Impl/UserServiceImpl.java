@@ -1,9 +1,7 @@
 package com.nap_blog.service.Impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.nap_blog.entity.BloggerInfo;
 import com.nap_blog.entity.User;
-import com.nap_blog.mapper.UserInfoMapper;
 import com.nap_blog.mapper.UserMapper;
 import com.nap_blog.service.UserService;
 import com.nap_blog.vo.response.UserInfoRes;

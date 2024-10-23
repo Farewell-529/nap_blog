@@ -7,7 +7,7 @@ const headers = [
         title: '分类名',
         key: 'categoryName',
         width: '50px',
-        align: 'center' ,
+        align: 'center',
         sortable: false
     },
     {
@@ -53,7 +53,7 @@ let currentItem: number[] = []
 const keyword = ref()
 const getCategoryList = async () => {
     const { data } = await categoryListApi(queryParams.value)
-    total.value = data.total||0
+    total.value = data.total || 0
     showCategoryList.value = data.recordList.map((item: any) => {
         const date = new Date(item.createDate!)
         return {
@@ -119,7 +119,9 @@ const loadingItem = ({ page, itemsPerPage }: any) => {
     loading.value = true
     queryParams.value.current = page
     queryParams.value.size = itemsPerPage
-    getCategoryList()
+    if (process.client) {
+        getCategoryList()
+    }
 }
 const deleteBatchBtn = () => {
     dialog.value = true
@@ -156,12 +158,12 @@ watch((selectedCategoryIds), (val) => {
                     </div>
                 </div>
                 <div class="flex gap-2">
-                  <div class=" hover:cursor-not-allowed">
-                    <v-btn @click="deleteBatchBtn" variant="tonal" color="#d12e1f" prepend-icon="mdi-trash-can"
-                        :disabled>
-                        批量删除
-                    </v-btn>
-                  </div>
+                    <div class=" hover:cursor-not-allowed">
+                        <v-btn @click="deleteBatchBtn" variant="tonal" color="#d12e1f" prepend-icon="mdi-trash-can"
+                            :disabled>
+                            批量删除
+                        </v-btn>
+                    </div>
                 </div>
             </template>
 

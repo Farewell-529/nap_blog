@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nap_blog.mapper.VisitsMapper">
+
+    <select id="getPageViewsByDays" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM visits
+        WHERE visit_time >= NOW() - INTERVAL #{day} DAY
+        GROUP BY DATE(visit_time);
+    </select>
+
+    <select id="getVisitorsByDays" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT ip)
+        FROM visits
+        WHERE visit_time >= NOW() - INTERVAL #{day} DAY
+        GROUP BY DATE(visit_time);
+    </select>
+    <select id="getVisitDays" resultType="java.lang.String">
+        SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL #{day} DAY), '%Y-%m-%d') AS visit_date
+        FROM (SELECT 0 AS dummy UNION ALL
+              SELECT 1 UNION ALL
+              SELECT 2 UNION ALL
+              SELECT 3 UNION ALL
+              SELECT 4 UNION ALL
+              SELECT 5 UNION ALL
+              SELECT 6) AS numbers
+        WHERE DATE_SUB(CURDATE(), INTERVAL #{day} DAY) + INTERVAL numbers.dummy DAY >= CURDATE() - INTERVAL 7 DAY
+    </select>
+    <select id="getViewsChartByDays" resultType="com.nap_blog.vo.response.ViewsChartRes">
+        SELECT
+            DATE(visit_time) AS viewTime,
+            COUNT(*) AS PageViews,
+            COUNT(DISTINCT ip) AS Visitors
+        FROM
+            visits
+        WHERE
+            visit_time >= NOW() - INTERVAL #{day} DAY
+        GROUP BY
+            DATE(visit_time)
+        ORDER BY
+            viewTime ASC
+    </select>
+</mapper>

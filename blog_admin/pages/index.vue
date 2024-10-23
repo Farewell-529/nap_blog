@@ -1,22 +1,27 @@
 <script setup lang="ts">
-import { blogInfoApi } from '~/api/blog'
+import { homePageInfoApi } from '~/api/blog'
 import * as echarts from 'echarts';
 if (process.client) {
     import('echarts-wordcloud')
 }
 let categoryVOList = <any>[]
 let tagsVOList = <any>[]
-let countList = ref(<any>[])
-let contactList = ref(<any>[])
-const getBlogInfo = async () => {
+const countList = ref(<any>[])
+const contactList = ref(<any>[])
+const viewTime = ref(<any>[])
+const pageViews = ref(<any>[])
+const visitors = ref(<any>[])
+const userHomePageInfo = async () => {
     try {
-        const { data } = await blogInfoApi()
+        const { data } = await homePageInfoApi()
         categoryVOList = data.categoryVOList.map((item: any) => {
             return {
                 value: item.articleCount,
                 name: item.categoryName
             }
         })
+
+
         tagsVOList = data.tagsVOList.map((item: any) => {
             return {
                 value: item.articleCount,
@@ -51,13 +56,22 @@ const getBlogInfo = async () => {
                 count: data.viewCount || 0
             },
         ]
+        viewTime.value = data.viewsChartList.map((item: any) => new Date(item.viewTime).toLocaleDateString("zh-CN"))
+        pageViews.value = data.viewsChartList.map((item: any) => item.pageViews)
+        visitors.value = data.viewsChartList.map((item: any) => item.visitors)
     } catch (error) {
         console.error('获取博客信息失败:', error);
     }
 
 }
 const generateCategoryChart = () => {
-    const categoryChart = echarts.init(document.getElementById('category'), 'dark')
+    const categoryDom = document.getElementById('category');
+    if (!categoryDom) {
+        return
+    }
+    const categoryChart = echarts.getInstanceByDom(categoryDom) || echarts.init(categoryDom, 'dark');
+
+
     const categoryOptions = {
         title: {
             text: '文章分类统计',
@@ -111,7 +125,11 @@ const generateCategoryChart = () => {
     categoryChart.setOption(categoryOptions);
 }
 const generateTagsCloudChart = () => {
-    const tagsCloudChart = echarts.init(document.getElementById('tagsCloud'), 'dark')
+    const tagsDom = document.getElementById('tagsCloud')
+    if (!tagsDom) {
+        return
+    }
+    const tagsCloudChart = echarts.getInstanceByDom(tagsDom) || echarts.init(tagsDom, 'dark')
     const tagsCloudOptions = {
         title: {
             text: '文章标签统计',
@@ -175,18 +193,74 @@ const generateTagsCloudChart = () => {
         }]
     }
     tagsCloudChart.setOption(tagsCloudOptions)
+}
+const generateViewChart = () => {
+    const viewDom = document.getElementById('viewChart')
+    if (!viewDom) {
+        return
+    }
+    const ViewsChart =echarts.getInstanceByDom(viewDom)|| echarts.init(viewDom, 'dark')
+    const ViewsChartOptions = {
+        title: {
+            text: '流量趋势',
+            top: 10,
+            left: 10
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ['浏览量', '访客量'],
+            top: 20
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            containLabel: true
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: viewTime.value
+        },
+        yAxis: {
+            type: 'value'
+        },
+        series: [
+            {
+                name: '浏览量',
+                type: 'line',
+                data: pageViews.value,
+                smooth: true
+            },
+            {
+                name: '访客量',
+                type: 'line',
+                data: visitors.value,
+                smooth: true
+            }
+        ]
+    };
+    // 绘制图表
+    ViewsChart.setOption(ViewsChartOptions);
+    // 添加窗口调整事件
+    window.addEventListener('resize', () => {
+        ViewsChart.resize();
+    });
 
 }
 
 onMounted(async () => {
-    await getBlogInfo()
+    await userHomePageInfo()
     generateCategoryChart()
     generateTagsCloudChart()
+    generateViewChart()
 
 })
 </script>
 <template>
-    <div class="w-full ">
+    <div class="w-full">
         <div class="text-4xl font-semibold mt-8 block mb-6">
             仪表盘
         </div>
@@ -212,9 +286,14 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <div class="flex justify-between ">
-            <div id="category" class="w-[400px] h-[300px] "></div>
-            <div id="tagsCloud" class="w-[750px] h-[300px] "></div>
+
+        <div class="flex justify-center">
+            <div id="viewChart" class="min-w-[1250px] h-[400px] mb-4 "></div>
+
+        </div>
+        <div class="flex justify-between h-[340px]">
+            <div id="category" class="w-[400px] h-[300px]"></div>
+            <div id="tagsCloud" class="w-[800px] h-[300px]"></div>
         </div>
 
     </div>

@@ -20,7 +20,7 @@ html {
 
 ::-webkit-scrollbar-thumb {
     background-color: #9c9b9b; /* 滚动条手柄颜色 */
-    border-radius: 5px; /* 圆角 */
+    border-radius: 5px; 
 }
 
 ::-webkit-scrollbar-thumb:hover {

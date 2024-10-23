@@ -3,7 +3,7 @@
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCalendarCheckOutline, mdiFolderOutline, mdiChevronDoubleRight, mdiUpdate, mdiPound,mdiEyeOutline } from '@mdi/js';
 import { articleListApi } from '~/api/article'
-import { type Article, type ArticleRes, type ArticleQuery } from '~/types/Article'
+import { type ArticleRes, type ArticleQuery } from '~/types/Article'
 const showArticleList = ref()
 const page = ref(1)
 const pagelength = ref()
@@ -76,9 +76,12 @@ onMounted(() => {
                     <svg-icon type="mdi" :path="item.fileIcon" class="w-5 mr-1" />
                     <span>
                         分类
-                     <NuxtLink :to="{path: '/category/categoryArticle', query: { id: item.id,categoryName: item.categoryName}}" class="border-b-[1px] border-b-black pb-1 text-black">
+                     <NuxtLink v-if="item.categoryName":to="{path: '/category/categoryArticle', query: { id: item.id,categoryName: item.categoryName}}" class="border-b-[1px] border-b-black pb-1 text-black">
                             {{ item.categoryName }}
                      </NuxtLink>
+                     <span v-else class="text-black">
+                            无
+                     </span>
                     </span>
                 </div>
                 <div class="flex items-center pl-2 ml-2 border-l-2 border-gray-500" >

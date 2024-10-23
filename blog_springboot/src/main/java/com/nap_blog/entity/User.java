@@ -19,17 +19,8 @@ public class User {
 
     private String password;
 
-    private String avatar;
-
-    private String motto;
-
-    private String bio;
-
     private Date createDate;
 
     private Date updateDate;
 
-    private String githubUrl;
-
-    private String xUrl;
 }

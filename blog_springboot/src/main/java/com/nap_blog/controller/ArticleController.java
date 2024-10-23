@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.http.HttpRequest;
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
@@ -81,8 +82,8 @@ public class ArticleController {
 
     }
     @GetMapping("/api/articles/list")
-    public Result listArticleFont(ArticleQuery articleQuery) {
-        return Result.success(articleService.listArticleVO(articleQuery));
+    public Result listArticleFont(ArticleQuery articleQuery,HttpServletRequest httpServletRequest) throws ParseException {
+        return Result.success(articleService.listArticleVO(articleQuery,httpServletRequest));
     }
     @GetMapping("/api/articles/{id}")
     public Result getArticleByIdFont(@PathVariable("id") Long id, HttpServletRequest request) {

@@ -16,5 +16,5 @@ public interface ArticleMapper extends BaseMapper<Article> {
 
     void setStatusBatchByIds(@Param("articleIds") List<Integer> articleIds,@Param("status") int status);
 
-
+    void setCategoryIds(@Param("articleIds") List<Long> articleIds);
 }

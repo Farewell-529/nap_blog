@@ -19,7 +19,7 @@ const service = $fetch.create({
             console.error(res)
             return res.data
         }
-        return res
+        return res  
     }
 })
 export default service;

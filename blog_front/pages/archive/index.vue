@@ -31,7 +31,6 @@ const getArchiveList = async () => {
     }
 
     showList.value = groupedData
-    console.log(showList.value);
 }
 
 

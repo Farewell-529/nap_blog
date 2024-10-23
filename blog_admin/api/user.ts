@@ -1,16 +1,9 @@
 import request from '~/utils/request'
-import { type User } from '~/types/User'
 import { type Result } from '~/types/Result'
 
-export function getUserInfoApi(): Promise<Result> {
-   return request('/user',{
+export function getBloggerInfoApi(): Promise<Result> {
+   return request('/admin/blogger',{
       method:"get"
-   })
-}
-export function editUser(user: User): Promise<Result> {
-   return request('/user', {
-      method: 'put',
-      body: user
    })
 }
 

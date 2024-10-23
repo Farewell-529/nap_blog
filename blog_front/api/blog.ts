@@ -6,3 +6,8 @@ export function archiveListApi(): Promise<Result> {
         method: 'get'
     })
 }
+export function getBloggerInfoApi(): Promise<Result> {
+    return request('/api/blogger',{
+       method:"get"
+    })
+ }

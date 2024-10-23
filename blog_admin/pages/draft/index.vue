@@ -153,7 +153,9 @@ const clearHandle = () => {
 const loadingItem = ({ page, itemsPerPage }: any) => {
     queryParams.value.current = page
     queryParams.value.size = itemsPerPage
-    getArticleList()
+    if(process.client){
+        getArticleList()
+    }
 }
 const deleteBatchBtn = () => {
     dialog.value = true
@@ -178,7 +180,7 @@ watch((selectedArticleIds), (val) => {
     <div class="w-[100%]">
         <div class="text-2xl font-semibold mt-10 hover:cursor-pointer mb-4">草稿</div>
         <!-- headers中的key对应items中item的属性 -->
-        <v-data-table-server :headers="headers" :items="showarticleList" @update:options="loadingItem"
+        <v-data-table-server :headers="headers as any" :items="showarticleList" @update:options="loadingItem"
             :items-per-page="itemsPerPage" :items-length="total" v-model="selectedArticleIds" show-select
             item-value="id">
             <!-- 为headers中每个item中的key，用来定制某一列 -->

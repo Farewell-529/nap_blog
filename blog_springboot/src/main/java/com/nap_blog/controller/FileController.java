@@ -1,5 +1,8 @@
 package com.nap_blog.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.nap_blog.entity.BlogInfo;
+import com.nap_blog.mapper.BlogInfoMapper;
 import com.nap_blog.vo.Result;
 import com.nap_blog.entity.User;
 import com.nap_blog.service.ImgService;
@@ -22,6 +25,8 @@ public class FileController {
     UserService userService;
     @Autowired
     ImgService imgService;
+    @Autowired
+    BlogInfoMapper blogInfoMapper;
     @PostMapping("/uploadImg")
     public Result uploadImg(@RequestParam("file") MultipartFile file,@RequestParam("articleId") String articleId) {
         String pre = "C:\\Users\\Farewell\\Desktop\\Blog\\upload\\img\\";
@@ -36,14 +41,14 @@ public class FileController {
         return Result.success(fileName);
     }
     @PostMapping("/user/uploadAvatar")
-    public Result userUploadAvatar(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
-        String pre = "C:\\Users\\Farewell\\Desktop\\Blog\\upload\\user\\avatar\\";
-        Long userId = (Long) request.getAttribute("userId");
-        // 获取用户旧头像文件名
-        User user = userService.getById(userId);
-        String oldAvatar = user.getAvatar();
-        if (oldAvatar != null) {
-            String oldPath = pre + oldAvatar;
+    public Result userUploadAvatar(@RequestParam("file") MultipartFile file) {
+        String pre = "C:\\Users\\Farewell\\Desktop\\Nap_Blog\\upload\\avatar\\";
+        // 获取旧头像文件名
+        BlogInfo oldAvatar= blogInfoMapper.selectOne(new LambdaQueryWrapper<BlogInfo>()
+                .eq(BlogInfo::getInfoKey,"Avatar"));
+        String oldAvatarVal = oldAvatar.getValue();
+        if (oldAvatarVal != null) {
+            String oldPath = pre + oldAvatarVal;
             File oldFile = new File(oldPath);
             if (oldFile.exists()) {
                 oldFile.delete();
@@ -51,9 +56,9 @@ public class FileController {
         }
         String fileName = uploadFile(file, pre);
         //更新头像
-        user.setAvatar(fileName);
-        user.setCreateDate(new Date());
-        userService.updateById(user);
+        oldAvatar.setValue(fileName);
+        oldAvatar.setUpdateDate(new Date());
+        blogInfoMapper.updateById(oldAvatar);
         return Result.success(fileName);
     }
 

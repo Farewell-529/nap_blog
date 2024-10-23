@@ -77,8 +77,9 @@ const getArticleList = async () => {
             categoryName: item.categoryName,
             updateDate: new Date(item.updateDate!).toLocaleDateString('zh-CN')
         }
-    }).sort((a:any, b:any) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime()))
+    }).sort((a: any, b: any) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime()))
     loading.value = false
+
 }
 
 const editBtn = (item: any) => {
@@ -150,7 +151,9 @@ const loadingItem = ({ page, itemsPerPage }: any) => {
     loading.value = true
     queryParams.value.current = page
     queryParams.value.size = itemsPerPage
-    getArticleList()
+    if (process.client) {
+        getArticleList()
+    }
 }
 const deleteBatchBtn = () => {
     dialog.value = true
@@ -170,7 +173,9 @@ watch((selectedArticleIds), (val) => {
     }
     disabled.value = true
 })
-
+onMounted(() => {
+    getArticleList()
+})
 </script>
 <template>
     <div class="w-full">
@@ -178,7 +183,7 @@ watch((selectedArticleIds), (val) => {
         <!-- headers中的key对应items中item的属性 -->
         <v-data-table-server :headers="headers as any" :items="showArticleVoList" @update:options="loadingItem" :search
             :items-per-page="itemsPerPage" :items-length="total" :show-current-page="false" :loading show-select
-            v-model="selectedArticleIds" item-value="id" >
+            v-model="selectedArticleIds" item-value="id">
             <template v-slot:top>
                 <div class="flex w-[100%] gap-4 mt-4">
                     <div class="w-40">

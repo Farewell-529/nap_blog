@@ -1,6 +1,5 @@
 package com.nap_blog.controller;
 
-import com.nap_blog.entity.BloggerInfo;
 import com.nap_blog.entity.User;
 import com.nap_blog.vo.Result;
 import com.nap_blog.service.UserService;

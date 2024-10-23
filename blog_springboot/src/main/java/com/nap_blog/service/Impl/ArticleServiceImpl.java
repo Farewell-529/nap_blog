@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -43,7 +45,10 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Autowired
     CommentsService commentsService;
     @Autowired
+    VisitsService visitsService;
+    @Autowired
     private RedisTemplate<String, String> redisTemplate;
+
     @Override
     public PageResult<ArticleBackRes> listArticleBackVO(ArticleQuery articleQuery) {
         //创建page对象
@@ -76,26 +81,29 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         }).toList();
     }
 
+    @Transactional
     @Override
-    public PageResult<ArticleRes> listArticleVO(ArticleQuery articleQuery) {
+    public PageResult<ArticleRes> listArticleVO(ArticleQuery articleQuery, HttpServletRequest httpServletRequest) throws ParseException {
+        //记录访客浏览量
+        visitsService.recordVisitsToRedis(httpServletRequest);
         Page<Article> resultPage = queryArticles(articleQuery, 1);
         long total = resultPage.getTotal();
         List<Article> articles = resultPage.getRecords();
         Map<Long, String> categoryMap = getCategoryMap();
         Map<Long, List<Tags>> articleAndTagsMap = getArticleAndTagsMap();
-
         List<ArticleRes> articleListVOList = articles.stream()
-                .map(item -> ArticleRes.builder()
-                        .id(item.getId())
-                        .title(item.getTitle())
-                        .createDate(item.getCreateDate())
-                        .updateDate(item.getUpdateDate())
-                        .categoryName(categoryMap.get((long) item.getCategoryId()))
-                        .categoryId(item.getCategoryId())
-                        .tagsList(articleAndTagsMap.get(item.getId()))
-                        .content(item.getContent())
-                        .viewCount(item.getViewCount())
-                        .build()).toList();
+                .map(item ->ArticleRes.builder()
+                                .id(item.getId())
+                                .title(item.getTitle())
+                                .createDate(item.getCreateDate())
+                                .updateDate(item.getUpdateDate())
+                                .categoryName(categoryMap.get((long) item.getCategoryId()))
+                                .categoryId(item.getCategoryId())
+                                .tagsList(articleAndTagsMap.get(item.getId()))
+                                .content(item.getContent())
+                                .viewCount(item.getViewCount())
+                                .build()).toList();
+
 
         return new PageResult<>(articleListVOList, total);
     }
@@ -108,7 +116,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Article articleById = articleMapper.selectById(id);
         //查询文章对应的分类名
         categoryLQW.eq(Category::getId, articleById.getCategoryId());
-        String categoryName = categoryService.getOne(categoryLQW).getCategoryName();
+        Category category = categoryService.getOne(categoryLQW);
+        String categoryName = category != null
+                ? category.getCategoryName()
+                : null;
+
         //查询文章对应的标签
         articleTagsLQW.in(ArticleTags::getArticleId, id);
         List<Long> tagsIds = articleTagsService.list(articleTagsLQW)
@@ -141,6 +153,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setCreateDate(new Date());
         article.setUpdateDate(new Date());
         article.setWordCount(culWordCount(article.getContent()));
+        article.setViewCount(1);
         articleMapper.insert(article);
         addArticleTags(tagsList, article);
     }
@@ -204,7 +217,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .in(Comments::getTargetId, articleIds);
         commentsService.remove(queryWrapper);
         articleTagsMapper.delete(new LambdaQueryWrapper<ArticleTags>()
-                .in(ArticleTags::getArticleId,articleIds));
+                .in(ArticleTags::getArticleId, articleIds));
         imgService.deleteImg(articleIds);
         articleMapper.deleteBatchIds(articleIds);
     }
@@ -255,7 +268,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         // 检查 Redis 中是否存在该 IP 的访问记录
         if (Boolean.FALSE.equals(redisTemplate.hasKey(redisKey))) {
             // 如果不存在，增加文章浏览量
-            articleById.setViewCount(articleById.getViewCount()+1);
+            articleById.setViewCount(articleById.getViewCount() + 1);
             articleMapper.updateById(articleById);
             // 将 IP 存入 Redis，设置 30 分钟过期时间
             redisTemplate.opsForValue().set(redisKey, "1", 30, TimeUnit.MINUTES);
@@ -263,6 +276,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //查询文章对应的分类名
         Category category = categoryService.getOne(new LambdaQueryWrapper<Category>()
                 .eq(Category::getId, articleById.getCategoryId()));
+        String categoryName=category!=null?category.getCategoryName():null;
         //查询文章对应的标签
         List<Long> tagsId = articleTagsService.list(new LambdaQueryWrapper<ArticleTags>()
                 .in(ArticleTags::getArticleId, id)).stream().map(ArticleTags::getTagsId).toList();
@@ -270,7 +284,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         List<Tags> tagsList = tagsService.list(new LambdaQueryWrapper<Tags>()
                 .in(Tags::getId, tagsId));
         //文章对应评论
-        List<CommentsRes> commentsList = commentsService.getCommentsList("article",id.intValue());
+        List<CommentsRes> commentsList = commentsService.getCommentsList("article", id.intValue());
         // 构建返回的 VO 对象
         return ArticleInfoRes.builder()
                 .id(id)
@@ -279,7 +293,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                 .createDate(articleById.getCreateDate())
                 .updateDate(articleById.getUpdateDate())
                 .tags(tagsList)
-                .categoryName(category.getCategoryName())
+                .categoryName(categoryName)
                 .commentsList(commentsList)
                 .viewCount(articleById.getViewCount())
                 .build();
@@ -331,6 +345,8 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             List<Long> articleIds = articleTags.stream().map(ArticleTags::getArticleId).toList();
             lqw.in(Article::getId, articleIds);
         }
+        // 按照创建日期进行降序排序
+        lqw.orderByDesc(Article::getCreateDate);
         int current = (articleQuery.getCurrent() == null) ? 1 : articleQuery.getCurrent();
         int size = (articleQuery.getSize() == null) ? 10 : articleQuery.getSize();
         Page<Article> page = new Page<>(current, size);

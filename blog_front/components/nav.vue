@@ -3,16 +3,18 @@
 // @ts-ignore
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCardAccountDetails, mdiHome, mdiTagMultiple, mdiTableLarge, mdiArchive, mdiAccountMultiple } from '@mdi/js';
-import { userInfoApi } from "~/api/user";
-import { type User } from "~/types/User";
-import { userStore } from "~/store/userInfo";
-const store = userStore()
-const userInfo = ref<User>({
-    id: 1,
-    username: '',
+import { getBloggerInfoApi } from "~/api/blog";
+import { type BloggerInfo } from "~/types/BlogInfo";
+import { blogInfoStore } from "~/store/blogInfo";
+const store = blogInfoStore()
+const userInfo = ref<BloggerInfo>({
+    bloggerName: "",
     motto: '',
+    bio: '',
     avatar: '',
-    bio: ''
+    github_url: '',
+    x_url: '',
+    bilibili_url: ''
 })
 const list = [
     {
@@ -47,9 +49,9 @@ const list = [
     }
 ]
 const getUserInfo = async () => {
-    const { data } = await userInfoApi()
-    store.setUser(data)
-    userInfo.value = { ...store.user! }
+    const { data } = await getBloggerInfoApi()
+    store.setBlogInfo(data)
+    userInfo.value = { ...store.blogInfo! }
 }
 onMounted(() => {
     getUserInfo()
@@ -58,7 +60,7 @@ onMounted(() => {
 <template>
     <div class="flex  flex-col items-center my-10 relative">
         <div class="w-36 h-8 bg-black mb-3 text-white flex justify-center items-center">
-            {{ userInfo.username }}
+            {{ userInfo.bloggerName }}
         </div>
         <div class="ZCOOL-KuaiLe text-gray-400 text-xs ">
             {{ userInfo.motto }}

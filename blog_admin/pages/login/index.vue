@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { Account } from '~/types/User';
 import { loginApi, registerApi } from '~/api/login'
-import { getUserInfoApi } from '~/api/user';
+import { getBloggerInfoApi } from '~/api/blog';
 import { UserRound } from 'lucide-vue-next'
-import { userStore } from '~/store/userInfo';
+import { userStore } from '~/store/blogInfo';
 const store = userStore()
 const loading = ref(false)
 const loginColor = '#09917de1'
@@ -20,7 +20,7 @@ const registerAccount = ref<Account>({
 })
 const { $toast } = useNuxtApp()
 const getUserInfo = async () => {
-    const res = await getUserInfoApi()
+    const res = await getBloggerInfoApi()
     store.setUser(res.data)
 }
 const loging = async () => {

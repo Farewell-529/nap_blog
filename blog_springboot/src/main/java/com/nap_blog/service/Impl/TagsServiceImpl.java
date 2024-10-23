@@ -3,6 +3,7 @@ package com.nap_blog.service.Impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.nap_blog.entity.Article;
 import com.nap_blog.entity.ArticleTags;
 import com.nap_blog.entity.Tags;
 import com.nap_blog.mapper.ArticleMapper;
@@ -30,7 +31,8 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
     ArticleTagsService articleTagsService;
     @Autowired
     ArticleTagsMapper articleTagsMapper;
-
+    @Autowired
+    ArticleMapper articleMapper;
     @Autowired
     TagsMapper tagsMapper;
 
@@ -80,9 +82,8 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
 
     @Override
     public void deleteTags(List<Integer> ids) {
-       articleTagsMapper.delete(new LambdaQueryWrapper<ArticleTags>()
-               .in(ArticleTags::getTagsId,ids));
-       tagsMapper.deleteBatchIds(ids);
+        articleTagsMapper.delete(new LambdaQueryWrapper<ArticleTags>().in(ArticleTags::getTagsId, ids));
+        tagsMapper.deleteBatchIds(ids);
     }
 
 
@@ -106,16 +107,19 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
         List<Tags> tagsList = tagsMapper.selectList(null);
         // 获取所有标签的ID
         List<Long> tagsIds = tagsList.stream().map(Tags::getId).toList();
+        // 查询所有状态为1的文章
+        List<Article> articles = articleMapper.selectList(new LambdaQueryWrapper<Article>().eq(Article::getStatus, 1));
+
+        // 获取所有状态为1的文章ID
+        List<Long> articleIds = articles.stream().map(Article::getId).toList();
         // 批量查询每个标签的使用数量
-        Map<Long, Integer> countMap = articleTagsMapper.selectList(new LambdaQueryWrapper<ArticleTags>()
-                        .in(ArticleTags::getTagsId, tagsIds))
-                .stream()
+        LambdaQueryWrapper<ArticleTags> lqw=new LambdaQueryWrapper<>();
+        lqw.in(ArticleTags::getTagsId, tagsIds).in(ArticleTags::getArticleId,articleIds);
+        Map<Long, Integer> countMap = articleTagsMapper.selectList(lqw).stream()
                 //Collectors.groupingBy(ArticleTags::getTagsId)将流按ArticleTags的tagsId字段进行分组。
-                .collect(Collectors.groupingBy(
-                        ArticleTags::getTagsId,
+                .collect(Collectors.groupingBy(ArticleTags::getTagsId,
                         //求和
-                        Collectors.summingInt(e -> 1)
-                ));
+                        Collectors.summingInt(e -> 1)));
         List<TagsCountRes> TagsCountResList = tagsList.stream().map(item -> {
             TagsCountRes tagsCountRes = new TagsCountRes();
             tagsCountRes.setId(item.getId());
