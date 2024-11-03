@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,22 +49,25 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
         if (tagsQuery.getKeyword() != null && !tagsQuery.getKeyword().trim().isEmpty()) {
             lqw.like(Tags::getTagsName, tagsQuery.getKeyword());
         }
+        if (tagsQuery.getCreateDate() != null && !tagsQuery.getCreateDate().trim().isEmpty()) {
+            LocalDate localDate = LocalDate.parse(tagsQuery.getCreateDate());
+            LocalDateTime startOfDay = localDate.atStartOfDay();
+            LocalDateTime startOfNextDay = localDate.plusDays(1).atStartOfDay();
+            lqw.ge(Tags::getCreateDate,startOfDay);
+            lqw.lt(Tags::getCreateDate,startOfNextDay);
+        }
         int current = (tagsQuery.getCurrent() == null) ? 1 : tagsQuery.getCurrent();
         int size = (tagsQuery.getSize() == null) ? 10 : tagsQuery.getSize();
         // 创建分页对象
         Page<Tags> page = new Page<>(current, size);
-
         // 执行分页查询
         List<Tags> tagsList = this.list(page, lqw);
-
         // 获取标签的ID集合
         List<Long> tagsIds = tagsList.stream().map(Tags::getId).toList();
         // 批量查询每个标签的使用数量
         Map<Long, Integer> useCountMap = articleTagsService.countByTagsIds(tagsIds);
-
         // 组装结果列表
         List<TagsBackRes> tagsBackResList = tagsList.stream().map(item -> TagsBackRes.builder().id(item.getId()).tagsName(item.getTagsName()).useCount(useCountMap.getOrDefault(item.getId(), 0)).createDate(item.getCreateDate()).build()).toList();
-
         return new PageResult<>(tagsBackResList, total);
     }
 

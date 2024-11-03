@@ -9,4 +9,5 @@ export interface Category {
 export interface CategoryQuery extends PageQuery {
     //关键字
     keyword?: string
+    createDate?:string
 }

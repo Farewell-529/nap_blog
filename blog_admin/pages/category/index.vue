@@ -2,6 +2,8 @@
 import { savecategoryApi, updatecategoryApi, deletecategoryApi, categoryListApi } from '~/api/category'
 import { type Category, type CategoryQuery } from '~/types/Category';
 import { type Result } from '~/types/Result'
+import { formatDateToYYYYMMDD } from "~/utils/dateUtils";
+
 const headers = [
     {
         title: '分类名',
@@ -50,7 +52,8 @@ const form = ref<Category>({
     categoryName: ''
 })
 let currentItem: number[] = []
-const keyword = ref()
+const dateDialog = ref(false)
+const rowDate = ref()
 const getCategoryList = async () => {
     const { data } = await categoryListApi(queryParams.value)
     total.value = data.total || 0
@@ -107,13 +110,15 @@ const handlerOption = async () => {
     getCategoryList()
 }
 const searchHandle = () => {
-    queryParams.value.keyword = keyword.value
     getCategoryList()
 }
 const clearHandle = () => {
-    keyword.value = ''
-    delete queryParams.value.keyword
+     queryParams.value={
+        current:1,
+        size:10
+     }
     getCategoryList()
+    rowDate.value=null
 }
 const loadingItem = ({ page, itemsPerPage }: any) => {
     loading.value = true
@@ -136,6 +141,10 @@ watch((selectedCategoryIds), (val) => {
     }
     disabled.value = true
 })
+const clickDatePicker = () => {
+    queryParams.value.createDate = formatDateToYYYYMMDD(new Date(rowDate.value))
+    dateDialog.value = false
+}
 </script>
 <template>
     <div class="w-full">
@@ -146,8 +155,20 @@ watch((selectedCategoryIds), (val) => {
             <template v-slot:top>
                 <div class="flex w-[100%] gap-4 mt-4">
                     <div class="w-40">
-                        <v-text-field variant="solo-filled" v-model="keyword" density="compact"
+                        <v-text-field variant="solo-filled" v-model="queryParams.keyword" density="compact"
                             label="分类名"></v-text-field>
+                    </div>
+                    <div class="w-52">
+                        <v-menu v-model="dateDialog" :close-on-content-click="false">
+                            <template v-slot:activator="{ props }">
+                                <v-text-field v-bind="props"  label="选择日期"
+                                    v-model="queryParams.createDate" density="compact" readonly variant="solo-filled"
+                                    append-inner-icon="mdi-calendar-month-outline" />
+                            </template>
+                            <v-date-picker  :hide-header="true"
+                                v-model="rowDate" @update:modelValue="clickDatePicker">
+                            </v-date-picker>
+                        </v-menu>
                     </div>
                     <v-btn size="small" icon="mdi-magnify" @click="searchHandle"></v-btn>
                     <v-btn size="small" icon="mdi-refresh" @click="clearHandle"></v-btn>
@@ -186,11 +207,11 @@ watch((selectedCategoryIds), (val) => {
                 </v-card-text>
                 <template v-slot:actions>
                     <v-spacer></v-spacer>
-                    <v-btn @click="handlerOption">
-                        确定啊
-                    </v-btn>
                     <v-btn @click="dialog = false">
                         算了
+                    </v-btn>
+                    <v-btn @click="handlerOption" color="primary" variant="tonal">
+                        确定啊
                     </v-btn>
                 </template>
             </v-card>
@@ -202,7 +223,7 @@ watch((selectedCategoryIds), (val) => {
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn text="Close" variant="plain" @click="dialog = false"></v-btn>
+                    <v-btn text="Close"  @click="dialog = false"></v-btn>
                     <v-btn color="primary" text="Save" variant="tonal" @click="handlerOption"></v-btn>
                 </v-card-actions>
             </v-card>

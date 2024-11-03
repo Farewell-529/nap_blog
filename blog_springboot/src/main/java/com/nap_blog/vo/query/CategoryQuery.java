@@ -8,4 +8,5 @@ import lombok.EqualsAndHashCode;
 public class CategoryQuery extends PageQuery{
     //搜索内容
     private String keyword;
+    private String createDate;
 }

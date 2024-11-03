@@ -12,7 +12,10 @@ public class HomePageInfoRes {
     private Long tagsCount;
     private Long friendCount;
     private Long commentCount;
-    private Long viewCount;
+    private Long articleViewCount;
+    private Long pageViewCount;
+    private Integer todayView;
+    private Integer yesterdayView;
     private List<ViewsChartRes> viewsChartList;
     private List<CategoryCountRes> categoryVOList;
     private List<TagsCountRes> tagsVOList;

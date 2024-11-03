@@ -6,11 +6,19 @@ import { logout } from '~/api/user'
 import MarkdownIt from 'markdown-it';
 // @ts-ignore
 import { createHighlighter } from 'shiki'
+import { type User } from "~/types/User";
 import 'github-markdown-css/github-markdown.css';
+import { getAccountApi, editAccountApi } from "~/api/user";
 const store = blogInfoStore()
 const blogInfo = ref<any>({})
 const logoutDialog = ref(false)
 const { $toast } = useNuxtApp()
+const dialog = ref(false)
+const account = ref<User>()
+const form = ref<User>({
+    username: '',
+    password: ''
+})
 let md: any
 const initializeMarkdown = async () => {
     const highlighter = await createHighlighter({
@@ -64,7 +72,9 @@ const decodeBase64 = (encodedText: string): string => {
 const getBlogInfo = async () => {
     await initializeMarkdown()
     blogInfo.value = store.blogInfo
+    // if (typeof blogInfo.value.Bio == "string") {
     blogInfo.value.bio = md.render(blogInfo.value.bio)
+    // }    
 }
 const logoutHandler = async () => {
     await logout()
@@ -94,7 +104,55 @@ const uploadAvatar = () => {
     getBlogInfo()
     input.click();
 };
-
+const getAccount = async () => {
+    const { data } = await getAccountApi()
+    account.value = data
+    form.value = { ...account.value! }
+}
+const clickEditBtn = () => {
+    if (!account.value) {
+        dialog.value = true
+        getAccount()
+        return
+    }
+    form.value = { ...account.value! }
+    dialog.value = true
+}
+const close = () => {
+    dialog.value = false
+}
+const validate = (user: User) => {
+    if (user.username == null || user.username == '') {
+        $toast.error("账号不能为空")
+        return false
+    }
+    if (user.password == null || user.password == '') {
+        $toast.error("密码不能为空")
+        return false
+    }
+    if (user.username.length < 3) {
+        $toast.error("账号不能小于两位")
+        return false
+    }
+    if (user.password.length < 6) {
+        $toast.error("密码不能小于六位")
+        return false
+    }
+    return true
+}
+const confirm = async () => {
+    if (!validate(form.value)) {
+        return
+    }
+    const res = await editAccountApi(form.value)
+    if (res.code != 200) {
+        $toast.error(res.msg)
+        return
+    }
+    getAccount()
+    $toast.success(res.msg)
+    dialog.value = false
+}
 onMounted(() => {
     getBlogInfo()
 })
@@ -127,7 +185,10 @@ onMounted(() => {
         <div v-html="blogInfo?.bio" class="mt-8 markdown-body">
         </div>
 
-        <div class="fixed right-20 top-5">
+        <div class="flex gap-4 fixed right-20 top-5">
+            <v-btn color="#000000" @click="clickEditBtn">
+                修改密码
+            </v-btn>
             <v-btn color="#000000" @click="logoutHandler">
                 退出登录
             </v-btn>
@@ -138,6 +199,18 @@ onMounted(() => {
                 编辑
             </v-btn>
         </NuxtLink>
+        <v-dialog v-model="dialog" max-width="600" persistent>
+            <v-card prepend-icon="mdi-account" title="账号密码">
+                <v-form class="p-3">
+                    <v-text-field variant="solo-filled" v-model="form.username" label="账号" required></v-text-field>
+                    <v-text-field variant="solo-filled" v-model="form.password" label="密码" required></v-text-field>
+                </v-form>
+                <v-card-actions>
+                    <v-btn text="关闭" @click="close"></v-btn>
+                    <v-btn color="primary" text="确认" variant="tonal" @click="confirm"></v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 

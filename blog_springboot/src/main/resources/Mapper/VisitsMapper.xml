@@ -2,42 +2,50 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.nap_blog.mapper.VisitsMapper">
 
-    <select id="getPageViewsByDays" resultType="java.lang.Integer">
+
+
+    <select id="getViewsChartByDays" resultType="com.nap_blog.vo.response.ViewsChartRes">
+    <![CDATA[
+        WITH RECURSIVE date_series AS (
+            SELECT DATE(NOW()) AS viewTime, 0 AS n
+            UNION ALL
+            SELECT DATE(NOW() - INTERVAL (n + 1) DAY), n + 1
+            FROM date_series
+            WHERE n + 1 < #{day}
+        )
+        SELECT
+            ds.viewTime AS viewTime,
+            COALESCE(v.PageViews, 0) AS PageViews,
+            COALESCE(v.Visitors, 0) AS Visitors
+        FROM date_series ds
+                 LEFT JOIN (
+            SELECT
+                DATE(visit_time) AS viewTime,
+                COUNT(*) AS PageViews,
+                COUNT(DISTINCT ip) AS Visitors
+            FROM
+                visits
+            WHERE
+                visit_time >= NOW() - INTERVAL #{day} DAY
+            GROUP BY
+                DATE(visit_time)
+        ) v ON ds.viewTime = v.viewTime
+        ORDER BY
+            viewTime ASC;
+        ]]>
+</select>
+    <select id="getTodayViewCount" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM visits
-        WHERE visit_time >= NOW() - INTERVAL #{day} DAY
-        GROUP BY DATE(visit_time);
+        WHERE DATE(visit_time) = CURDATE()
     </select>
 
-    <select id="getVisitorsByDays" resultType="java.lang.Integer">
-        SELECT COUNT(DISTINCT ip)
+
+    <select id="getYesterdayViewCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
         FROM visits
-        WHERE visit_time >= NOW() - INTERVAL #{day} DAY
-        GROUP BY DATE(visit_time);
+        WHERE DATE(visit_time) = CURDATE() - INTERVAL 1 DAY
     </select>
-    <select id="getVisitDays" resultType="java.lang.String">
-        SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL #{day} DAY), '%Y-%m-%d') AS visit_date
-        FROM (SELECT 0 AS dummy UNION ALL
-              SELECT 1 UNION ALL
-              SELECT 2 UNION ALL
-              SELECT 3 UNION ALL
-              SELECT 4 UNION ALL
-              SELECT 5 UNION ALL
-              SELECT 6) AS numbers
-        WHERE DATE_SUB(CURDATE(), INTERVAL #{day} DAY) + INTERVAL numbers.dummy DAY >= CURDATE() - INTERVAL 7 DAY
-    </select>
-    <select id="getViewsChartByDays" resultType="com.nap_blog.vo.response.ViewsChartRes">
-        SELECT
-            DATE(visit_time) AS viewTime,
-            COUNT(*) AS PageViews,
-            COUNT(DISTINCT ip) AS Visitors
-        FROM
-            visits
-        WHERE
-            visit_time >= NOW() - INTERVAL #{day} DAY
-        GROUP BY
-            DATE(visit_time)
-        ORDER BY
-            viewTime ASC
-    </select>
+
+
 </mapper>

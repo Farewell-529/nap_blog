@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper
 public interface VisitsMapper extends BaseMapper<Visits> {
     List<ViewsChartRes> getViewsChartByDays(@Param("day")Integer day);
-    List<Integer> getPageViewsByDays(@Param("day")Integer day);
-    List<Integer> getVisitorsByDays(@Param("day")Integer day);
-    List<String> getVisitDays(@Param("day")Integer day);
+    Integer getTodayViewCount();
+
+    Integer getYesterdayViewCount();
 }

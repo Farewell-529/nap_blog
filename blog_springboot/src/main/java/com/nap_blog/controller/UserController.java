@@ -13,21 +13,12 @@ import java.util.Date;
 public class UserController {
     @Autowired
     UserService userService;
-    @GetMapping("/user")
-    public Result getUserInfo(HttpServletRequest request){
+    @GetMapping("/admin/user")
+    public Result getUserAccountById(HttpServletRequest request){
         Long id = (Long)request.getAttribute("userId");
         return Result.success(userService.getById(id));
     }
-//    @GetMapping("/api/user/about")
-//    public Result getUserBio(){
-//        User user = userService.getById(1);
-//        return Result.success(user.getBio());
-//    }
-    @GetMapping("/api/user")
-    public Result getUserInfoFront(){
-        return Result.success(userService.getUserInfoFront(1L));
-    }
-    @PutMapping("/user")
+    @PutMapping("/admin/user/edit")
     public Result editUser(@RequestBody User user){
         user.setUpdateDate(new Date());
         return userService.updateById(user)?Result.success():Result.error();

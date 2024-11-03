@@ -35,4 +35,6 @@ export interface ArticleQuery extends PageQuery {
     //关键字
     keyword?: string
     categoryId?:number
+    createDate?:string
+
 } 

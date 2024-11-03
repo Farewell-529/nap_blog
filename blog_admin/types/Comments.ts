@@ -30,5 +30,6 @@ export interface CommentsRes{
 }
 export interface CommentsQuery extends PageQuery{
     keyword?:string,
+    createDate?:string
     targetType:string
   }

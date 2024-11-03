@@ -1,6 +1,5 @@
 const service = $fetch.create({
     baseURL: 'http://localhost:8080',
-
     async onRequest(request) {
         // 请求显示
         request.options.headers = {
@@ -15,7 +14,7 @@ const service = $fetch.create({
     async onResponse(response) {
         const res = response.response._data
         if (res.code === 403) {
-            useRouter().push("/login/")
+            useRouter().push("/login")
             console.error(res)
             return res.data
         }

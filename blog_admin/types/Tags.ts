@@ -10,4 +10,5 @@ export interface Tags {
 export interface TagsQuery extends PageQuery {
     //关键字
     keyword?: string
+    createDate?:string
 } 

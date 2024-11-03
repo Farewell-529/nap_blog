@@ -37,6 +37,8 @@ public class BlogInfoServiceImpl extends ServiceImpl<BlogInfoMapper, BlogInfo> i
     @Autowired
     VisitsMapper visitsMapper;
     @Autowired
+    VisitsService visitsService;
+    @Autowired
     BlogInfoMapper blogInfoMapper;
 
     @Override
@@ -107,15 +109,18 @@ public class BlogInfoServiceImpl extends ServiceImpl<BlogInfoMapper, BlogInfo> i
     public HomePageInfoRes getHomePageInfo() {
         List<Article> articles = articleService.list();
         Long articleCount = 0L;
-        Long viewCount = 0L;
+        Long articleViewCount = 0L;
         for (Article article : articles) {
             articleCount++;
-            viewCount += article.getViewCount() == null ? 1 : article.getViewCount();
+            articleViewCount += article.getViewCount() == null ? 1 : article.getViewCount();
         }
         Long categoryCount = categoryService.count();
         Long tagsCount = tagsService.count();
         Long commentsCount = commentsService.count();
         Long friendCount = friendService.count();
+        Long pageViewCount=visitsService.count();
+        Integer todayViewCount = visitsMapper.getTodayViewCount();
+        Integer yesterdayViewCount = visitsMapper.getYesterdayViewCount();
         List<ViewsChartRes> viewsChartList = visitsMapper.getViewsChartByDays(7);
         //查询每个分类的使用次数
         List<CategoryCountRes> categoryCountResList = categoryService.getCategoryCountsList().getRecordList();
@@ -127,7 +132,10 @@ public class BlogInfoServiceImpl extends ServiceImpl<BlogInfoMapper, BlogInfo> i
                 .tagsCount(tagsCount)
                 .commentCount(commentsCount)
                 .friendCount(friendCount)
-                .viewCount(viewCount)
+                .articleViewCount(articleViewCount)
+                .pageViewCount(pageViewCount)
+                .todayView(todayViewCount)
+                .yesterdayView(yesterdayViewCount)
                 .categoryVOList(categoryCountResList)
                 .viewsChartList(viewsChartList)
                 .tagsVOList(tagsCountResList)

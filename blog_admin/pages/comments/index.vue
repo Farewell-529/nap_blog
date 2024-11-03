@@ -3,6 +3,7 @@ import { saveCommentsApi, updateCommentsApi, deleteCommentsApi, commentsListApi 
 import { articleAllListApi } from "~/api/article";
 import { type Comments, type CommentsQuery, type CommentsRes } from '~/types/Comments';
 import { type Result } from '~/types/Result'
+import { formatDateToYYYYMMDD } from "~/utils/dateUtils";
 const headers = [
     {
         title: '头像',
@@ -14,15 +15,15 @@ const headers = [
     {
         title: '昵称',
         key: 'name',
-        maxWidth:'140px',
-        nowrap:true,
+        maxWidth: '140px',
+        nowrap: true,
         align: 'center',
         sortable: false
     },
     {
         title: '内容',
         key: 'content',
-        maxWidth:'450px',
+        maxWidth: '450px',
         sortable: false
     },
     {
@@ -36,7 +37,7 @@ const headers = [
         key: 'url',
         width: '100px',
         maxWidth: '220px',
-        nowrap:true,
+        nowrap: true,
         sortable: false
     },
     {
@@ -100,7 +101,8 @@ const form = ref<Comments>({
     replytId: -1
 })
 let currentItem: number[] = []
-const keyword = ref()
+const dateDialog = ref(false)
+const rowDate = ref()
 const getCommentsList = async () => {
     const { data } = await commentsListApi(queryParams.value)
     total.value = data.total || 0
@@ -167,19 +169,22 @@ const handlerOption = async () => {
     getCommentsList()
 }
 const searchHandle = () => {
-    queryParams.value.keyword = keyword.value
     getCommentsList()
 }
 const clearHandle = () => {
-    keyword.value = ''
-    delete queryParams.value.keyword
+    queryParams.value = {
+        current: 1,
+        size: 10,
+        targetType: 'article'
+    }
+    rowDate.value=null
     getCommentsList()
 }
 const loadingItem = ({ page, itemsPerPage }: any) => {
     loading.value = true
     queryParams.value.current = page
     queryParams.value.size = itemsPerPage
-    if(process.client){
+    if (process.client) {
         getCommentsList()
     }
 }
@@ -209,7 +214,10 @@ watch((selectedCommentsIds), (val) => {
     }
     disabled.value = true
 })
-
+const clickDatePicker = () => {
+    queryParams.value.createDate = formatDateToYYYYMMDD(new Date(rowDate.value))
+    dateDialog.value = false
+}
 </script>
 <template>
     <div class="w-full">
@@ -220,8 +228,20 @@ watch((selectedCommentsIds), (val) => {
             <template v-slot:top>
                 <div class="flex w-[100%] gap-4 mt-4">
                     <div class="w-40">
-                        <v-text-field variant="solo-filled" v-model="keyword" density="compact"
+                        <v-text-field variant="solo-filled" v-model="queryParams.keyword" density="compact"
                             label="评论内容"></v-text-field>
+                    </div>
+                    <div class="w-52">
+                        <v-menu v-model="dateDialog" :close-on-content-click="false">
+                            <template v-slot:activator="{ props }">
+                                <v-text-field v-bind="props"  label="选择日期"
+                                    v-model="queryParams.createDate" density="compact" readonly variant="solo-filled"
+                                    append-inner-icon="mdi-calendar-month-outline" />
+                            </template>
+                            <v-date-picker  :hide-header="true"
+                                v-model="rowDate" @update:modelValue="clickDatePicker">
+                            </v-date-picker>
+                        </v-menu>
                     </div>
                     <v-btn size="small" icon="mdi-magnify" @click="searchHandle"></v-btn>
                     <v-btn size="small" icon="mdi-refresh" @click="clearHandle"></v-btn>
@@ -242,7 +262,8 @@ watch((selectedCommentsIds), (val) => {
             </template>
             <template v-slot:item.avatar="{ item }">
                 <div class="w-[100%] flex justify-center">
-                    <img class="size-11 my-2 rounded-lg" :src="'https://www.gravatar.com/avatar/' + item.avatar+ '?d=mysteryman'" alt="">
+                    <img class="size-11 my-2 rounded-lg"
+                        :src="'https://www.gravatar.com/avatar/' + item.avatar + '?d=mysteryman'" alt="">
                 </div>
             </template>
             <template v-slot:item.handler="{ item }">
@@ -264,11 +285,11 @@ watch((selectedCommentsIds), (val) => {
                 </v-card-text>
                 <template v-slot:actions>
                     <v-spacer></v-spacer>
-                    <v-btn @click="handlerOption">
-                        确定啊
-                    </v-btn>
                     <v-btn @click="dialog = false">
                         算了
+                    </v-btn>
+                    <v-btn @click="handlerOption" color="primary" variant="tonal">
+                        确定啊
                     </v-btn>
                 </template>
             </v-card>
@@ -294,7 +315,7 @@ watch((selectedCommentsIds), (val) => {
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn text="关闭" variant="plain" @click="closeHandle"></v-btn>
+                    <v-btn text="关闭" @click="closeHandle"></v-btn>
                     <v-btn color="primary" text="保存" variant="tonal" @click="handlerOption"></v-btn>
                 </v-card-actions>
             </v-card>

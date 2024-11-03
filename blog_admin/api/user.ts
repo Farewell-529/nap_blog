@@ -1,12 +1,18 @@
 import request from '~/utils/request'
 import { type Result } from '~/types/Result'
+import { type User } from "~/types/User";
 
-export function getBloggerInfoApi(): Promise<Result> {
-   return request('/admin/blogger',{
-      method:"get"
+export function getAccountApi():Promise<Result>{
+   return request('/admin/user', {
+      method: 'get'
    })
 }
-
+export function editAccountApi(user:User):Promise<Result>{
+   return request('/admin/user/edit', {
+      method: 'put',
+      body:user
+   })
+}
 export function logout(): Promise<Result> {
    return request('/logout', {
       method: 'post'

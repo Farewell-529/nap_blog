@@ -12,4 +12,5 @@ export interface Friend{
 
 export interface FriendQuery extends PageQuery{
     keyword?:string,
+    createDate?:string
   }

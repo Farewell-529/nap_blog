@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nap_blog.entity.Article;
 import com.nap_blog.entity.Comments;
+import com.nap_blog.entity.Tags;
 import com.nap_blog.mapper.ArticleMapper;
 import com.nap_blog.mapper.CommentsMapper;
 import com.nap_blog.service.CommentsService;
@@ -21,6 +22,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -104,6 +107,13 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         LambdaQueryWrapper<Comments> lqw = new LambdaQueryWrapper<>();
         if (commentsQuery.getKeyword() != null && !commentsQuery.getKeyword().trim().isEmpty()) {
             lqw.like(Comments::getContent, commentsQuery.getKeyword());
+        }
+        if (commentsQuery.getCreateDate() != null && !commentsQuery.getCreateDate().trim().isEmpty()) {
+            LocalDate localDate = LocalDate.parse(commentsQuery.getCreateDate());
+            LocalDateTime startOfDay = localDate.atStartOfDay();
+            LocalDateTime startOfNextDay = localDate.plusDays(1).atStartOfDay();
+            lqw.ge(Comments::getCreateDate,startOfDay);
+            lqw.lt(Comments::getCreateDate,startOfNextDay);
         }
         lqw.eq(Comments::getTargetType, commentsQuery.getTargetType());
         int current = (commentsQuery.getCurrent() == null) ? 1 : commentsQuery.getCurrent();

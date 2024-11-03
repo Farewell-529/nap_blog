@@ -3,6 +3,7 @@ import { articleDraftListApi, publishArticleListApi, deleteArticleApi } from '~/
 import { type Article, type ArticleBackRes, type ArticleQuery } from '~/types/Article'
 import { type Category } from '~/types/Category'
 import { categoryAllListApi } from '~/api/category'
+import { formatDateToYYYYMMDD } from "~/utils/dateUtils";
 
 const headers = [
     {
@@ -57,13 +58,14 @@ const queryParams = ref<ArticleQuery>({
     current: 1,
     size: 10
 })
-const keyword = ref()
 const categoryNameArr = ref([])
 const selectedCategoryName = ref('')
 const selectedArticleIds = ref([])
 const disabled = ref(true)
 let categoryList = <any>[]
 let isCategoryListFetched = false;
+const dateDialog = ref(false)
+const rowDate = ref()
 const getArticleList = async () => {
     const { data } = await articleDraftListApi(queryParams.value)
     if (!data.recordList) {
@@ -139,21 +141,22 @@ const getCategoryList = async () => {
     isCategoryListFetched = true;
 }
 const searchHandle = () => {
-    queryParams.value.keyword = keyword.value
     findCategoryId()
     getArticleList()
 }
 const clearHandle = () => {
-    keyword.value = ''
     selectedCategoryName.value = ''
-    delete queryParams.value.keyword
-    delete queryParams.value.categoryId
+    queryParams.value = {
+        current: 1,
+        size: 10
+    }
+    rowDate.value=null
     getArticleList()
 }
 const loadingItem = ({ page, itemsPerPage }: any) => {
     queryParams.value.current = page
     queryParams.value.size = itemsPerPage
-    if(process.client){
+    if (process.client) {
         getArticleList()
     }
 }
@@ -175,6 +178,10 @@ watch((selectedArticleIds), (val) => {
     }
     disabled.value = true
 })
+const clickDatePicker = () => {
+    queryParams.value.createDate = formatDateToYYYYMMDD(new Date(rowDate.value))
+    dateDialog.value = false
+}
 </script>
 <template>
     <div class="w-[100%]">
@@ -190,12 +197,24 @@ watch((selectedArticleIds), (val) => {
             <template v-slot:top>
                 <div class="flex w-[100%] gap-4 mt-4">
                     <div class="w-40">
-                        <v-text-field variant="solo-filled" v-model="keyword" density="compact"
+                        <v-text-field variant="solo-filled" v-model="queryParams.keyword" density="compact"
                             label="标题"></v-text-field>
                     </div>
                     <div class="w-60" @click="getCategoryList">
                         <v-combobox variant="solo-filled" density="compact" v-model="selectedCategoryName"
                             :items="categoryNameArr" label="分类"></v-combobox>
+                    </div>
+                    <div class="w-52">
+                        <v-menu v-model="dateDialog" :close-on-content-click="false">
+                            <template v-slot:activator="{ props }">
+                                <v-text-field v-bind="props"  label="选择日期"
+                                    v-model="queryParams.createDate" density="compact" readonly variant="solo-filled"
+                                    append-inner-icon="mdi-calendar-month-outline" />
+                            </template>
+                            <v-date-picker  :hide-header="true"
+                                v-model="rowDate" @update:modelValue="clickDatePicker">
+                            </v-date-picker>
+                        </v-menu>
                     </div>
                     <v-btn size="small" icon="mdi-magnify" @click="searchHandle"></v-btn>
                     <v-btn size="small" icon="mdi-refresh" @click="clearHandle"></v-btn>
@@ -213,7 +232,7 @@ watch((selectedArticleIds), (val) => {
                         </v-btn>
                     </div>
                     <div class=" hover:cursor-not-allowed">
-                        <v-btn  @click="deleteBatchBtn" variant="tonal" color="#d12e1f" prepend-icon="mdi-trash-can"
+                        <v-btn @click="deleteBatchBtn" variant="tonal" color="#d12e1f" prepend-icon="mdi-trash-can"
                             :disabled>
                             批量删除
                         </v-btn>
@@ -234,7 +253,6 @@ watch((selectedArticleIds), (val) => {
                 </div>
             </template>
         </v-data-table-server>
-
         <v-dialog v-model="dialog" max-width="400" persistent>
             <v-card title="提示">
                 <v-card-text>
@@ -242,11 +260,11 @@ watch((selectedArticleIds), (val) => {
                 </v-card-text>
                 <template v-slot:actions>
                     <v-spacer></v-spacer>
-                    <v-btn @click="switchHandler">
-                        确定啊
-                    </v-btn>
                     <v-btn @click="dialog = false">
                         算了
+                    </v-btn>
+                    <v-btn @click="switchHandler" color="primary" variant="tonal">
+                        确定啊
                     </v-btn>
                 </template>
             </v-card>

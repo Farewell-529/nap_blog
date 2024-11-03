@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { MdEditor } from 'md-editor-v3';
+import 'md-editor-v3/lib/style.css';
 import { uploadAvatarApi, uploadUserImgApi } from '~/api/user'
 import { getBloggerInfoApi, editBloggerInfoApi } from "~/api/blog";
 import { type BloggerInfo, type BlogInfo } from "~/types/BlogInfo";
@@ -66,12 +67,6 @@ const onUploadImg = async (files: Array<File>, callback: Function) => {
     })
 }
 const editUserHandle = async () => {
-    // editFormArr.value = Object.entries(form.value).map(([key, value]) => {
-    //     return {
-    //         infoKey: key,
-    //         value: value
-    //     }
-    // })
     const { code } = await editBloggerInfoApi(form.value)
     if (code !== 200) {
         $toast.error('修改失败')
@@ -108,12 +103,6 @@ onMounted(() => {
             <v-btn @click="callbackFn">
                 <Undo2 />
             </v-btn>
-            <!-- <div class="w-[280px]">
-                <v-text-field v-model="form.username" label="账号" variant="solo" required></v-text-field>
-            </div>
-            <div class="w-[300px]">
-                <v-text-field v-model="form.password" label="密码" variant="solo" required></v-text-field>
-            </div> -->
             <div class="w-[600px]">
                 <v-text-field v-model="form.motto" label="格言" required variant="solo"></v-text-field>
             </div>
@@ -153,8 +142,8 @@ onMounted(() => {
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn text="Close" variant="plain" @click="close"></v-btn>
-                    <v-btn color="primary" text="Save" variant="tonal" @click="save"></v-btn>
+                    <v-btn text="关闭"  @click="close"></v-btn>
+                    <v-btn color="保持" text="Save" variant="tonal" @click="save"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

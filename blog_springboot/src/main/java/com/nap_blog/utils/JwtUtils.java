@@ -28,13 +28,13 @@ public class JwtUtils {
     /**
      * 过期时间
      **/
-    private static final long EXPIRATION = 18000;//单位为秒
+    private static final long EXPIRATION = 86400;//单位为秒
 
     /**
      * 生成用户token,设置token超时时间
      */
     public static String createToken(User user) {
-        //过期时间
+        //过期时间1天
         Date expireDate = new Date(System.currentTimeMillis() + EXPIRATION * 1000);
         Map<String, Object> map = new HashMap<>();
         map.put("alg", "HS256");
@@ -53,19 +53,15 @@ public class JwtUtils {
     /**
      * 校验token并解析token
      */
-    public static Map<String, Claim> verifyToken(String token) {
+    public static Map<String, Claim> verifyToken(String token) throws Exception {
         DecodedJWT jwt = null;
         try {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
             jwt = verifier.verify(token);
 
-            //decodedJWT.getClaim("属性").asString()  获取负载中的属性值
-
         } catch (Exception e) {
-            logger.error(e.getMessage());
-            logger.error("token解码异常");
             //解码异常则抛出异常
-            return null;
+            throw new Exception("Token解码失败", e);
         }
         return jwt.getClaims();
     }

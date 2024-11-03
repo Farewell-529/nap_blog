@@ -54,21 +54,21 @@ public class CheckLogin implements Filter {
             res.getWriter().write(notLogin);
             return;
         }
+        Map<String, Claim> Claims = null;
         try {
-            Map<String, Claim> Claims = JwtUtils.verifyToken(token);
-            if (Claims != null && Claims.containsKey("id")) {
-                Long id = Claims.get("id").asLong();
-                log.info("用户id为:{}", id);
-                req.setAttribute("userId", id);
-            }
-
+            Claims = JwtUtils.verifyToken(token);
         } catch (Exception e) {
             e.printStackTrace();
             log.info("解析令牌失效");
-            Result error = Result.error("NOT_LOGIN");
+            Result error = Result.error(403,"NOT_LOGIN");
             String notLogin = JSONObject.toJSONString(error);
             res.getWriter().write(notLogin);
             return;
+        }
+        if (Claims != null && Claims.containsKey("id")) {
+            Long id = Claims.get("id").asLong();
+            log.info("用户id为:{}", id);
+            req.setAttribute("userId", id);
         }
         chain.doFilter(servletRequest, servletResponse);
     }

@@ -8,6 +8,7 @@ let categoryVOList = <any>[]
 let tagsVOList = <any>[]
 const countList = ref(<any>[])
 const contactList = ref(<any>[])
+const visitsList = ref(<any>[])
 const viewTime = ref(<any>[])
 const pageViews = ref(<any>[])
 const visitors = ref(<any>[])
@@ -20,8 +21,6 @@ const userHomePageInfo = async () => {
                 name: item.categoryName
             }
         })
-
-
         tagsVOList = data.tagsVOList.map((item: any) => {
             return {
                 value: item.articleCount,
@@ -52,8 +51,22 @@ const userHomePageInfo = async () => {
                 count: data.commentCount || 0
             },
             {
-                title: '总浏览量',
-                count: data.viewCount || 0
+                title: '文章总浏览量',
+                count: data.articleViewCount || 0
+            },
+        ]
+        visitsList.value = [
+            {
+                title: '今日浏览量',
+                count: data.todayView || 0
+            },
+            {
+                title: '昨日浏览量',
+                count: data.yesterdayView || 0
+            },
+            {
+                title: '页面总浏览量',
+                count: data.pageViewCount || 0
             },
         ]
         viewTime.value = data.viewsChartList.map((item: any) => new Date(item.viewTime).toLocaleDateString("zh-CN"))
@@ -66,11 +79,11 @@ const userHomePageInfo = async () => {
 }
 const generateCategoryChart = () => {
     const categoryDom = document.getElementById('category');
-    if (!categoryDom) {
-        return
-    }
-    const categoryChart = echarts.getInstanceByDom(categoryDom) || echarts.init(categoryDom, 'dark');
+    if (echarts.getInstanceByDom(categoryDom!)) {
+        echarts.dispose(categoryDom!);
 
+    }
+    const categoryChart = echarts.init(categoryDom, 'dark');
 
     const categoryOptions = {
         title: {
@@ -126,10 +139,10 @@ const generateCategoryChart = () => {
 }
 const generateTagsCloudChart = () => {
     const tagsDom = document.getElementById('tagsCloud')
-    if (!tagsDom) {
-        return
+    if (echarts.getInstanceByDom(tagsDom!)) {
+        echarts.dispose(tagsDom!)
     }
-    const tagsCloudChart = echarts.getInstanceByDom(tagsDom) || echarts.init(tagsDom, 'dark')
+    const tagsCloudChart = echarts.init(tagsDom, 'dark')
     const tagsCloudOptions = {
         title: {
             text: '文章标签统计',
@@ -187,7 +200,6 @@ const generateTagsCloudChart = () => {
                     color: '#ffffff',
                 }
             },
-
             // 数据必须是一个数组，数组是对象，对象必须有name和value属性
             data: tagsVOList
         }]
@@ -196,21 +208,24 @@ const generateTagsCloudChart = () => {
 }
 const generateViewChart = () => {
     const viewDom = document.getElementById('viewChart')
-    if (!viewDom) {
-        return
+    if (echarts.getInstanceByDom(viewDom!)) {
+        echarts.dispose(viewDom!)
     }
-    const ViewsChart =echarts.getInstanceByDom(viewDom)|| echarts.init(viewDom, 'dark')
+    const ViewsChart = echarts.init(viewDom, 'dark')
     const ViewsChartOptions = {
         title: {
-            text: '流量趋势',
+            text: '过去七天流量趋势',
             top: 10,
             left: 10
         },
         tooltip: {
-            trigger: 'axis'
+            trigger: 'axis',
+            axisPointer: {
+                type: 'none' // 设置为 'none' 以取消指示线
+            }
         },
         legend: {
-            data: ['浏览量', '访客量'],
+            data: ['浏览量', 'IP数量'],
             top: 20
         },
         grid: {
@@ -225,7 +240,14 @@ const generateViewChart = () => {
             data: viewTime.value
         },
         yAxis: {
-            type: 'value'
+            type: 'value',
+            axisLabel: {
+                formatter: (value: any) => {
+                    return Math.floor(value); // 将值向下取整以显示为整数
+                }
+            },
+            minInterval: 1, // 确保 Y 轴显示为整数
+
         },
         series: [
             {
@@ -235,7 +257,7 @@ const generateViewChart = () => {
                 smooth: true
             },
             {
-                name: '访客量',
+                name: 'IP数量',
                 type: 'line',
                 data: visitors.value,
                 smooth: true
@@ -248,7 +270,6 @@ const generateViewChart = () => {
     window.addEventListener('resize', () => {
         ViewsChart.resize();
     });
-
 }
 
 onMounted(async () => {
@@ -264,22 +285,19 @@ onMounted(async () => {
         <div class="text-4xl font-semibold mt-8 block mb-6">
             仪表盘
         </div>
-
         <div class="bg-black rounded-lg w-full h-24 flex  items-center mb-8">
-            <div class="w-[30%] text-center border-r-4 border-solid border-gray-400 py-2 
-            cursor-pointer hover:text-slate-300 last:border-r-0 " v-for="(item, index) in countList" :key="index">
+            <div class="w-96 text-center border-r-4 border-solid border-gray-400 py-2 transition-all duration-300
+            cursor-pointer hover:text-slate-300 last:border-r-0 font-semibold" v-for="(item, index) in countList"
+                :key="index">
                 <div>{{ item.title }}</div>
                 <span>{{ item.count }}</span>
             </div>
         </div>
 
-        <div class="border-[3px] rounded-lg border-solid border-black p-4 mb-5">
-            <div class="text-2xl font-semibold mb-6">
-                统计
-            </div>
+        <div class="border-[3px] rounded-lg border-solid border-black py-6 mb-5">
             <div class="flex items-center">
                 <div v-for="(item, index) in contactList" :key="index"
-                    class="w-[30%] text-center transition-all duration-300
+                    class="w-96 text-center transition-all duration-300
                 border-r-4 border-solid border-gray-700 py-2 last:border-r-0 cursor-pointer font-semibold hover:text-gray-500">
                     <div>{{ item.title }}</div>
                     <span>{{ item.count }}</span>
@@ -287,17 +305,27 @@ onMounted(async () => {
             </div>
         </div>
 
-        <div class="flex justify-center">
-            <div id="viewChart" class="min-w-[1250px] h-[400px] mb-4 "></div>
-
+        <div class=" rounded-lg bg-black  mb-5 py-6">
+            <div class="text-2xl font-semibold mb-6 ml-3">
+                流量统计
+            </div>
+            <div class="flex items-center">
+                <div v-for="(item, index) in visitsList" :key="index"
+                    class="w-96 text-center transition-all duration-300 
+                border-r-4 border-solid border-gray-400 py-2 last:border-r-0 cursor-pointer font-semibold hover:text-gray-500">
+                    <div>{{ item.title }}</div>
+                    <span>{{ item.count }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-center w-full">
+            <div id="viewChart" class="min-w-full h-[400px] mb-4 "></div>
         </div>
         <div class="flex justify-between h-[340px]">
             <div id="category" class="w-[400px] h-[300px]"></div>
             <div id="tagsCloud" class="w-[800px] h-[300px]"></div>
         </div>
-
     </div>
-
 </template>
 
 <style scoped></style>

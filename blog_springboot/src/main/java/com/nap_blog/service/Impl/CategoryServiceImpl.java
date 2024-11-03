@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nap_blog.entity.Article;
 import com.nap_blog.entity.Category;
+import com.nap_blog.entity.Tags;
 import com.nap_blog.vo.query.CategoryQuery;
 import com.nap_blog.vo.PageResult;
 import com.nap_blog.vo.response.CategoryCountRes;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -39,6 +42,13 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         LambdaQueryWrapper<Category> lqw = new LambdaQueryWrapper<>();
         if (categoryQuery.getKeyword() != null && !categoryQuery.getKeyword().trim().isEmpty()) {
             lqw.like(Category::getCategoryName, categoryQuery.getKeyword());
+        }
+        if (categoryQuery.getCreateDate() != null && !categoryQuery.getCreateDate().trim().isEmpty()) {
+            LocalDate localDate = LocalDate.parse(categoryQuery.getCreateDate());
+            LocalDateTime startOfDay = localDate.atStartOfDay();
+            LocalDateTime startOfNextDay = localDate.plusDays(1).atStartOfDay();
+            lqw.ge(Category::getCreateDate,startOfDay);
+            lqw.lt(Category::getCreateDate,startOfNextDay);
         }
         int current = (categoryQuery.getCurrent() == null) ? 1 : categoryQuery.getCurrent();
         int size = (categoryQuery.getSize() == null) ? 10 : categoryQuery.getSize();

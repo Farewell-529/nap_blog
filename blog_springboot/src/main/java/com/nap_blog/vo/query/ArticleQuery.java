@@ -9,10 +9,9 @@ public class ArticleQuery extends PageQuery {
 
     //搜索内容
     private String keyword;
-
     //分类id
     private Integer categoryId;
-
     //标签id
     private Integer tagsId;
+    private String createDate;
 }

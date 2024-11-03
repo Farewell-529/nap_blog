@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, ArrowRight, Home, Newspaper, Tags, BookOpenCheck, MessageSquareMore, LayoutDashboard, Aperture, UserRound } from 'lucide-vue-next'
+import { ArrowLeft, ArrowRight, Home, Newspaper, Tags, BookOpenCheck, MessageSquareMore, LayoutDashboard, Aperture, UserRound,SquareMousePointer } from 'lucide-vue-next'
 import { blogInfoStore } from '~/store/blogInfo'
 import { getBloggerInfoApi } from '~/api/blog'
 import { type BlogInfo } from "~/types/BlogInfo";
@@ -37,6 +37,11 @@ const list = [
         icon: MessageSquareMore
     },
     {
+        name: '浏览',
+        url: '/visits',
+        icon: SquareMousePointer
+    },
+    {
         name: '朋友圈',
         url: '/friends',
         icon: Aperture
@@ -68,7 +73,7 @@ onMounted(() => {
 </script>
 <template>
     <div class="mr-12 ">
-        <div class="w-56 h-full  transition-all duration-300 overflow-hidden" :class="{ closeSlide: !isOpen }">
+        <div class="w-56 h-full transition-all duration-300 overflow-hidden" :class="{ closeSlide: !isOpen }">
             <div class="w-56 h-full fixed  bg-[#1d1d1d] text-[#d2d2d2] transition-all duration-300 overflow-hidden"
                 :class="{ closeSlide: !isOpen }">
                 <div class="flex justify-between  p-3 ">
@@ -83,8 +88,8 @@ onMounted(() => {
                     </div>
                 </div>
                 <div v-for="(item, index) in list" :key="index" class="hover:text-black w-48" v-ripple>
-                    <NuxtLink  :title="!isOpen ? item.name : ''" :to="item.url" class="flex gap-8 items-center  my-8 font-semibold text-sm hover:bg-gray-200  
-                     py-2 pl-2 rounded-md  max-h-10 overflow-hidden transition-all duration-300" 
+                    <NuxtLink  :title="!isOpen ? item.name : ''" :to="item.url" class="flex gap-8 items-center  my-6 font-semibold text-sm hover:bg-gray-200  
+                     py-2 pl-2 rounded-md  max-h-10 overflow-hidden transition-all duration-300 select-none" 
                         :class="isOpen ? 'opacity-100 w-48 ' : 'w-11'">
                         <span>
                             <component :is="item.icon" />

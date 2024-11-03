@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nap_blog.entity.Friend;
+import com.nap_blog.entity.Tags;
 import com.nap_blog.vo.PageResult;
 import com.nap_blog.vo.query.FriendQuery;
 import com.nap_blog.mapper.FriendMapper;
@@ -12,6 +13,8 @@ import com.nap_blog.vo.response.FriendInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -22,13 +25,20 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
 
     @Override
     public PageResult<Friend> listFriend(FriendQuery friendQuery) {
-        LambdaQueryWrapper<Friend> lqw = new LambdaQueryWrapper<>();
-        if (friendQuery.getKeyword() != null) {
-            lqw.like(Friend::getFriendName, friendQuery.getKeyword());
-        }
-        long total = this.count(lqw);
+        long total = this.count();
         if (total == 0) {
             return new PageResult<>();
+        }
+        LambdaQueryWrapper<Friend> lqw = new LambdaQueryWrapper<>();
+        if (friendQuery.getKeyword() != null&&!friendQuery.getKeyword().trim().isEmpty()) {
+            lqw.like(Friend::getFriendName, friendQuery.getKeyword());
+        }
+        if (friendQuery.getCreateDate() != null&&!friendQuery.getCreateDate().trim().isEmpty()) {
+            LocalDate localDate = LocalDate.parse(friendQuery.getCreateDate());
+            LocalDateTime startOfDay = localDate.atStartOfDay();
+            LocalDateTime startOfNextDay = localDate.plusDays(1).atStartOfDay();
+            lqw.ge(Friend::getCreateDate,startOfDay);
+            lqw.lt(Friend::getCreateDate,startOfNextDay);
         }
         int current = (friendQuery.getCurrent() == null) ? 1 : friendQuery.getCurrent();
         int size = (friendQuery.getSize() == null) ? 10 : friendQuery.getSize();

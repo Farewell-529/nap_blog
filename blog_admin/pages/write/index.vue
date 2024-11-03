@@ -257,11 +257,11 @@ onMounted(() => {
                 </v-card-text>
                 <template v-slot:actions>
                     <v-spacer></v-spacer>
-                    <v-btn @click="choseHandle">
-                        确定啊
-                    </v-btn>
                     <v-btn @click="dialog = false">
                         算了
+                    </v-btn>
+                    <v-btn color="primary" text="确认" variant="tonal" @click="choseHandle">
+                        确定啊
                     </v-btn>
                 </template>
             </v-card>

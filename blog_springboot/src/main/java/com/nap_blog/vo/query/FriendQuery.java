@@ -6,4 +6,5 @@ import lombok.Data;
 public class FriendQuery extends PageQuery{
     //搜索内容
     private String keyword;
+    private String createDate;
 }

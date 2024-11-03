@@ -20,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -332,7 +334,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private Page<Article> queryArticles(ArticleQuery articleQuery, int status) {
         LambdaQueryWrapper<Article> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Article::getStatus, status);
-        if (articleQuery.getKeyword() != null) {
+        if (articleQuery.getKeyword() != null&&!articleQuery.getKeyword().trim().isEmpty()) {
             lqw.like(Article::getTitle, articleQuery.getKeyword());
         }
         if (articleQuery.getCategoryId() != null) {
@@ -344,6 +346,13 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
                     .eq(ArticleTags::getTagsId, articleQuery.getTagsId()));
             List<Long> articleIds = articleTags.stream().map(ArticleTags::getArticleId).toList();
             lqw.in(Article::getId, articleIds);
+        }
+        if (articleQuery.getCreateDate() != null&&!articleQuery.getCreateDate().trim().isEmpty()) {
+            LocalDate localDate = LocalDate.parse(articleQuery.getCreateDate());
+            LocalDateTime startOfDay = localDate.atStartOfDay();
+            LocalDateTime startOfNextDay = localDate.plusDays(1).atStartOfDay();
+            lqw.ge(Article::getCreateDate,startOfDay);
+            lqw.lt(Article::getCreateDate,startOfNextDay);
         }
         // 按照创建日期进行降序排序
         lqw.orderByDesc(Article::getCreateDate);

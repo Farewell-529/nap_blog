@@ -2,7 +2,7 @@
 import { saveTagsApi, updateTagsApi, deleteTagsApi, tagsListApi } from '~/api/tags'
 import { type Tags, type TagsQuery } from '~/types/Tags';
 import { type Result } from '~/types/Result'
-
+import { formatDateToYYYYMMDD } from "~/utils/dateUtils";
 const headers = [
     {
         title: '标签名',
@@ -39,7 +39,6 @@ const dialogTitle = ref('')
 const itemsPerPage = ref(10)
 const loading = ref(false)
 const total = ref(0)
-const keyword = ref()
 const queryParams = ref<TagsQuery>({
     current: 1,
     size: 10
@@ -53,6 +52,8 @@ const selectedTagsIds = ref([])
 const disabled = ref(true)
 const tipsText = ref('')
 let currentItem: number[] = []
+const dateDialog = ref(false)
+const rowDate = ref()
 const getTagsList = async () => {
     const { data } = await tagsListApi(queryParams.value)
     total.value = data.total || 0
@@ -108,13 +109,14 @@ const handlerOption = async () => {
     getTagsList()
 }
 const searchHandle = () => {
-    queryParams.value.keyword = keyword.value
     getTagsList()
-
 }
 const clearHandle = () => {
-    keyword.value = ''
-    delete queryParams.value.keyword
+    queryParams.value = {
+        current: 1,
+        size: 10
+    }
+    rowDate.value=null
     getTagsList()
 }
 const deleteBatchBtn = () => {
@@ -138,7 +140,10 @@ watch((selectedTagsIds), (val) => {
     }
     disabled.value = true
 })
-
+const clickDatePicker = () => {
+    queryParams.value.createDate = formatDateToYYYYMMDD(new Date(rowDate.value))
+    dateDialog.value = false
+}
 </script>
 <template>
     <div class="w-full">
@@ -149,8 +154,20 @@ watch((selectedTagsIds), (val) => {
             <template v-slot:top>
                 <div class="flex w-[100%] gap-4 mt-4">
                     <div class="w-40">
-                        <v-text-field variant="solo-filled" v-model="keyword" density="compact"
+                        <v-text-field variant="solo-filled" v-model="queryParams.keyword" density="compact"
                             label="标签名"></v-text-field>
+                    </div>
+                    <div class="w-52">
+                        <v-menu v-model="dateDialog" :close-on-content-click="false">
+                            <template v-slot:activator="{ props }">
+                                <v-text-field v-bind="props"  label="选择日期"
+                                    v-model="queryParams.createDate" density="compact" readonly variant="solo-filled"
+                                    append-inner-icon="mdi-calendar-month-outline" />
+                            </template>
+                            <v-date-picker  :hide-header="true"
+                                v-model="rowDate" @update:modelValue="clickDatePicker">
+                            </v-date-picker>
+                        </v-menu>
                     </div>
                     <v-btn size="small" icon="mdi-magnify" @click="searchHandle"></v-btn>
                     <v-btn size="small" icon="mdi-refresh" @click="clearHandle"></v-btn>
@@ -188,11 +205,11 @@ watch((selectedTagsIds), (val) => {
                 </v-card-text>
                 <template v-slot:actions>
                     <v-spacer></v-spacer>
-                    <v-btn @click="handlerOption">
-                        确定啊
-                    </v-btn>
                     <v-btn @click="dialog = false">
                         算了
+                    </v-btn>
+                    <v-btn color="primary" variant="tonal" @click="handlerOption">
+                        确定啊
                     </v-btn>
                 </template>
             </v-card>
@@ -204,8 +221,8 @@ watch((selectedTagsIds), (val) => {
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn text="Close" variant="plain" @click="dialog = false"></v-btn>
-                    <v-btn color="primary" text="Save" variant="tonal" @click="handlerOption"></v-btn>
+                    <v-btn text="关闭" @click="dialog = false"></v-btn>
+                    <v-btn color="primary" text="确认" variant="tonal" @click="handlerOption"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

@@ -14,11 +14,11 @@ config({
 <template>
   <div>
     <v-app>
-     <div class="flex">
-      <Slide/>
-      <Toaster position="top-center" richColors  />
-        <NuxtPage class="px-1"/>
-     </div>
+      <div class="flex ">
+        <Slide />
+        <Toaster position="top-center" richColors />
+        <NuxtPage class="px-1" />
+      </div>
     </v-app>
   </div>
 </template>
