@@ -78,7 +78,7 @@ onMounted(() => {
     bottom: 0;
     width: 100%;
     height: 2px;
-    background-color: black;
+    background-color: var(--btn-bg-color);
     /* 初始状态下，宽度为 0，元素不可见 */
     transform: scaleX(0);
     transform-origin: bottom right;

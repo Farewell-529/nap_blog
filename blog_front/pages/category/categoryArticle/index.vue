@@ -1,65 +1,17 @@
 <script setup lang="ts">
 // @ts-ignore
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiCalendarCheckOutline, mdiFolderOutline, mdiChevronDoubleRight, mdiUpdate, mdiPound, mdiTableLarge } from '@mdi/js';
-import { articleListApi } from '~/api/article'
-import { type Article, type ArticleRes, type ArticleQuery } from '~/types/Article'
+import { mdiTableLarge } from '@mdi/js';
 const route = useRoute()
-const showArticleList = ref()
-const page = ref(1)
-const pagelength = ref()
-const pageVisible = ref(5)
-// const articleCount = Number(route.query.articleCount) || 0;
-// const categorysName = route.query.categoryName;
-const articleCount = ref(0);
+const articleCount = ref(route.query.articleCount);
 const categorysName = ref(route.query.categoryName);
-const query = ref<ArticleQuery>({
-    current: 1,
-    size: 5,
-    categoryId: Number(route.query.id!)
-})
-const getArticleList = async () => {
-    const { data } = await articleListApi(query.value)
-    if (data.total == 0) return
-    articleCount.value = data.total
-    pagelength.value = data.total < pageVisible.value ? 1 : Math.ceil(data.total / pageVisible.value)
-    showArticleList.value = data.recordList.map((item: ArticleRes) => {
-        let updateDate = null
-        if (item.updateDate != item.createDate) {
-            updateDate = item.updateDate
-        }
-        return {
-            id: item.id,
-            title: item.title,
-            createDate: new Date(item.createDate!).toLocaleDateString('zh-CN'),
-            updateDate: item.updateDate !== item.createDate
-                ? new Date(item.updateDate!).toLocaleDateString('zh-CN')
-                : null,
-            categoryName: item.categoryName,
-            categorysList: item.tagsList,
-            content: item.content,
-            calenderIcon: mdiCalendarCheckOutline,
-            fileIcon: mdiFolderOutline,
-            updateIcon: mdiUpdate,
-            detailUrl: `/posts/` + item.id
-        }
-    })
-}
-
-const updateModelValue = (currentPage: number) => {
-    query.value.current = currentPage
-    getArticleList()
-}
 const callback = () => {
     useRouter().back()
 }
-onMounted(() => {
-    getArticleList()
-})
 </script>
 <template>
-    <div class="pb-10 my-0 mx-auto">
-        <div class="flex items-center w-fit bg-white p-1 rounded-md cursor-pointer text-sm font-semibold category"
+    <div class="max-w-[800px] relative">
+        <div class="flex items-center w-fit  p-1 rounded-md cursor-pointer text-sm font-semibold absolute left-3 category"
             @click="callback">
             <svg-icon type="mdi" :path="mdiTableLarge" class="w-4 mr-1" />
             <span>
@@ -69,7 +21,8 @@ onMounted(() => {
                 {{ articleCount }}
             </span>
         </div>
-        <div class="min-w-[800px]">
+        <ArticleList></ArticleList>
+        <!-- <div class="min-w-[800px]">
             <div v-if="articleCount > 0" v-for="item in showArticleList" class=" flex flex-col items-center mt-20 ">
                 <div class="text-3xl font-normal cursor-pointer mb-3">
                     {{ item.title }}
@@ -123,7 +76,7 @@ onMounted(() => {
         </div>
 
         <v-pagination class="mt-10" v-model="page" :length="pagelength" :total-visible="pageVisible"
-            @update:modelValue="updateModelValue" density="compact" />
+            @update:modelValue="updateModelValue" density="compact" /> -->
 
     </div>
 </template>
@@ -166,14 +119,15 @@ html {
 
 
 .category {
-    border: solid 2px rgb(0, 0, 0);
+    border: solid 2px var(--btn-border-color);
+    background: var(--bg-color);
     box-sizing: border-box;
     transition: all 0.2s ease;
 }
 
 .category:hover {
-    background-color: rgb(0, 0, 0) !important;
-    color: rgb(223, 223, 223) !important;
+    background-color: var( --btn-bg-color) !important;
+    color: var(--btn-text-color) !important;
     transform: scale(1.05);
 }
 </style>

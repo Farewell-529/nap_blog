@@ -2,22 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* 基础（白色）模式变量 light */
+:root {
+    --text-color: #161616;
+    --bg-color: #f7f7f7;
+    --minor-text-color: #808080;
+    --border-color:#808080;
+    --category-text-color:#161616;
+    --category-under-border-color:#0d0d0d;
+    --btn-text-color:var(--bg-color);
+    --btn-bg-color:var(--text-color);
+    --btn-border-color:var(--text-color);
+    ---comment-content-color:#ebebeb;
+    ---comment-bg-color:#1f1f1f;
+    ---input-bg-color:#efefefd3;
+    ---input-border-color:#828282;
+    ---input-border-foucs-color:#3c3c3cd3;
+    ---input-shadow-foucs-color:var(---input-border-foucs-color);
+    ---input-placeholder-color:#747474;
+
+}
+
+/* 黑色模式变量 dark */
+.dark {
+    --text-color: #e5e5e5;
+    --bg-color: #161616;
+    --minor-text-color: #a09f9f;
+    --border-color:#a09f9f;
+    --category-text-color:#eee;
+    --category-under-border-color:#ececec;
+    --btn-text-color:var(--bg-color);
+    --btn-bg-color:rgb(216, 216, 216);
+    --btn-border-color:var(--btn-bg-color);
+    ---comment-content-color:#111111;
+    ---comment-bg-color:#ececec;
+    ---input-bg-color:#3f3f3f;
+    ---input-border-color:#737373;
+    ---input-border-foucs-color:#d8d8d8;
+    ---input-shadow-foucs-color:var(---input-border-foucs-color);
+    ---input-placeholder-color:#2f2f2f;
+
+}
+
 body {
     width: 100vw;
 }
-
+.medium-zoom-overlay{
+    background-color: var(--bg-color) !important;
+}
 html {
     overflow-y: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: color, background-color, 0.3s;
 }
 
+ul{
+    list-style-type: disc;
+}
 ::-webkit-scrollbar {
     width: 5px;
 }
 
 ::-webkit-scrollbar-track {
-    background-color: #ffffff;
+    background-color: var(--bg-color);
     /* 滚动条轨道背景色 */
 }
 
@@ -32,6 +83,7 @@ html {
     background-color: #9c9b9b;
     /* 鼠标悬停时手柄颜色 */
 }
+
 html {
     scroll-behavior: smooth;
 }

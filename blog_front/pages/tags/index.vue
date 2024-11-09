@@ -27,12 +27,12 @@ onMounted(() => {
         </span>
         <div class="max-w-[920px] flex gap-5 flex-wrap">
             <NuxtLink
-                :to="{ path: '/tags/tagsArticle', query: { id: item.id, tagsName: item.tagsName, articleCount: item.articleCount } }"
+                :to="{ path: '/tags/tagsArticle', query: { tagsId: item.id, tagsName: item.tagsName, articleCount: item.articleCount } }"
                 v-for="item in countsList"
-                class="flex items-center text-sm font-semibold p-1 rounded-md bg-black cursor-pointer  tag">
+                class="flex items-center text-sm font-semibold p-1 rounded-md cursor-pointer  tag">
                 <svg-icon type="mdi" :path="mdiPound" class="w-4 mr-1" />
                 <span>{{ item.tagsName }}</span>
-                <span class="ml-2 p-1 bg-white text-black rounded-sm tag-count">{{ item.articleCount }}</span>
+                <span class="ml-2 p-1  rounded-sm  tag-count" style="background: var(--bg-color); color: var(--text-color);">{{ item.articleCount }}</span>
             </NuxtLink>
         </div>
 
@@ -40,19 +40,21 @@ onMounted(() => {
 </template>
 <style scoped>
 .tag {
-    border: solid 2px rgb(0, 0, 0);
+    border: solid 2px var(--btn-border-color);
+    background-color: var(--btn-bg-color);
+    color: var(--btn-text-color);
     box-sizing: border-box;
     transition: all 0.3s ease;
 }
 
 .tag:hover {
-    background-color: white !important;
-    color: black !important;
+    background-color: var(---bg-color) !important;
+    color: var(---text-color) !important;
     transform: scale(1.1);
 }
 
 .tag:hover .tag-count {
-    background-color: black !important;
-    color: white !important;
+    background-color: var(--btn-bg-color) !important;
+    color: var(--btn-text-color)!important;
 }
 </style>

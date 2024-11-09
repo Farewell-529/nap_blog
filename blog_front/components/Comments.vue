@@ -2,6 +2,7 @@
 import { saveCommentstApi, commentstListApi } from "~/api/conmments";
 import { toast } from 'vue-sonner'
 import { type Comments, type CommentsRes } from "~/types/Comments";
+import "~/assets/css/main.css"
 type Ttarget = {
     targetType: string
     targetId: number
@@ -32,13 +33,10 @@ const commentsInfo = ref({
 });
 // 加载 localStorage 中的数据
 const loadCommentsInfo = () => {
-    const storedName = localStorage.getItem('comment-name') || '';
-    const storedEmail = localStorage.getItem('comment-email') || '';
-    const storedUrl = localStorage.getItem('comment-url') || '';
     // 设置到 commentsInfo 对象
-    commentsInfo.value.name = storedName;
-    commentsInfo.value.email = storedEmail;
-    commentsInfo.value.url = storedUrl;
+    commentsInfo.value.name = localStorage.getItem('comment-name') || '';
+    commentsInfo.value.email = localStorage.getItem('comment-email') || '';
+    commentsInfo.value.url = localStorage.getItem('comment-url') || '';
 };
 const mapComments = (comments: any[]) => {
     return comments.map((item: any) => {
@@ -162,7 +160,7 @@ watch(() => props.commentsList, (newList) => {
 })
 
 watch(() => isReply.value, (newVal) => {
-    if (newVal==0) {
+    if (newVal == 0) {
         setTimeout(() => {
             const target = document.getElementById("defaultCommentForm")
             if (target) {
@@ -196,11 +194,12 @@ onMounted(() => {
                             class="font-semibold text-sm mr-2 inline-block max-w-52 whitespace-nowrap overflow-hidden text-ellipsis">
                             {{ rootComment.name }}
                         </span>
-                        <span class="text-[10px] text-gray-500">{{ rootComment.createDate }}
+                        <span class="text-[10px] " style="color: var(--minor-text-color);">{{ rootComment.createDate }}
                         </span>
                     </div>
-                    <span class="text-sm w-max  text-gray-100 bg-gray-800 rounded-tl-lg rounded-tr-lg rounded-br-lg px-3 py-2 
-                         max-w-[50rem]">
+                    <span class="text-sm w-max   rounded-tl-lg rounded-tr-lg rounded-br-lg px-3 py-2 
+                         max-w-[50rem]"
+                        style="color: var(---comment-content-color); background-color: var(---comment-bg-color)">
                         {{ rootComment.content }}
                     </span>
                     <span class="text-[12px] cursor-pointer font-semibold mt-2 select-none"
@@ -225,15 +224,16 @@ onMounted(() => {
                                 class="font-semibold text-sm inline-block max-w-52 whitespace-nowrap overflow-hidden text-ellipsis">
                                 {{ childComment.name }}
                             </span>
-                            <span class="text-[10px] text-gray-500 ml-2">
+                            <span class="text-[10px]  ml-2" style="color: var(--minor-text-color);">
                                 {{ formatDateWithDay(childComment.createDate!) }}
                             </span>
-                            <span v-if="childComment.replyName" class="font-semibold text-[14px]">
+                            <span v-if="childComment.replyName" class="font-semibold text-[14px]" style="color: var(--text-color);">
                                 @{{ childComment.replyName }}
                             </span>
                         </div>
-                        <span class="text-sm w-max text-gray-100 bg-gray-800 rounded-tl-lg rounded-tr-lg rounded-br-lg px-3 py-2 
-                            max-w-[47rem]">
+                        <span class="text-sm w-max  rounded-tl-lg rounded-tr-lg rounded-br-lg px-3 py-2 
+                            max-w-[47rem]"
+                            style="color: var(---comment-content-color); background-color: var(---comment-bg-color)">
                             {{ childComment.content }}
                         </span>
                         <span class="text-[12px] cursor-pointer font-semibold mt-2 select-none"

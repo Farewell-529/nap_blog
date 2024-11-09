@@ -94,7 +94,7 @@ export const useMarkdown = () => {
             navigator.clipboard.writeText(decodedValue).then(() => {
                 toast.success('已复制到粘贴板~')
             }).catch(err => {
-                console.error('Failed to copy: ', err);
+                console.error('复制失败: ', err);
             });
         }
     }

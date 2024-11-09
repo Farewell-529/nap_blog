@@ -45,8 +45,8 @@ public class IpUtil {
          } else {
             return "无效的 IP 地址";
          }
-
-         return translateCity(result.getCity());
+         String city = result.getCity();
+         return (city!=null&&!city.isEmpty()?translateCity(result.getCity()):"未知") ;
       } catch (Exception e) {
          e.printStackTrace();
          return "";

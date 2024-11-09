@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import 'github-markdown-css/github-markdown.css';
 // @ts-ignore
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCalendarCheckOutline, mdiUpdate, mdiPound, mdiEyeOutline, mdiFolderOutline } from '@mdi/js';
 import { articleByIdApi } from "~/api/article";
-
 const route = useRoute()
 const articleId = parseInt(route.query.id as string)
 const target={
@@ -46,11 +44,10 @@ onMounted(() => {
 </script>
 <template>
     <div class="flex flex-col items-center mt-20">
-        <div class="text-3xl font-bold cursor-pointer mb-3">
+        <div class="text-3xl font-bold cursor-pointer mb-3 font-mono" style="color: var(--text-color);">
             {{ articleInfo.title }}
         </div>
-        <div class="flex items-center text-[10px] text-gray-500 mb-12 h-3 iconDiv gap-3">
-
+        <div class="flex items-center text-[10px] mb-12 h-3 iconDiv gap-3" style="color: var(--minor-text-color);">
             <div v-if="articleInfo.updateDate" class="flex items-center ">
                 <svg-icon type="mdi" :path="mdiUpdate" class="w-4 mr-1" />
                 <span>

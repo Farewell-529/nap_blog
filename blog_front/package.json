@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "start": "nuxt start"  
+    "start": "nuxt start"
   },
   "dependencies": {
     "@agoose77/markdown-it-mermaid": "^1.1.0",
@@ -24,10 +24,10 @@
     "markdown-it-toc-done-right": "^4.2.0",
     "medium-zoom": "^1.1.0",
     "mermaid": "^10.9.1",
-    "nuxt": "^3.12.3",
+    "nuxt": "^3.13.2",
     "pinia": "^2.2.2",
     "pnpm": "^9.7.1",
-    "vue": "latest",
+    "vue": "^3.5.12",
     "vue-sonner": "^1.1.4"
   },
   "devDependencies": {
@@ -36,7 +36,6 @@
     "postcss": "^8.4.39",
     "shiki": "^1.14.1",
     "tailwindcss": "^3.4.4",
-    "vite-plugin-vuetify": "^2.0.4",
-    "vuetify": "^3.7.0"
+    "vite-plugin-vuetify": "^2.0.4"
   }
 }

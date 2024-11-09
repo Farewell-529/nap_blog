@@ -3,6 +3,8 @@ import { type Comments } from "~/types/Comments";
 // @ts-ignore
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiClose } from '@mdi/js';
+import "~/assets/css/main.css"
+const isClient = ref(false);
 const props = defineProps({
     isSend: Boolean,
     replyName: String
@@ -10,6 +12,7 @@ const props = defineProps({
 const emit = defineEmits(['addComment', 'replyHandle']);
 const commentsInfo = defineModel<Comments>('commentsInfo', {
     required: true,
+    default: { content: '' }
 });
 const isReply = defineModel('isReply');
 const addComment = async () => {
@@ -17,7 +20,6 @@ const addComment = async () => {
 };
 const clickReply = () => {
     isReply.value = 0
-    // emit('replyHandle')
 }
 const saveToLocalStorage = () => {
     if (commentsInfo.value.name) {
@@ -30,10 +32,13 @@ const saveToLocalStorage = () => {
         localStorage.setItem('comment-url', commentsInfo.value.url);
     }
 };
+onMounted(() => {
+  isClient.value=true
+});
 </script>
 
 <template>
-    <form class="w-full mt-2 p-3 overflow-hidden">
+    <form v-if="isClient" class="w-full mt-2 p-3 overflow-hidden">
         <div class="flex justify-between gap-5 mb-5">
             <input class="input-style" type="text" placeholder="昵称*" @input="saveToLocalStorage"
                 v-model="commentsInfo.name" />
@@ -43,15 +48,15 @@ const saveToLocalStorage = () => {
                 v-model="commentsInfo.url" />
         </div>
         <div class="content">
-            <textarea class="w-full h-[80%] resize-none focus:outline-none " placeholder="说些什么吧" v-model="commentsInfo.content">
+            <textarea class="w-full h-[80%] resize-none focus:outline-none " style="background: var(---input-bg-color);" placeholder="说些什么吧" v-model="commentsInfo.content">
             </textarea>
             <div class="w-full flex justify-between ">
-                <div v-show="replyName" class="flex items-center bg-black px-2 rounded-sm cursor-pointer"
-                    @click="clickReply">
-                    <span class="text-sm text-white max-w-52 whitespace-nowrap overflow-hidden text-ellipsis">
+                <div v-show="replyName" class="flex items-center  px-2 rounded-sm cursor-pointer"
+                    @click="clickReply" style="background-color: var(--btn-bg-color);">
+                    <span class="text-sm max-w-52 whitespace-nowrap overflow-hidden text-ellipsis" style="color: var(--btn-text-color);">
                         回复@{{ replyName }}
                     </span>
-                    <svg-icon type="mdi" :path="mdiClose" class="w-4" />
+                    <svg-icon type="mdi" :path="mdiClose" class="w-4" style="color: var(--btn-text-color);"/>
                 </div>
                 <div class="ml-auto w-max">
                     <button v-if="!isSend" type="button" class="send" @click="addComment">
@@ -67,10 +72,10 @@ const saveToLocalStorage = () => {
 </template>
 <style scoped>
 .input-style {
-    border: 1px solid #828282;
+    border: 1px solid var(---input-border-color);
     padding: 0.25rem;
     border-radius: 0.375rem;
-    background: #efefefd3;
+    background: var(---input-bg-color);
     width: 20rem;
     outline: none;
     transition: all 0.3s;
@@ -78,19 +83,19 @@ const saveToLocalStorage = () => {
 }
 
 .input-style:focus {
-    border: 1px solid #2c2c2cd3;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(---input-border-foucs-color);
+    box-shadow: 0 4px 8px var(---input-shadow-foucs-color);
 }
 
 .input-style::placeholder {
-    color: rgb(116, 116, 116);
+    color: var(---input-placeholder-color)
 }
 
 .send {
-    background: black;
+    background:var(--btn-bg-color);
     padding: 0.2rem;
     border-radius: 5px;
-    color: white;
+    color: var(--btn-text-color);
     font-size: 15px;
     transition: all 0.3s;
     cursor: pointer;
@@ -101,19 +106,19 @@ const saveToLocalStorage = () => {
     padding: 0.8rem;
     position: relative;
     border-radius: 0.5rem;
-    background: #d8d8d8d3;
+    background: var(---input-bg-color);
     transition: all 0.3s;
     border: 1px solid transparent;
     box-sizing: border-box;
 }
 
 .content:focus-within {
-    border: 1px solid #2c2c2cd3;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(---input-border-foucs-color);
+    box-shadow: 0 4px 12px var(---input-shadow-foucs-color);
 }
 
 content::placeholder {
-    color: rgb(116, 116, 116);
+    color: var(---input-placeholder-color);
 }
 
 .send:hover {

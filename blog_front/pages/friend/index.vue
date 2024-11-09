@@ -11,7 +11,7 @@ onMounted(() => {
 })
 </script>
 <template>
-    <div class="mt-10 mx-auto">
+    <div >
         <div class="font-extrabold  mb-8 text-center">
             <h1 class="text-4xl mb-4">
                 朋友们
@@ -23,13 +23,13 @@ onMounted(() => {
         <div class="flex  flex-wrap w-[50rem] justify-between">
             <div v-for="friend in friendList">
                 <a :href="friend.url" role="link" target="_blank"  rel="noopener noreferrer" class="friend">
-                    <span class="rounded-lg border-[3px] border-gray-500 ">
+                    <span class="rounded-lg border-[3px] " style="border-color: var( --btn-border-color);">
                         <img :src="friend.avatarUrl" alt="" class="size-16 rounded-lg">
                     </span>
                     <span class="text-lg font-medium ">
                         {{ friend.friendName }}
                     </span>
-                    <span class=" text-balance break-all text-center text-sm text-gray-500">
+                    <span class=" text-balance break-all text-center text-sm " style="color: var(--minor-text-color);">
                         {{ friend.description }}
                     </span>
                 </a>

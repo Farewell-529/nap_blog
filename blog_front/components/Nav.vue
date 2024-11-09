@@ -1,11 +1,23 @@
 <script setup lang="ts">
-
 // @ts-ignore
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCardAccountDetails, mdiHome, mdiTagMultiple, mdiTableLarge, mdiArchive, mdiAccountMultiple } from '@mdi/js';
 import { getBloggerInfoApi } from "~/api/blog";
 import { type BloggerInfo } from "~/types/BlogInfo";
 import { blogInfoStore } from "~/store/blogInfo";
+import { themeStore } from "~/store/theme";
+const theme = themeStore()
+const updateClass = () => {
+    if (theme.isDark) {
+        document.documentElement.classList.add("dark");
+    } else {
+        document.documentElement.classList.remove("dark");
+    }
+};
+const clickBtn = () => {
+    theme.toggleTheme()
+    updateClass()
+}
 const store = blogInfoStore()
 const userInfo = ref<BloggerInfo>({
     bloggerName: "",
@@ -58,32 +70,28 @@ onMounted(() => {
 })
 </script>
 <template>
+  <div class="text-xs">
     <div class="flex  flex-col items-center my-10 relative">
-        <div class="w-36 h-8 bg-black mb-3 text-white flex justify-center items-center">
+        <div class="w-36 h-8  flex justify-center items-center cursor-pointer mb-3 text-xl " 
+        style="background-color: var(--btn-bg-color); color: var(--bg-color);" @click="clickBtn">
             {{ userInfo.bloggerName }}
         </div>
-        <div class="ZCOOL-KuaiLe text-gray-400 text-xs ">
+        <div class="my-2">
             {{ userInfo.motto }}
         </div>
     </div>
     <div class="flex justify-center gap-8 ">
-        <NuxtLink :to="item.url" class="cursor-pointer text-xs router ZCOOL-KuaiLe" v-for="item in list">
+        <NuxtLink :to="item.url" class="cursor-pointer  router " v-for="item in list">
             <svg-icon type="mdi" :path="item.icon" class="mb-2" />
             <span>{{ item.name }}</span>
         </NuxtLink>
     </div>
+  </div>
 </template>
 <style scoped>
 @font-face {
     font-family: ZCOOL KuaiLe;
     src: url('../assets/font/ZCOOLKuaiLe-Regular.ttf') format('truetype');
-}
-
-.ZCOOL-KuaiLe {
-    font-family: "ZCOOL KuaiLe", sans-serif;
-    font-weight: 400;
-    font-style: normal;
-    font-size: medium;
 }
 
 .router {
@@ -99,7 +107,7 @@ onMounted(() => {
     bottom: 0;
     width: 100%;
     height: 2px;
-    background-color: black;
+    background-color: var(--btn-bg-color);
     /* 初始状态下，宽度为 0，元素不可见 */
     transform: scaleX(0);
     /* 缩放从右下角开始 */
@@ -118,7 +126,7 @@ onMounted(() => {
 
 .router-link-exact-active::after {
     height: 2px;
-    background-color: black;
+    background-color: var(--btn-bg-color);
     transform: scaleX(1);
 }
 </style>

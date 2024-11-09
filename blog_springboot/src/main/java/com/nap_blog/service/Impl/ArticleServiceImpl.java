@@ -94,17 +94,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         Map<Long, String> categoryMap = getCategoryMap();
         Map<Long, List<Tags>> articleAndTagsMap = getArticleAndTagsMap();
         List<ArticleRes> articleListVOList = articles.stream()
-                .map(item ->ArticleRes.builder()
-                                .id(item.getId())
-                                .title(item.getTitle())
-                                .createDate(item.getCreateDate())
-                                .updateDate(item.getUpdateDate())
-                                .categoryName(categoryMap.get((long) item.getCategoryId()))
-                                .categoryId(item.getCategoryId())
-                                .tagsList(articleAndTagsMap.get(item.getId()))
-                                .content(item.getContent())
-                                .viewCount(item.getViewCount())
-                                .build()).toList();
+                .map(item -> ArticleRes.builder()
+                        .id(item.getId())
+                        .title(item.getTitle())
+                        .createDate(item.getCreateDate())
+                        .updateDate(item.getUpdateDate())
+                        .categoryName(categoryMap.get((long) item.getCategoryId()))
+                        .categoryId(item.getCategoryId())
+                        .tagsList(articleAndTagsMap.get(item.getId()))
+                        .content(item.getContent())
+                        .viewCount(item.getViewCount())
+                        .build()).toList();
 
 
         return new PageResult<>(articleListVOList, total);
@@ -278,13 +278,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         //查询文章对应的分类名
         Category category = categoryService.getOne(new LambdaQueryWrapper<Category>()
                 .eq(Category::getId, articleById.getCategoryId()));
-        String categoryName=category!=null?category.getCategoryName():null;
+        String categoryName = category != null ? category.getCategoryName() : null;
         //查询文章对应的标签
-        List<Long> tagsId = articleTagsService.list(new LambdaQueryWrapper<ArticleTags>()
+        List<Long> tagsIds = articleTagsService.list(new LambdaQueryWrapper<ArticleTags>()
                 .in(ArticleTags::getArticleId, id)).stream().map(ArticleTags::getTagsId).toList();
-
-        List<Tags> tagsList = tagsService.list(new LambdaQueryWrapper<Tags>()
-                .in(Tags::getId, tagsId));
+        List<Tags> tagsList = new ArrayList<>();
+        if (!tagsIds.isEmpty()) {
+            tagsList = tagsService.list(new LambdaQueryWrapper<Tags>()
+                    .in(Tags::getId, tagsIds));
+        }
         //文章对应评论
         List<CommentsRes> commentsList = commentsService.getCommentsList("article", id.intValue());
         // 构建返回的 VO 对象
@@ -334,7 +336,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     private Page<Article> queryArticles(ArticleQuery articleQuery, int status) {
         LambdaQueryWrapper<Article> lqw = new LambdaQueryWrapper<>();
         lqw.eq(Article::getStatus, status);
-        if (articleQuery.getKeyword() != null&&!articleQuery.getKeyword().trim().isEmpty()) {
+        if (articleQuery.getKeyword() != null && !articleQuery.getKeyword().trim().isEmpty()) {
             lqw.like(Article::getTitle, articleQuery.getKeyword());
         }
         if (articleQuery.getCategoryId() != null) {
@@ -347,12 +349,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             List<Long> articleIds = articleTags.stream().map(ArticleTags::getArticleId).toList();
             lqw.in(Article::getId, articleIds);
         }
-        if (articleQuery.getCreateDate() != null&&!articleQuery.getCreateDate().trim().isEmpty()) {
+        if (articleQuery.getCreateDate() != null && !articleQuery.getCreateDate().trim().isEmpty()) {
             LocalDate localDate = LocalDate.parse(articleQuery.getCreateDate());
             LocalDateTime startOfDay = localDate.atStartOfDay();
             LocalDateTime startOfNextDay = localDate.plusDays(1).atStartOfDay();
-            lqw.ge(Article::getCreateDate,startOfDay);
-            lqw.lt(Article::getCreateDate,startOfNextDay);
+            lqw.ge(Article::getCreateDate, startOfDay);
+            lqw.lt(Article::getCreateDate, startOfNextDay);
         }
         // 按照创建日期进行降序排序
         lqw.orderByDesc(Article::getCreateDate);

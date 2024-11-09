@@ -3,7 +3,9 @@ import '~/assets/css/markdown.css';
 import 'github-markdown-css/github-markdown.css';
 import { blogInfoStore } from "~/store/blogInfo";
 import { type BloggerInfo } from "~/types/BlogInfo";
-
+import "~/assets/css/main.css"
+// 获取配置
+const config = useRuntimeConfig()
 const store = blogInfoStore()
 const blogInfo = ref<BloggerInfo>({
     bloggerName: "",
@@ -28,9 +30,9 @@ onMounted(() => {
     <div class="mt-20 mx-auto">
         <div class="flex flex-col items-center mb-4">
             <img class="w-[100px] mb-2 rounded-md "
-                :src="useRuntimeConfig().public.baseURL + '/static/avatar/' + blogInfo.avatar" alt="">
-            <span class="text-xs text-gray-500 font-bold">{{ blogInfo.motto }}</span>
-        </div>
+                :src="config.public.baseURL + '/static/avatar/' + blogInfo.avatar" alt="">
+            <span class="text-xs  font-bold" style="color: var(--minor-text-color)">{{ blogInfo.motto }}</span>
+        </div> 
         <Article :content="blogInfo.bio">
         </Article>
     </div>

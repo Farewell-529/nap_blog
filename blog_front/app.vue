@@ -3,11 +3,10 @@ import { Toaster} from 'vue-sonner'
 </script>
 <template>
   <div>
-    <v-app>
       <Nav></Nav>
       <Toaster position="top-right" />
-      <NuxtPage />
-    </v-app>
+      <NuxtPage class="flex flex-col items-center mt-10 mx-auto"/>
+      <Footer></Footer>
   </div>
 </template>
 

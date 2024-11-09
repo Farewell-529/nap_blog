@@ -28,9 +28,9 @@ onMounted(() => {
         </span>
         <div class="max-w-[920px] flex gap-8">
             <NuxtLink
-                :to="{ path: '/category/categoryArticle', query: { id: item.id, categoryName: item.categoryName } }"
+                :to="{ path: '/category/categoryArticle', query: { categoryId: item.id, categoryName: item.categoryName,articleCount:item.articleCount } }"
                 v-for="item in countsList"
-                class="flex flex-col gap-2 justify-center items-center font-semibold w-32 h-32 p-1 rounded-2xl mb-5 text-xl bg-white category">
+                class="flex flex-col gap-2 justify-center items-center font-semibold w-32 h-32 p-1 rounded-2xl mb-5 text-xl  category">
                 <svg-icon type="mdi" :path="mdiTableLarge" class="w-8 mr-1" />
                 <span>{{ item.categoryName }}</span>
                 <span >{{ item.articleCount }}</span>
@@ -41,20 +41,21 @@ onMounted(() => {
 </template>
 <style scoped>
 .category {
-    border: solid 2px rgb(0, 0, 0);
+    border: solid 2px var(--btn-border-color);
+    background: var(--bg-color);
     box-sizing: border-box;
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .category:hover {
-    background-color: rgb(0, 0, 0) !important;
-    color: rgb(239, 239, 239) !important;
+    background-color: var(--btn-border-color) !important;
+    color: var(--btn-text-color) !important;
     transform: scale(1.1);
 }
 
 .category:hover .category-count {
-    background-color: black !important;
-    color: white !important;
+    background-color: var(--btn-bg-color) !important;
+    color: var(--btn-text-color) !important;
 }
 </style>
