@@ -51,7 +51,7 @@ const userHomePageInfo = async () => {
                 count: data.commentCount || 0
             },
             {
-                title: '文章总浏览量',
+                title: '文章总阅读量',
                 count: data.articleViewCount || 0
             },
         ]

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { saveCommentsApi, updateCommentsApi, deleteCommentsApi, commentsListApi } from '~/api/comments'
 import { articleAllListApi } from "~/api/article";
+import { saveBlockedApi } from "~/api/blocked";
 import { type Comments, type CommentsQuery, type CommentsRes } from '~/types/Comments';
+import { type Blocked, type BlockedQuery } from "~/types/Blocked";
 import { type Result } from '~/types/Result'
 import { formatDateToYYYYMMDD } from "~/utils/dateUtils";
 const headers = [
@@ -23,23 +25,32 @@ const headers = [
     {
         title: '内容',
         key: 'content',
-        maxWidth: '450px',
+        minWidth: '150px',
         sortable: false
     },
     {
         title: '邮箱',
         key: 'email',
-        width: '100px',
+        width: '50px',
+        nowrap: true,
         sortable: false
     },
     {
         title: '网址',
         key: 'url',
         width: '100px',
-        maxWidth: '220px',
+        maxWidth: '120px',
         nowrap: true,
         sortable: false
     },
+    {
+        title: 'ip地址',
+        align: 'center',
+        key: 'ip',
+        width: '120px',
+        sortable: false
+    },
+
     {
         title: '回复的文章',
         align: 'center',
@@ -48,9 +59,9 @@ const headers = [
         sortable: false
     },
     {
-        title: '回复的人',
+        title: '是否隐藏',
         align: 'center',
-        key: 'replyName',
+        key: 'status',
         width: '100px',
         sortable: false
     },
@@ -58,12 +69,12 @@ const headers = [
         title: '评论日期',
         align: 'center',
         key: 'createDate',
-        width: '100px',
+        width: '130px',
         sortable: false
     },
     {
         title: '操作',
-        width: '50px',
+        width: '100px',
         align: 'center',
         key: 'handler',
         sortable: false
@@ -90,7 +101,7 @@ const queryParams = ref<CommentsQuery>({
     targetType: 'article'
 })
 const { $toast } = useNuxtApp()
-const form = ref<Comments>({
+const CommentsForm = ref<Comments>({
     targetType: 'article',
     targetId: 0,
     name: '',
@@ -100,6 +111,10 @@ const form = ref<Comments>({
     pid: -1,
     replytId: -1
 })
+const blockFrom = ref<Blocked>({
+    ip: "",
+    blockReason: "",
+})
 let currentItem: number[] = []
 const dateDialog = ref(false)
 const rowDate = ref()
@@ -107,10 +122,9 @@ const getCommentsList = async () => {
     const { data } = await commentsListApi(queryParams.value)
     total.value = data.total || 0
     showCommentsList.value = data.recordList?.map((item: CommentsRes) => {
-        const date = new Date(item.createDate!)
         return {
             ...item,
-            createDate: date.toLocaleDateString('zh-CN')
+            createDate: formatDateToYYYYMMDD(new Date(item.createDate!))
         }
     })
     loading.value = false
@@ -118,7 +132,7 @@ const getCommentsList = async () => {
 const editBtn = (item: any) => {
     whichOne.value = 'edit'
     dialogTitle.value = '修改评论'
-    form.value = {
+    CommentsForm.value = {
         id: item.id,
         content: item.content,
         name: item.name,
@@ -141,10 +155,19 @@ const saveBtn = async () => {
     whichOne.value = 'save'
     dialogTitle.value = '添加评论'
     dialog.value = true
-    form.value = {
+    CommentsForm.value = {
         targetType: 'article'
     }
     getArticleList()
+}
+const blockedBtn = async (item: any) => {
+    whichOne.value = 'block'
+    dialogTitle.value = '拉黑'
+    dialog.value = true
+    blockFrom.value={
+        ip:item.ip ?? '',
+        blockReason:''
+    }
 }
 const handlerOption = async () => {
     let option = whichOne.value
@@ -153,11 +176,14 @@ const handlerOption = async () => {
         res = await deleteCommentsApi(currentItem)
         selectedCommentsIds.value = []
     } if (option == 'edit') {
-        form.value.targetId = selectedArticle.value.id
-        res = await updateCommentsApi(form.value)
+        CommentsForm.value.targetId = selectedArticle.value.id
+        res = await updateCommentsApi(CommentsForm.value)
     } if (option == 'save') {
-        form.value.targetId = selectedArticle.value.id
-        res = await saveCommentsApi(form.value)
+        CommentsForm.value.targetId = selectedArticle.value.id
+        res = await saveCommentsApi(CommentsForm.value)
+    }if (option == 'block') {
+        blockFrom.value
+        res = await saveBlockedApi(blockFrom.value)
     }
 
     if (res.code != 200) {
@@ -177,7 +203,7 @@ const clearHandle = () => {
         size: 10,
         targetType: 'article'
     }
-    rowDate.value=null
+    rowDate.value = null
     getCommentsList()
 }
 const loadingItem = ({ page, itemsPerPage }: any) => {
@@ -218,6 +244,17 @@ const clickDatePicker = () => {
     queryParams.value.createDate = formatDateToYYYYMMDD(new Date(rowDate.value))
     dateDialog.value = false
 }
+const clickSwitch = async (item: Comments) => {
+    item.status = item.status === 0 ? 1 : (item.status === 1 ? 0 : item.status);
+    const { code } = await updateCommentsApi(item);
+    // 根据返回码显示提示
+    if (code === 200) {
+        $toast.success("操作成功");
+    } else {
+        $toast.error("操作失败");
+    }
+};
+
 </script>
 <template>
     <div class="w-full">
@@ -234,12 +271,11 @@ const clickDatePicker = () => {
                     <div class="w-52">
                         <v-menu v-model="dateDialog" :close-on-content-click="false">
                             <template v-slot:activator="{ props }">
-                                <v-text-field v-bind="props"  label="选择日期"
-                                    v-model="queryParams.createDate" density="compact" readonly variant="solo-filled"
+                                <v-text-field v-bind="props" label="选择日期" v-model="queryParams.createDate"
+                                    density="compact" readonly variant="solo-filled"
                                     append-inner-icon="mdi-calendar-month-outline" />
                             </template>
-                            <v-date-picker  :hide-header="true"
-                                v-model="rowDate" @update:modelValue="clickDatePicker">
+                            <v-date-picker :hide-header="true" v-model="rowDate" @update:modelValue="clickDatePicker">
                             </v-date-picker>
                         </v-menu>
                     </div>
@@ -266,6 +302,10 @@ const clickDatePicker = () => {
                         :src="'https://www.gravatar.com/avatar/' + item.avatar + '?d=mysteryman'" alt="">
                 </div>
             </template>
+            <template v-slot:item.status="{ item }">
+                <v-switch :model-value="item.status == 0" color="indigo" hide-details
+                    @update:modelValue="clickSwitch(item)"></v-switch>
+            </template>
             <template v-slot:item.handler="{ item }">
                 <div class="flex gap-4 justify-center">
                     <v-icon size="small" @click="editBtn(item)">
@@ -273,6 +313,9 @@ const clickDatePicker = () => {
                     </v-icon>
                     <v-icon size="small" @click="deleteBtn(item)">
                         mdi-delete
+                    </v-icon>
+                    <v-icon size="small" @click="blockedBtn(item)">
+                        mdi-block-helper
                     </v-icon>
                 </div>
             </template>
@@ -288,37 +331,47 @@ const clickDatePicker = () => {
                     <v-btn @click="dialog = false">
                         算了
                     </v-btn>
-                    <v-btn @click="handlerOption" color="primary" variant="tonal">
+                    <v-btn @click="handlerOption" variant="tonal">
                         确定啊
                     </v-btn>
                 </template>
             </v-card>
             <v-card prepend-icon="mdi-account" :title="dialogTitle" v-else width="600px">
                 <v-card-text>
-                    <v-form>
+                    <v-form v-if="whichOne=='save'||whichOne=='edit'">
                         <v-combobox variant="solo-filled" v-model="selectedArticle" item-value="id"
                             :items="articlkNameArr" label="对应文章">
                         </v-combobox>
                         <v-row dense>
                             <v-col cols="4">
-                                <v-text-field variant="solo-filled" v-model="form.name" label="昵称" required />
+                                <v-text-field variant="solo-filled" v-model="CommentsForm.name" label="昵称" required />
                             </v-col>
                             <v-col cols="4">
-                                <v-text-field variant="solo-filled" v-model="form.email" label="邮箱" required />
+                                <v-text-field variant="solo-filled" v-model="CommentsForm.email" label="邮箱" required />
                             </v-col>
                             <v-col cols="4">
-                                <v-text-field variant="solo-filled" v-model="form.url" label="网址" required />
+                                <v-text-field variant="solo-filled" v-model="CommentsForm.url" label="网址" required />
                             </v-col>
                         </v-row>
-                        <v-textarea label="内容" variant="solo-filled" v-model="form.content"></v-textarea>
+                        <v-textarea label="内容" variant="solo-filled" v-model="CommentsForm.content"></v-textarea>
+                    </v-form>
+                    <v-form v-if="whichOne=='block'">
+                        <v-row dense>
+                            <v-col cols="12">
+                                <v-text-field variant="solo-filled" v-model="blockFrom.blockReason" label="拉黑理由" required />
+                            </v-col>
+                        </v-row>
                     </v-form>
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn text="关闭" @click="closeHandle"></v-btn>
-                    <v-btn color="primary" text="保存" variant="tonal" @click="handlerOption"></v-btn>
+                    <v-btn text="确定" variant="tonal" @click="handlerOption"></v-btn>
                 </v-card-actions>
             </v-card>
+          
+          
+
         </v-dialog>
     </div>
 </template>

@@ -22,6 +22,8 @@ public class Comments {
     private Integer userId;
     private Integer pid;
     private Integer replyId;
+    private Integer status;
+    private String ip;
     private String name;
     private String content;
     private String email;

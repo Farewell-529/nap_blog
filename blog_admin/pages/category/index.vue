@@ -58,12 +58,11 @@ const getCategoryList = async () => {
     const { data } = await categoryListApi(queryParams.value)
     total.value = data.total || 0
     showCategoryList.value = data.recordList.map((item: any) => {
-        const date = new Date(item.createDate!)
         return {
             id: item.id,
             categoryName: item.categoryName,
             useCount: item.useCount,
-            createDate: date.toLocaleDateString('zh-CN')
+            createDate: formatDateToYYYYMMDD(new Date(item.createDate!))
         }
     })
     loading.value = false
@@ -210,7 +209,7 @@ const clickDatePicker = () => {
                     <v-btn @click="dialog = false">
                         算了
                     </v-btn>
-                    <v-btn @click="handlerOption" color="primary" variant="tonal">
+                    <v-btn @click="handlerOption"  variant="tonal">
                         确定啊
                     </v-btn>
                 </template>
@@ -224,7 +223,7 @@ const clickDatePicker = () => {
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn text="Close"  @click="dialog = false"></v-btn>
-                    <v-btn color="primary" text="Save" variant="tonal" @click="handlerOption"></v-btn>
+                    <v-btn  text="Save" variant="tonal" @click="handlerOption"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

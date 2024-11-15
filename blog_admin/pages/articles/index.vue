@@ -74,9 +74,9 @@ const getArticleList = async () => {
         return {
             id: item.id,
             title: item.title,
-            createDate: new Date(item.createDate!).toLocaleDateString('zh-CN'),
+            createDate: formatDateToYYYYMMDD(new Date(item.createDate!)),
             categoryName: item.categoryName,
-            updateDate: new Date(item.updateDate!).toLocaleDateString('zh-CN')
+            updateDate: formatDateToYYYYMMDD(new Date(item.updateDate!)) 
         }
     }).sort((a: any, b: any) => new Date(b.createDate).getTime() - new Date(a.createDate).getTime()))
     loading.value = false
@@ -257,7 +257,7 @@ const clickDatePicker = () => {
                     <v-btn @click="dialog = false">
                         算了
                     </v-btn>
-                    <v-btn @click="switchHandler" color="primary" variant="tonal">
+                    <v-btn @click="switchHandler"  variant="tonal">
                         确定啊
                     </v-btn>
                 </template>

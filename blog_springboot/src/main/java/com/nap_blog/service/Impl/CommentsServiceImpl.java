@@ -4,18 +4,24 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nap_blog.entity.Article;
+import com.nap_blog.entity.Blocked;
 import com.nap_blog.entity.Comments;
 import com.nap_blog.entity.Tags;
 import com.nap_blog.mapper.ArticleMapper;
 import com.nap_blog.mapper.CommentsMapper;
+import com.nap_blog.service.BlockedService;
 import com.nap_blog.service.CommentsService;
 import com.nap_blog.service.EmailService;
 import com.nap_blog.utils.AvatarUtil;
+import com.nap_blog.utils.EmailUtil;
+import com.nap_blog.utils.SensitiveWordUtil;
 import com.nap_blog.vo.PageResult;
+import com.nap_blog.vo.Result;
 import com.nap_blog.vo.query.CommentsQuery;
 import com.nap_blog.vo.response.CommentsBackRes;
 import com.nap_blog.vo.response.CommentsRes;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,23 +45,10 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
     ArticleMapper articleMapper;
     @Autowired
     EmailService emailService;
-    @Value("${email.from}")
-    private String fromEmail;
-
-    @Value("${email.subject.defaultSubject}")
-    private String defaultSubject;
-
-    @Value("${email.subject.replySubject}")
-    private String replySubject;
-
-    @Value("${email.content.defaultContent}")
-    private String defaultContentTemplate;
-
-    @Value("${email.content.replyContent}")
-    private String replyContentTemplate;
-
-    @Value("${email.content.parentContent}")
-    private String parentContentTemplate;
+    @Autowired
+    BlockedService blockedService;
+    @Autowired
+    EmailUtil emailUtil;
 
     @Override
     public List<CommentsRes> getCommentsList(String targetType, Integer articleId) {
@@ -64,7 +57,8 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         );
         List<Comments> allComments = commentsMapper.selectList(new LambdaQueryWrapper<Comments>()
                 .eq(Comments::getTargetType, targetType)
-                .eq(Comments::getTargetId, articleId));
+                .eq(Comments::getTargetId, articleId)
+                .eq(Comments::getStatus,1));
 
         List<CommentsRes> rootComments = allComments.stream().filter(item -> item.getPid() == -1)
                 .map(comment -> CommentsRes.builder()
@@ -123,14 +117,15 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         Map<Long, String> articleMap = articleMapper.selectList(null).stream().collect(
                 Collectors.toMap(Article::getId, Article::getTitle)
         );
-        Map<Long, String> commentsMap = commentsMapper.selectList(null).stream().collect(
-                Collectors.toMap(Comments::getId, Comments::getName)
-        );
+//        Map<Long, String> commentsMap = commentsMapper.selectList(null).stream().collect(
+//                Collectors.toMap(Comments::getId, Comments::getName)
+//        );
         List<CommentsBackRes> commentsList = commentsMapper.selectList(page, lqw).stream().map(comment -> {
             CommentsBackRes commentsBackRes = new CommentsBackRes();
             BeanUtils.copyProperties(comment, commentsBackRes);
             commentsBackRes.setArticleName(articleMap.get(comment.getTargetId().longValue()));
-            commentsBackRes.setReplyName(comment.getReplyId() != null ? commentsMap.get(comment.getReplyId().longValue()) : null);
+            commentsBackRes.setStatus(comment.getStatus());
+//            commentsBackRes.setReplyName(comment.getReplyId() != null ? commentsMap.get(comment.getReplyId().longValue()) : null);
             return commentsBackRes;
         }).toList();
         return new PageResult<>(commentsList, total);
@@ -190,17 +185,22 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
     }
 
     @Override
-    public boolean saveComments(Comments comments) throws MessagingException {
+    public Result saveComments(Comments comments, HttpServletRequest request) throws MessagingException {
+        Blocked isExist = blockedService.checkBlocked(request.getRemoteAddr());
+        if(isExist.getStatus()==1){
+            return Result.error("你违反了评论规则，暂时无法评论");
+        }
         //检查评论信息是否有空
         if (isInvalidComment(comments)) {
-            return false;
+            return Result.error("有未填项");
         }
         //初始化添加评论的信息
-        initializeComment(comments);
+        initializeComment(comments,request);
+
         commentsMapper.insert(comments);
         String articleTitle = articleMapper.selectById(comments.getTargetId()).getTitle();
         //给自己发送邮箱
-        sendDefaultEmail(comments, articleTitle);
+        emailUtil.sendDefaultCommentEmail(comments, articleTitle);
         //被回复者的信息
         Comments replyComment = commentsMapper.selectOne(new LambdaQueryWrapper<Comments>()
                 .eq(Comments::getId, comments.getReplyId()));
@@ -208,59 +208,32 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         Comments parentComment = commentsMapper.selectOne(new LambdaQueryWrapper<Comments>()
                 .eq(Comments::getId, comments.getPid()));
         if (replyComment != null) {
-            sendReplyEmail(replyComment.getEmail(), comments, articleTitle);
+            emailUtil.sendReplyCommentEmail(replyComment.getEmail(), comments, articleTitle);
         }
 
         if (parentComment != null) {
             // 确保不重复发送给同一个人
             if (replyComment == null || !replyComment.getEmail().equals(parentComment.getEmail())) {
-                sendParentCommentEmail(parentComment.getEmail(), comments, articleTitle);
+                emailUtil.sendParentCommentEmail(parentComment.getEmail(), comments, articleTitle);
             }
         }
-        return true;
+        return Result.success("评论成功");
     }
 
-    private void initializeComment(Comments comments) {
+    private void initializeComment(Comments comments,HttpServletRequest request) {
         comments.setCreateDate(new Date());
         try {
             comments.setAvatar(AvatarUtil.getGravatarUrl(comments.getEmail()));
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("头像生成失败", e);
         }
+        if(comments.getStatus()==null)comments.setStatus(1);
         comments.setTargetId(Optional.ofNullable(comments.getTargetId()).orElse(-1));
         comments.setPid(Optional.ofNullable(comments.getPid()).orElse(-1));
         comments.setReplyId(Optional.ofNullable(comments.getReplyId()).orElse(-1));
+        comments.setIp(request.getRemoteAddr());
+        comments.setContent(SensitiveWordUtil.replaceSensitiveWord(comments.getContent()));
     }
 
-    private void sendDefaultEmail(Comments comments, String articleTitle) throws MessagingException {
-        String defaultContent = String.format(defaultContentTemplate, articleTitle,
-                comments.getName(), comments.getContent(), comments.getEmail(), comments.getUrl());
-        emailService.sendEmail(fromEmail,
-                String.format(defaultSubject, articleTitle),
-                defaultContent, fromEmail);
 
-    }
-
-    private void sendReplyEmail(String replyCommentEmail, Comments comments, String articleTitle) throws MessagingException {
-
-        String replyContent = String.format(replyContentTemplate, articleTitle,
-                comments.getName(), comments.getContent());
-
-        emailService.sendEmail(replyCommentEmail,
-                String.format(replySubject, articleTitle),
-                replyContent,
-                fromEmail);
-    }
-
-    private void sendParentCommentEmail(String parentCommentEmail, Comments comments, String articleTitle) throws MessagingException {
-
-
-        String parentContent = String.format(parentContentTemplate, articleTitle,
-                comments.getName(), comments.getContent());
-
-        emailService.sendEmail(parentCommentEmail,
-                String.format(replySubject, articleTitle),
-                parentContent,
-                fromEmail);
-    }
 }

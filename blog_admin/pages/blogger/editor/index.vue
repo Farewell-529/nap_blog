@@ -39,8 +39,8 @@ const toolbarsExclude = [
 ] as any;
 const getBlogInfo = async () => {
     const { data } = await getBloggerInfoApi()
-    bloggerInfo.value=data
-  
+    bloggerInfo.value = data
+
     form.value = { ...bloggerInfo.value }
     transfromFile()
 }
@@ -142,8 +142,8 @@ onMounted(() => {
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn text="关闭"  @click="close"></v-btn>
-                    <v-btn color="保持" text="Save" variant="tonal" @click="save"></v-btn>
+                    <v-btn text="关闭" @click="close"></v-btn>
+                    <v-btn text="保存" variant="tonal" @click="save"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

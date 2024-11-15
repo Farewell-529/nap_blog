@@ -14,24 +14,6 @@ importers:
       '@pinia/nuxt':
         specifier: ^0.5.1
         version: 0.5.1(rollup@4.13.2)(vue@3.4.21)
-      '@toast-ui/editor':
-        specifier: ^3.2.2
-        version: 3.2.2
-      '@toast-ui/editor-plugin-chart':
-        specifier: ^3.0.1
-        version: 3.0.1
-      '@toast-ui/editor-plugin-code-syntax-highlight':
-        specifier: ^3.1.0
-        version: 3.1.0
-      '@toast-ui/editor-plugin-color-syntax':
-        specifier: ^3.1.0
-        version: 3.1.0
-      '@toast-ui/editor-plugin-table-merged-cell':
-        specifier: ^3.1.0
-        version: 3.1.0
-      '@toast-ui/editor-plugin-uml':
-        specifier: ^3.0.1
-        version: 3.0.1
       '@vavt/cm-extension':
         specifier: ^1.4.4
         version: 1.4.4
@@ -1142,27 +1124,6 @@ packages:
     resolution: {integrity: sha512-LtoMMhxAlorcGhmFYI+LhPgbPZCkgP6ra1YL604EeF6U98pLlQ3iWIGMdWSC+vWmPBWBNgmDBAhnAobLROJmwg==}
     engines: {node: '>=18'}
 
-  '@toast-ui/chart@4.6.1':
-    resolution: {integrity: sha512-F35IkHS0U9zqN6xIV1Yj3/wh8KGlZyzT3bwVGBJh/82DMDMn8rD2Us8X7xBMBGcZ3E15qkfnKjrATxU5ZoGAnA==}
-
-  '@toast-ui/editor-plugin-chart@3.0.1':
-    resolution: {integrity: sha512-mdqJerDo836kxKZEa3B6NZOJLrb+acRMkPIanYo//9GFPJcllG7KFdZU+K0bSMapEED7W7OJCsOzM0VNThndHg==}
-
-  '@toast-ui/editor-plugin-code-syntax-highlight@3.1.0':
-    resolution: {integrity: sha512-OgX5pZiTnHREoTTXDAFu1k6RzEspGOxeJNRlt/Lnoi1GvLbIpUTTbBcls9becpXT/Qdls++8G3r5C60cVdellA==}
-
-  '@toast-ui/editor-plugin-color-syntax@3.1.0':
-    resolution: {integrity: sha512-UVKfMBPV+3snSaJn9RUKGbxJbgi92D2t68ow8wAjGezvMp1ht4UVETrvomdTGr+RYhXSeH3JvSwN9nmQqw0qzA==}
-
-  '@toast-ui/editor-plugin-table-merged-cell@3.1.0':
-    resolution: {integrity: sha512-9ch9h1heTs0Kkmhwpb1ef9psQSM77wvUO3J75BsHv3RO5nAug42W3HC4Y+qbX5n1z1VhOGGjuOb4GPIr8s5dRA==}
-
-  '@toast-ui/editor-plugin-uml@3.0.1':
-    resolution: {integrity: sha512-KKvTB++lJkogOSBgtgJqli5nW76/fgxh0CvsHqKh5WQu2r6O+BTGPBG6oRy9PBfJvwN1g8YZ4ZLQGXSXDrtm1w==}
-
-  '@toast-ui/editor@3.2.2':
-    resolution: {integrity: sha512-ASX7LFjN2ZYQJrwmkUajPs7DRr9FsM1+RQ82CfTO0Y5ZXorBk1VZS4C2Dpxinx9kl55V4F8/A2h2QF4QMDtRbA==}
-
   '@trysound/sax@0.2.0':
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
     engines: {node: '>=10.13.0'}
@@ -2017,9 +1978,6 @@ packages:
   domhandler@5.0.3:
     resolution: {integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==}
     engines: {node: '>= 4'}
-
-  dompurify@2.5.2:
-    resolution: {integrity: sha512-5vSyvxRAb45EoWwAktUT3AYqAwXK4FL7si22Cgj46U6ICsj/YJczCN+Bk7WNABIQmpWRymGfslMhrRUZkQNnqA==}
 
   domutils@3.1.0:
     resolution: {integrity: sha512-H78uMmQtI2AhgDJjWeQmHwJJ2bLPD3GMmO7Zja/ZZh84wkm+4ut+IUnUdRa8uCGX88DiVx1j6FRe1XfxEgjEZA==}
@@ -2988,9 +2946,6 @@ packages:
     resolution: {integrity: sha512-ZD6dgSZi0u1QCP55g8/2yS5hNJfIpgqsSGHLxxdOjvY7eIrXzj271FJEQw33VwsZ6RCtO/NOuhxa7GBWmEudyA==}
     hasBin: true
 
-  orderedmap@2.1.1:
-    resolution: {integrity: sha512-TvAWxi0nDe1j/rtMcWcIj94+Ffe6n7zhow33h40SKxmsmozs6dz/e+EajymfoFcHd7sxNn8yHM8839uixMOV6g==}
-
   p-map@4.0.0:
     resolution: {integrity: sha512-/bjOqmgETBYB5BoEeGVea8dmvHb2m9GLy1E9W43yeyfP6QQCZGFNa+XRceJEuDB6zqr+gKpIAmlLebMpykw/MQ==}
     engines: {node: '>=10'}
@@ -3090,9 +3045,6 @@ packages:
 
   pkg-types@1.2.1:
     resolution: {integrity: sha512-sQoqa8alT3nHjGuTjuKgOnvjo4cljkufdtLMnO2LBP/wRwuDlo1tkaEdMxCRhyGRPacv/ztlZgDPm2b7FAmEvw==}
-
-  plantuml-encoder@1.4.0:
-    resolution: {integrity: sha512-sxMwpDw/ySY1WB2CE3+IdMuEcWibJ72DDOsXLkSmEaSzwEUaYBT6DWgOfBiHGCux4q433X6+OEFWjlVqp7gL6g==}
 
   pnpm@9.6.0:
     resolution: {integrity: sha512-ONxvuo26NbOTQLlwARLC/h4S8QsXE0cVpKqYzPe7A152/Zgc8Ls4TfqY+NavVIHCvvL0Jmokv6IMNOtxR84LXg==}
@@ -3337,30 +3289,6 @@ packages:
     resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}
     engines: {node: '>= 6'}
 
-  prosemirror-commands@1.5.2:
-    resolution: {integrity: sha512-hgLcPaakxH8tu6YvVAaILV2tXYsW3rAdDR8WNkeKGcgeMVQg3/TMhPdVoh7iAmfgVjZGtcOSjKiQaoeKjzd2mQ==}
-
-  prosemirror-history@1.4.0:
-    resolution: {integrity: sha512-UUiGzDVcqo1lovOPdi9YxxUps3oBFWAIYkXLu3Ot+JPv1qzVogRbcizxK3LhHmtaUxclohgiOVesRw5QSlMnbQ==}
-
-  prosemirror-inputrules@1.4.0:
-    resolution: {integrity: sha512-6ygpPRuTJ2lcOXs9JkefieMst63wVJBgHZGl5QOytN7oSZs3Co/BYbc3Yx9zm9H37Bxw8kVzCnDsihsVsL4yEg==}
-
-  prosemirror-keymap@1.2.2:
-    resolution: {integrity: sha512-EAlXoksqC6Vbocqc0GtzCruZEzYgrn+iiGnNjsJsH4mrnIGex4qbLdWWNza3AW5W36ZRrlBID0eM6bdKH4OStQ==}
-
-  prosemirror-model@1.20.0:
-    resolution: {integrity: sha512-q7AY7vMjKYqDCeoedgUiAgrLabliXxndJuuFmcmc2+YU1SblvnOiG2WEACF2lwAZsMlfLpiAilA3L+TWlDqIsQ==}
-
-  prosemirror-state@1.4.3:
-    resolution: {integrity: sha512-goFKORVbvPuAQaXhpbemJFRKJ2aixr+AZMGiquiqKxaucC6hlpHNZHWgz5R7dS4roHiwq9vDctE//CZ++o0W1Q==}
-
-  prosemirror-transform@1.8.0:
-    resolution: {integrity: sha512-BaSBsIMv52F1BVVMvOmp1yzD3u65uC3HTzCBQV1WDPqJRQ2LuHKcyfn0jwqodo8sR9vVzMzZyI+Dal5W9E6a9A==}
-
-  prosemirror-view@1.33.6:
-    resolution: {integrity: sha512-zRLUNgLIQfd8IfGprsXxWTjdA8xEAFJe8cDNrOptj6Mop9sj+BMeVbJvceyAYCm5G2dOdT2prctH7K9dfnpIMw==}
-
   protocols@2.0.1:
     resolution: {integrity: sha512-/XJ368cyBJ7fzLMwLKv1e4vLxOju2MNAIokcr7meSaNcVbWz/CPcW22cP04mwxOErdA5mwjA8Q6w/cdAQxVn7Q==}
 
@@ -3465,9 +3393,6 @@ packages:
     resolution: {integrity: sha512-MIlLgsdMprDBXC+4hsPgzWUasLO9CE4zOkj/u6j+Z6j5A4zRY+CtiXAdJyPtgCsc42g658Aeh1DlrdVEJhsL2g==}
     engines: {node: '>=18.0.0', npm: '>=8.0.0'}
     hasBin: true
-
-  rope-sequence@1.3.4:
-    resolution: {integrity: sha512-UT5EDe2cu2E/6O4igUr5PSFs23nvvukicWHx6GnOPlHAiiYbzNuCRQCuiUdHJQcqKalLKlrYJnjY0ySGsXNQXQ==}
 
   run-applescript@7.0.0:
     resolution: {integrity: sha512-9by4Ij99JUr/MCFBUkDKLWK3G9HVXmabKz9U5MlIAIuvuzkiOicRYs8XJLxX+xahD+mLiiCYDqF9dKAgtzKP1A==}
@@ -3775,9 +3700,6 @@ packages:
   tuf-js@2.2.0:
     resolution: {integrity: sha512-ZSDngmP1z6zw+FIkIBjvOp/II/mIub/O7Pp12j1WNsiCpg5R5wAc//i555bBQsE44O94btLt0xM/Zr2LQjwdCg==}
     engines: {node: ^16.14.0 || >=18.0.0}
-
-  tui-color-picker@2.2.8:
-    resolution: {integrity: sha512-q5sE9NQ5NR9lYpilYjcI7Sdv0KCogo+W8fZY+AYTj/HYg+9fscYy3UuJ6UQiV1bF+ARCLwFRWC8UcOt9kuUctQ==}
 
   type-fest@0.21.3:
     resolution: {integrity: sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==}
@@ -5653,37 +5575,6 @@ snapshots:
 
   '@sindresorhus/merge-streams@2.3.0': {}
 
-  '@toast-ui/chart@4.6.1': {}
-
-  '@toast-ui/editor-plugin-chart@3.0.1':
-    dependencies:
-      '@toast-ui/chart': 4.6.1
-
-  '@toast-ui/editor-plugin-code-syntax-highlight@3.1.0':
-    dependencies:
-      prismjs: 1.29.0
-
-  '@toast-ui/editor-plugin-color-syntax@3.1.0':
-    dependencies:
-      tui-color-picker: 2.2.8
-
-  '@toast-ui/editor-plugin-table-merged-cell@3.1.0': {}
-
-  '@toast-ui/editor-plugin-uml@3.0.1':
-    dependencies:
-      plantuml-encoder: 1.4.0
-
-  '@toast-ui/editor@3.2.2':
-    dependencies:
-      dompurify: 2.5.2
-      prosemirror-commands: 1.5.2
-      prosemirror-history: 1.4.0
-      prosemirror-inputrules: 1.4.0
-      prosemirror-keymap: 1.2.2
-      prosemirror-model: 1.20.0
-      prosemirror-state: 1.4.3
-      prosemirror-view: 1.33.6
-
   '@trysound/sax@0.2.0': {}
 
   '@tufjs/canonical-json@2.0.0': {}
@@ -6679,8 +6570,6 @@ snapshots:
   domhandler@5.0.3:
     dependencies:
       domelementtype: 2.3.0
-
-  dompurify@2.5.2: {}
 
   domutils@3.1.0:
     dependencies:
@@ -7875,8 +7764,6 @@ snapshots:
       undici: 5.28.4
       yargs-parser: 21.1.1
 
-  orderedmap@2.1.1: {}
-
   p-map@4.0.0:
     dependencies:
       aggregate-error: 3.1.0
@@ -7974,8 +7861,6 @@ snapshots:
       confbox: 0.1.8
       mlly: 1.7.2
       pathe: 1.1.2
-
-  plantuml-encoder@1.4.0: {}
 
   pnpm@9.6.0: {}
 
@@ -8185,49 +8070,6 @@ snapshots:
       kleur: 3.0.3
       sisteransi: 1.0.5
 
-  prosemirror-commands@1.5.2:
-    dependencies:
-      prosemirror-model: 1.20.0
-      prosemirror-state: 1.4.3
-      prosemirror-transform: 1.8.0
-
-  prosemirror-history@1.4.0:
-    dependencies:
-      prosemirror-state: 1.4.3
-      prosemirror-transform: 1.8.0
-      prosemirror-view: 1.33.6
-      rope-sequence: 1.3.4
-
-  prosemirror-inputrules@1.4.0:
-    dependencies:
-      prosemirror-state: 1.4.3
-      prosemirror-transform: 1.8.0
-
-  prosemirror-keymap@1.2.2:
-    dependencies:
-      prosemirror-state: 1.4.3
-      w3c-keyname: 2.2.8
-
-  prosemirror-model@1.20.0:
-    dependencies:
-      orderedmap: 2.1.1
-
-  prosemirror-state@1.4.3:
-    dependencies:
-      prosemirror-model: 1.20.0
-      prosemirror-transform: 1.8.0
-      prosemirror-view: 1.33.6
-
-  prosemirror-transform@1.8.0:
-    dependencies:
-      prosemirror-model: 1.20.0
-
-  prosemirror-view@1.33.6:
-    dependencies:
-      prosemirror-model: 1.20.0
-      prosemirror-state: 1.4.3
-      prosemirror-transform: 1.8.0
-
   protocols@2.0.1: {}
 
   punycode.js@2.3.1: {}
@@ -8353,8 +8195,6 @@ snapshots:
       '@rollup/rollup-win32-ia32-msvc': 4.13.2
       '@rollup/rollup-win32-x64-msvc': 4.13.2
       fsevents: 2.3.3
-
-  rope-sequence@1.3.4: {}
 
   run-applescript@7.0.0: {}
 
@@ -8705,8 +8545,6 @@ snapshots:
       make-fetch-happen: 13.0.0
     transitivePeerDependencies:
       - supports-color
-
-  tui-color-picker@2.2.8: {}
 
   type-fest@0.21.3: {}
 

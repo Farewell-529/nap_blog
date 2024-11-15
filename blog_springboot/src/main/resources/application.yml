@@ -33,24 +33,26 @@ mybatis-plus:
 email:
   from: nap_zzz@126.com
   subject:
-    defaultSubject: 标题:《%s》有新评论
-    replySubject: 你在nap博客评论的标题为:《%s》的文章有回复
+    defaultCommentSubject: 标题:《%s》有新评论
+    replyCommentSubject: 你在nap博客评论的标题为:《%s》的文章有回复
+    VerificationCodeSubject: 博客找回密码
   content:
-    defaultContent: |
+    defaultCommentContent: |
       文章标题:%s<br>
       昵称:%s<br>
       评论内容:%s<br>
       邮箱:%s<br>
       网址：%s<br>
-    replyContent: |
+    replyCommentContent: |
       文章标题:%s<br>
       昵称:%s<br>
       回复你说:%s<br>
       博客网址：http://localhost:3000/
-    parentContent: |
+    parentCommentContent: |
       文章标题:%s<br>
       昵称:%s<br>
       有回复说:%s<br>
       博客网址：http://localhost:3000/
+   
 
 

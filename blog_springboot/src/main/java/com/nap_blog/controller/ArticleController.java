@@ -20,7 +20,7 @@ public class ArticleController {
     ArticleService articleService;
 
     @GetMapping("/admin/articles/list")
-    public Result listArticleBackVO(ArticleQuery articleQuery) {
+    public Result listArticleBackVO(ArticleQuery articleQuery ) {
         return Result.success(articleService.listArticleBackVO(articleQuery));
     }
 

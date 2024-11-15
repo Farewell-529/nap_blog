@@ -21,6 +21,7 @@
     ---input-border-foucs-color:#3c3c3cd3;
     ---input-shadow-foucs-color:var(---input-border-foucs-color);
     ---input-placeholder-color:#747474;
+    ---selection-color:#2f2f2f7e;
 
 }
 
@@ -42,18 +43,14 @@
     ---input-border-foucs-color:#d8d8d8;
     ---input-shadow-foucs-color:var(---input-border-foucs-color);
     ---input-placeholder-color:#2f2f2f;
-
+    ---selection-color:#d3d3d37e;
 }
 
-body {
-    width: 100vw;
-}
 .medium-zoom-overlay{
     background-color: var(--bg-color) !important;
 }
 html {
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow-y: scroll;
     scroll-behavior: smooth;
     background-color: var(--bg-color);
     color: var(--text-color);
@@ -63,6 +60,9 @@ html {
 ul{
     list-style-type: disc;
 }
+::selection {
+    background-color: var(---selection-color); 
+  }
 ::-webkit-scrollbar {
     width: 5px;
 }
@@ -82,8 +82,4 @@ ul{
 ::-webkit-scrollbar-thumb:hover {
     background-color: #9c9b9b;
     /* 鼠标悬停时手柄颜色 */
-}
-
-html {
-    scroll-behavior: smooth;
 }

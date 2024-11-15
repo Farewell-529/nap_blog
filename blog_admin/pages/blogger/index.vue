@@ -8,16 +8,19 @@ import MarkdownIt from 'markdown-it';
 import { createHighlighter } from 'shiki'
 import { type User } from "~/types/User";
 import 'github-markdown-css/github-markdown.css';
-import { getAccountApi, editAccountApi } from "~/api/user";
+import { getAccountApi, editAccountApi, checkPasswordApi, editPasswordApi } from "~/api/user";
 const store = blogInfoStore()
 const blogInfo = ref<any>({})
 const logoutDialog = ref(false)
 const { $toast } = useNuxtApp()
 const dialog = ref(false)
 const account = ref<User>()
-const form = ref<User>({
+const isOldPassword = ref(false)
+const originalPassword = ref('')
+const editPasswordForm = ref({
     username: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
 })
 let md: any
 const initializeMarkdown = async () => {
@@ -65,10 +68,6 @@ const initializeMarkdown = async () => {
 const encodeBase64 = (text: string): string => {
     return btoa(unescape(encodeURIComponent(text)));
 };
-const decodeBase64 = (encodedText: string): string => {
-    return decodeURIComponent(escape(atob(encodedText)));
-}
-
 const getBlogInfo = async () => {
     await initializeMarkdown()
     blogInfo.value = store.blogInfo
@@ -106,16 +105,10 @@ const uploadAvatar = () => {
 };
 const getAccount = async () => {
     const { data } = await getAccountApi()
-    account.value = data
-    form.value = { ...account.value! }
+    editPasswordForm.value.username = data.username
 }
-const clickEditBtn = () => {
-    if (!account.value) {
-        dialog.value = true
-        getAccount()
-        return
-    }
-    form.value = { ...account.value! }
+const clickEditBtn = async () => {
+    await getAccount()
     dialog.value = true
 }
 const close = () => {
@@ -140,17 +133,47 @@ const validate = (user: User) => {
     }
     return true
 }
-const confirm = async () => {
-    if (!validate(form.value)) {
+const checkOriginalPwdHandle = async () => {
+    if (!originalPassword.value) {
+        $toast.warning("请输入原始密码")
         return
     }
-    const res = await editAccountApi(form.value)
-    if (res.code != 200) {
-        $toast.error(res.msg)
+    const { code, msg } = await checkPasswordApi(originalPassword.value)
+    if (code != 200) {
+        $toast.error(msg)
         return
     }
-    getAccount()
-    $toast.success(res.msg)
+    isOldPassword.value = true
+    originalPassword.value = ''
+}
+const editPasswordHandle = async () => {
+    if (!(editPasswordForm.value.password && editPasswordForm.value.confirmPassword)) {
+        if (editPasswordForm.value.password !== editPasswordForm.value.confirmPassword) {
+            $toast.error("两次密码不一致")
+            return
+        }
+    }
+    let temp = {
+        username: '',
+        password: ''
+    }
+    temp = { ...editPasswordForm.value }
+    const { code, msg } = await editPasswordApi(temp)
+    if (code != 200) {
+        $toast.warning(msg)
+        return
+    }
+    $toast.success(msg)
+    editPasswordForm.value = {
+        username: '',
+        password: '',
+        confirmPassword: ''
+    }
+    dialog.value = false
+    isOldPassword.value = false
+}
+const editPasswordClose = () => {
+    isOldPassword.value = false
     dialog.value = false
 }
 onMounted(() => {
@@ -187,27 +210,45 @@ onMounted(() => {
 
         <div class="flex gap-4 fixed right-20 top-5">
             <v-btn color="#000000" @click="clickEditBtn">
-                修改密码
+                修改账号密码
             </v-btn>
             <v-btn color="#000000" @click="logoutHandler">
                 退出登录
             </v-btn>
         </div>
-
         <NuxtLink :to="{ path: '/blogger/editor' }" class="fixed right-20 bottom-5 ">
             <v-btn>
                 编辑
             </v-btn>
         </NuxtLink>
         <v-dialog v-model="dialog" max-width="600" persistent>
-            <v-card prepend-icon="mdi-account" title="账号密码">
+            <v-card prepend-icon="mdi-account" title="修改账号" v-if="!isOldPassword">
                 <v-form class="p-3">
-                    <v-text-field variant="solo-filled" v-model="form.username" label="账号" required></v-text-field>
-                    <v-text-field variant="solo-filled" v-model="form.password" label="密码" required></v-text-field>
+                    <v-text-field variant="solo-filled" v-model="editPasswordForm.username" label="账号" required>
+                    </v-text-field>
+                    <v-text-field variant="solo-filled" type="password" v-model="originalPassword" label="输入原始密码"
+                        required>
+                    </v-text-field>
                 </v-form>
                 <v-card-actions>
                     <v-btn text="关闭" @click="close"></v-btn>
-                    <v-btn color="primary" text="确认" variant="tonal" @click="confirm"></v-btn>
+                    <v-btn text="确认" variant="tonal" @click="checkOriginalPwdHandle"></v-btn>
+                </v-card-actions>
+            </v-card>
+            <v-card prepend-icon="mdi-account" title="如只修改账号名，无需填写密码相关字段。" v-else>
+                <v-form class="p-3">
+                    <v-text-field variant="solo-filled" v-model="editPasswordForm.username" label="账号" required>
+                    </v-text-field>
+                    <v-text-field variant="solo-filled" type="password" v-model="editPasswordForm.password"
+                        label="输入新密码" required>
+                    </v-text-field>
+                    <v-text-field variant="solo-filled" type="password" v-model="editPasswordForm.confirmPassword"
+                        label="确认密码" required>
+                    </v-text-field>
+                </v-form>
+                <v-card-actions>
+                    <v-btn text="关闭" @click="editPasswordClose"></v-btn>
+                    <v-btn text="确认" variant="tonal" @click="editPasswordHandle"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

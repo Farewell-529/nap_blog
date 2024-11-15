@@ -260,7 +260,7 @@ onMounted(() => {
                     <v-btn @click="dialog = false">
                         算了
                     </v-btn>
-                    <v-btn color="primary" text="确认" variant="tonal" @click="choseHandle">
+                    <v-btn  text="确认" variant="tonal" @click="choseHandle">
                         确定啊
                     </v-btn>
                 </template>

@@ -75,7 +75,8 @@ onMounted(() => {
                     <svg-icon type="mdi" :path="mdiFolderOutline" class="w-5 mr-1" />
                     <span>
                         分类
-                     <NuxtLink :to="{path: '/category/categoryArticle', query: { id: articleInfo.id,categoryName: articleInfo.categoryName}}" class="border-b-[1px] border-b-black pb-1 text-black">
+                     <NuxtLink :to="{path: '/category/categoryArticle', query: { id: articleInfo.id,categoryName: articleInfo.categoryName}}"
+                      class="border-b-[1px]  pb-1"  style="border-color:var(--border-color);color: var(--text-color);">
                             {{ articleInfo.categoryName }}
                      </NuxtLink>
                     </span>

@@ -28,6 +28,13 @@ public class Result {
                 data
         );
     }
+    public static Result success(String msg) {
+        return new Result(
+                200,
+                msg,
+                null
+        );
+    }
 
     public static Result error() {
         return new Result(

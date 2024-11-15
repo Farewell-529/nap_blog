@@ -145,7 +145,6 @@ html {
     justify-content: center;
     border: solid 2px var(--btn-border-color);
     transition: all 0.3s;
-    /* 添加过渡效果 */
 }
 
 .readBtn:hover {

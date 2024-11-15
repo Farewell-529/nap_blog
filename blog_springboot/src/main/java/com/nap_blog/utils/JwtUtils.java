@@ -13,17 +13,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @description: Jwt工具类，生成JWT和认证
- * @author: heshi
- */
+
 public class JwtUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
     /**
      * 密钥
      */
-    private static final String SECRET = "my_secret";
+    private static final String SECRET = "nap!2922";
 
     /**
      * 过期时间
@@ -42,8 +39,8 @@ public class JwtUtils {
         String token = JWT.create()
                 .withHeader(map)// 添加头部
                 //可以将基本信息放到claims中
-                .withClaim("id", user.getId())//userId
-                .withClaim("userName", user.getUsername())//userName
+                .withClaim("id", user.getId())
+                .withClaim("userName", user.getUsername())
                 .withExpiresAt(expireDate) //超时设置,设置过期的日期
                 .withIssuedAt(new Date()) //签发时间
                 .sign(Algorithm.HMAC256(SECRET)); //SECRET加密

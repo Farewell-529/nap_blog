@@ -14,7 +14,9 @@ public class CommentsBackRes {
     private Integer userId;
     private Integer pid;
     private String parentName;
-    private String replyName;
+//    private String replyName;
+    private Integer status;
+    private String ip;
     private String name;
     private String content;
     private String email;

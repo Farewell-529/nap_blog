@@ -84,7 +84,7 @@ const addComment = async () => {
         isSend.value = false
         return
     }
-    toast.success("成功发布~")
+    toast.success(msg)
     await fetchCommentsList()
     isReply.value = 0
     commentsInfo.value.content = ''

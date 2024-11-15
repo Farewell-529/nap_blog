@@ -41,7 +41,8 @@ public class CheckLogin implements Filter {
         }
         String url = req.getRequestURL().toString();
         //如果是登录，不需要过滤
-        if (url.contains("/login")||url.contains("/static")||url.contains("/register")||url.contains("/api")) {
+        if (url.contains("/login")||url.contains("/static")||url.contains("/register")||url.contains("/api")
+                ||url.contains("/validateEmail")||url.contains("/validateCode")||url.contains("resetPassword")) {
             chain.doFilter(servletRequest, servletResponse);
             return;
         }

@@ -45,3 +45,17 @@ export function uploadImgApi(file: File, articleId: Number): Promise<Result> {
       body: formData
    })
 }
+
+export function checkPasswordApi(password:string): Promise<Result> {
+   return request('/admin/checkPassword', {
+      method: 'get',
+      params:{password}
+   })
+ }
+
+ export function editPasswordApi(account:{username:string,password:string}): Promise<Result> {
+   return request('/admin/editPassword', {
+      method: 'put',
+      body:account
+   })
+ }

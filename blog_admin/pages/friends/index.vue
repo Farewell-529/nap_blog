@@ -76,14 +76,13 @@ const getFriendList = async () => {
     const { data } = await FriendListApi(queryParams.value)
     total.value = data.total || 0
     showFriendList.value = data.recordList.map((item: Friend) => {
-        const date = new Date(item.createDate!)
         return {
             id: item.id,
             avatarUrl: item.avatarUrl,
             url: item.url,
             friendName: item.friendName,
             description: item.description,
-            createDate: date.toLocaleDateString('zh-CN')
+            createDate: formatDateToYYYYMMDD(new Date(item.createDate!))
         }
     })
 }
@@ -240,7 +239,7 @@ const clickDatePicker = () => {
                     <v-btn @click="dialog = false">
                         算了
                     </v-btn>
-                    <v-btn  color="primary" variant="tonal" @click="handlerOption">
+                    <v-btn   variant="tonal" @click="handlerOption">
                         确定啊
                     </v-btn>
                 </template>
@@ -257,7 +256,7 @@ const clickDatePicker = () => {
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn text="关闭" @click="closeHandler"></v-btn>
-                    <v-btn color="primary" text="确认" variant="tonal" @click="handlerOption"></v-btn>
+                    <v-btn  text="确认" variant="tonal" @click="handlerOption"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

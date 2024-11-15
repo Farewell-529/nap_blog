@@ -72,8 +72,8 @@ onMounted(() => {
 <template>
   <div class="text-xs">
     <div class="flex  flex-col items-center my-10 relative">
-        <div class="w-36 h-8  flex justify-center items-center cursor-pointer mb-3 text-xl " 
-        style="background-color: var(--btn-bg-color); color: var(--bg-color);" @click="clickBtn">
+        <div class="w-36 h-8  flex justify-center items-center cursor-pointer mb-3 text-xl bloggerName" 
+         @click="clickBtn">
             {{ userInfo.bloggerName }}
         </div>
         <div class="my-2">
@@ -98,6 +98,16 @@ onMounted(() => {
     position: relative;
     padding-bottom: 0.5rem;
     transition: border-bottom 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+.bloggerName{
+    background-color: var(--btn-bg-color);
+    color: var(--btn-text-color);
+    border: solid 2px var(--btn-border-color);
+    transition: all 0.3s;
+}
+.bloggerName:hover {
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
 .router::after {

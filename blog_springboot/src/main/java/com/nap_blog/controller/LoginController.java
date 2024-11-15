@@ -1,9 +1,10 @@
 package com.nap_blog.controller;
 
+import com.nap_blog.service.UserService;
 import com.nap_blog.utils.JwtUtils;
 import com.nap_blog.vo.Result;
 import com.nap_blog.entity.User;
-import com.nap_blog.service.LoginService;
+import com.nap_blog.vo.query.ForgetPasswordQuery;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,18 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class LoginController {
     @Autowired
-    LoginService loginService;
+    UserService userService;
 
     @PostMapping("/login")
     public Result login(@RequestBody User user) {
-        User e = loginService.login(user);
-        //登录成功，返回下发令牌
-        if (e != null) {
-            String token = JwtUtils.createToken(e);//jwt包含了用户当前登录的信息
-            log.info("令牌是{}", token);
-            return Result.success(token);
-        }
-        return Result.error("用户名或密码错误");
+      return userService.login(user);
     }
 
     @PostMapping("/logout")
@@ -33,8 +27,25 @@ public class LoginController {
         return request.getAttribute("userId") == null ? Result.success() : Result.error();
     }
 
-    @PostMapping("/register")
-    public Result register(@RequestBody User user) {
-        return loginService.register(user);
+    @GetMapping("/validateEmail")
+    public Result validateEmail(ForgetPasswordQuery forgetPasswordQuery) {
+       return userService.validateEmail(forgetPasswordQuery);
     }
+
+    @GetMapping("/validateCode")
+    public Result validateCode(@RequestParam("code") String code) {
+        return userService.verifyCode(code);
+    }
+
+    @PutMapping("/resetPassword")
+    public Result validateEmail(@RequestBody String newPassword) {
+        return userService.resetPassword(newPassword);
+    }
+
+    @GetMapping("/checkPassword")
+    public Result checkPassword(String password,HttpServletRequest request) {
+        return userService.checkPassword(password,request);
+    }
+
+
 }

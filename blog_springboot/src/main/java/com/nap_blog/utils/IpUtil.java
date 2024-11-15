@@ -63,7 +63,7 @@ public class IpUtil {
    }
 
    private static void loadCityData() {
-      if (cityMap.isEmpty()) { // 只在第一次调用时加载
+      if (cityMap.isEmpty()) {
          try {
             String content = new String(Files.readAllBytes(Paths.get(CITIES_JSON_PATH)));
             JSONObject jsonObject = new JSONObject(content);

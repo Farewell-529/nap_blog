@@ -40,7 +40,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="flex flex-col items-center  mt-15">
+    <div class="flex flex-col items-center  mt-15 font-mono">
         <div class="text-2xl font-semibold mb-5">
             目前总共{{ total }}篇文章，再接再厉~
         </div>
@@ -52,7 +52,7 @@ onMounted(() => {
                     <span>({{ showList[year].length }})</span>
                 </div>
                 <div class="text-sm flex justify-between font-semibold" v-for="item in showList[year]" :key="item.id">
-                    <div class="flex gap-3 mb-1">
+                    <div class="flex gap-3 mb-1 ">
                         <span>{{ item.createDate }}</span>
                         <NuxtLink :to="{ path: `/posts/${item.id}`, query: { id: item.id } }" class="router">{{
                 item.articleTitle }}</NuxtLink>
@@ -68,6 +68,7 @@ onMounted(() => {
 .router {
     position: relative;
     padding-bottom: 0.1rem;
+    font-size: 16px;
     transition: border-bottom 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
