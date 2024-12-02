@@ -35,9 +35,10 @@ const headers = [
     {
         title: '浏览时间',
         align: 'center',
-        width: '30px',
+        width: '100px',
         key: 'visitTime',
-        sortable: false
+        sortable: false,
+        nowrap:true
     },
     {
         title: '操作',

@@ -33,6 +33,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       baseURL: 'http://localhost:8080',
+      BLOG_OWNER_EMAILS:'2922349007@qq.com',
+      BLOG_OWNER_NAME:'Nap'
     }
   },
 

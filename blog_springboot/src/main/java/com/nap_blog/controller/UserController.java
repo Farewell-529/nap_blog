@@ -32,4 +32,22 @@ public class UserController {
         user.setUpdateDate(new Date());
         return userService.updateById(user)?Result.success():Result.error();
     }
+
+    @GetMapping("/admin/validateOldEmail")
+    public Result validateOldEmail(String email) {
+        return userService.validateOldEmail(email);
+    }
+    @GetMapping("/admin/validateNewEmail")
+    public Result validateNewEmail(String email) {
+        return userService.validateNewEmail(email);
+    }
+    @GetMapping("/admin/validateCode")
+    public Result validateCode(String code,String toEmail) {
+        return userService.verifyCode(code,toEmail);
+    }
+    @PutMapping("/admin/editEmail")
+    public Result editEmail(@RequestBody String email,HttpServletRequest request) {
+        return userService.editEmail(email,request);
+    }
+
 }

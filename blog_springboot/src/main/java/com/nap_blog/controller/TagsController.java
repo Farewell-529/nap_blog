@@ -54,6 +54,6 @@ public class TagsController {
 
     @GetMapping("/api/tags/countsList")
     public Result getTagsCountsList() {
-        return Result.success(tagsService.getTagsCountsList());
+        return Result.success(tagsService.getTagsCountsListFront());
     }
 }

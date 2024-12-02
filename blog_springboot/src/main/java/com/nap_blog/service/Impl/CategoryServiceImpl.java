@@ -119,7 +119,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
                         article -> article.getCategoryId().longValue(),
                         Collectors.summingInt(e -> 1)
                 ));
-        List<CategoryCountRes> categoryCountResList = categoryList.stream().map(item -> {
+        List<CategoryCountRes> categoryCountResList = categoryList.stream().filter(item->countMap.getOrDefault(item.getId(),0)>0)
+                .map(item -> {
             CategoryCountRes categoryCountRes = new CategoryCountRes();
             categoryCountRes.setId(item.getId());
             categoryCountRes.setCategoryName(item.getCategoryName());

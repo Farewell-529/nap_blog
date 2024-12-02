@@ -15,11 +15,19 @@ public interface UserService extends IService<User> {
 
     Result register(User user);
 
-    Result validateEmail(ForgetPasswordQuery forgetPasswordQuery);
-    Result verifyCode(String inputCode);
+    Result sendEmailValidateCodeForForgetPassword(ForgetPasswordQuery forgetPasswordQuery);
+
+    Result validateOldEmail(String email);
+
+    Result validateNewEmail(String email);
+
+    Result editEmail(String email,HttpServletRequest request);
+    Result verifyCode(String inputCode,String toEmail);
     Result resetPassword(String resetPassword);
 
     Result checkPassword(String password, HttpServletRequest request);
 
     Result editPassword(EditAccountQuery editAccountQuery, HttpServletRequest request);
+
+    Result sendValidateCode(String toEmail);
 }

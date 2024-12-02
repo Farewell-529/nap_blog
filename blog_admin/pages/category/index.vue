@@ -222,8 +222,8 @@ const clickDatePicker = () => {
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn text="Close"  @click="dialog = false"></v-btn>
-                    <v-btn  text="Save" variant="tonal" @click="handlerOption"></v-btn>
+                    <v-btn text="关闭"  @click="dialog = false"></v-btn>
+                    <v-btn  text="保存" variant="tonal" @click="handlerOption"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>

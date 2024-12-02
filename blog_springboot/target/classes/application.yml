@@ -35,7 +35,7 @@ email:
   subject:
     defaultCommentSubject: 标题:《%s》有新评论
     replyCommentSubject: 你在nap博客评论的标题为:《%s》的文章有回复
-    VerificationCodeSubject: 博客找回密码
+    VerificationCodeSubject: 博客验证码
   content:
     defaultCommentContent: |
       文章标题:%s<br>

@@ -7,21 +7,30 @@ import MarkdownIt from 'markdown-it';
 // @ts-ignore
 import { createHighlighter } from 'shiki'
 import { type User } from "~/types/User";
-import 'github-markdown-css/github-markdown.css';
-import { getAccountApi, editAccountApi, checkPasswordApi, editPasswordApi } from "~/api/user";
+import 'github-markdown-css/github-markdown-light.css';
+import { getAccountApi, checkPasswordApi, editPasswordApi, validateOldEmailApi, validateNewEmailApi, validateCodeApi, editEmail } from "~/api/user";
 const store = blogInfoStore()
 const blogInfo = ref<any>({})
 const logoutDialog = ref(false)
 const { $toast } = useNuxtApp()
-const dialog = ref(false)
+const accountDialog = ref(false)
+const loading = ref(false)
+const emailDialog = ref(false)
 const account = ref<User>()
 const isOldPassword = ref(false)
+const isValidateEmail = ref(false)
+const codeForm = ref('')
 const originalPassword = ref('')
 const editPasswordForm = ref({
     username: '',
     password: '',
     confirmPassword: ''
 })
+const editEmailForm = ref({
+    oldEmail: '',
+    newEmail: ''
+})
+const eamilHandle = ref<'validateOldEmail' | 'validateOldEmailCode' | 'validateNewEmail' | 'validateNewEmailCode' | 'editEmail'>('validateOldEmail')
 let md: any
 const initializeMarkdown = async () => {
     const highlighter = await createHighlighter({
@@ -65,6 +74,12 @@ const initializeMarkdown = async () => {
         },
     })
 };
+const handleApiCall = async (apiFunc: Function, payload: any, nextStep?: typeof eamilHandle.value) => {
+    const { code, msg } = await apiFunc(payload)
+    if (code !== 200) return $toast.error(msg)
+    $toast.success(msg)
+    if (nextStep) eamilHandle.value = nextStep
+}
 const encodeBase64 = (text: string): string => {
     return btoa(unescape(encodeURIComponent(text)));
 };
@@ -107,12 +122,15 @@ const getAccount = async () => {
     const { data } = await getAccountApi()
     editPasswordForm.value.username = data.username
 }
-const clickEditBtn = async () => {
+const clickEditAccountBtn = async () => {
     await getAccount()
-    dialog.value = true
+    accountDialog.value = true
+}
+const clickEditEmialBtn = () => {
+    emailDialog.value = true
 }
 const close = () => {
-    dialog.value = false
+    accountDialog.value = false
 }
 const validate = (user: User) => {
     if (user.username == null || user.username == '') {
@@ -146,6 +164,12 @@ const checkOriginalPwdHandle = async () => {
     isOldPassword.value = true
     originalPassword.value = ''
 }
+const checkOriginalEmailHandle = async () => {
+    loading.value = true
+    handleApiCall(validateOldEmailApi, editEmailForm.value.oldEmail, "validateOldEmailCode").then(() => {
+        loading.value = false
+    })
+}
 const editPasswordHandle = async () => {
     if (!(editPasswordForm.value.password && editPasswordForm.value.confirmPassword)) {
         if (editPasswordForm.value.password !== editPasswordForm.value.confirmPassword) {
@@ -169,12 +193,46 @@ const editPasswordHandle = async () => {
         password: '',
         confirmPassword: ''
     }
-    dialog.value = false
+    accountDialog.value = false
     isOldPassword.value = false
 }
 const editPasswordClose = () => {
     isOldPassword.value = false
-    dialog.value = false
+    accountDialog.value = false
+}
+const resetSendCode = () => {
+    handleApiCall(validateOldEmailApi, editEmailForm.value.oldEmail, "validateOldEmailCode")
+}
+const checkOriginalBackHandle=()=>{
+    emailDialog.value=false
+    editEmailForm.value.oldEmail=''
+}
+const backToEmail = () => {
+    eamilHandle.value = 'validateOldEmail'
+}
+const valideCodeBtn = async () => {
+    let query = {
+        code: codeForm.value,
+        toEmail: ''
+    }
+    if (eamilHandle.value == 'validateOldEmailCode') {
+        query.toEmail = editEmailForm.value.oldEmail
+        handleApiCall(validateCodeApi, query, "validateNewEmail")
+        codeForm.value = ''
+        return
+    }
+    query.toEmail = editEmailForm.value.newEmail
+    handleApiCall(validateCodeApi, query, "editEmail")
+    await editEmail(editEmailForm.value.newEmail)
+    emailDialog.value = false
+    codeForm.value = ''
+}
+const editNewEmailHandle = () => {
+    loading.value = true
+    handleApiCall(validateNewEmailApi, editEmailForm.value.newEmail, "validateNewEmailCode").then(() => {
+        loading.value = false
+        editEmailForm.value.newEmail = ''
+    })
 }
 onMounted(() => {
     getBlogInfo()
@@ -208,9 +266,12 @@ onMounted(() => {
         <div v-html="blogInfo?.bio" class="mt-8 markdown-body">
         </div>
 
-        <div class="flex gap-4 fixed right-20 top-5">
-            <v-btn color="#000000" @click="clickEditBtn">
+        <div class="flex gap-4 fixed right-10 top-5">
+            <v-btn color="#000000" @click="clickEditAccountBtn">
                 修改账号密码
+            </v-btn>
+            <v-btn color="#000000" @click="clickEditEmialBtn">
+                更换邮箱
             </v-btn>
             <v-btn color="#000000" @click="logoutHandler">
                 退出登录
@@ -221,7 +282,7 @@ onMounted(() => {
                 编辑
             </v-btn>
         </NuxtLink>
-        <v-dialog v-model="dialog" max-width="600" persistent>
+        <v-dialog v-model="accountDialog" max-width="600" persistent>
             <v-card prepend-icon="mdi-account" title="修改账号" v-if="!isOldPassword">
                 <v-form class="p-3">
                     <v-text-field variant="solo-filled" v-model="editPasswordForm.username" label="账号" required>
@@ -249,6 +310,82 @@ onMounted(() => {
                 <v-card-actions>
                     <v-btn text="关闭" @click="editPasswordClose"></v-btn>
                     <v-btn text="确认" variant="tonal" @click="editPasswordHandle"></v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <v-dialog v-model="emailDialog" max-width="500" persistent>
+            <v-card class="p-7" prepend-icon="mdi-account" title="修改邮箱" v-if="eamilHandle == 'validateOldEmail'">
+                <v-form class="p-3">
+                    <v-text-field variant="solo-filled" v-model="editEmailForm.oldEmail" label="输入原始邮箱" required>
+                    </v-text-field>
+                </v-form>
+                <v-card-actions>
+                    <v-row dense>
+                        <v-col cols="4">
+                            <v-btn text="返回" class="my-2 " size="large" variant="elevated" block
+                                @click="checkOriginalBackHandle">
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="8">
+                            <v-btn text="下一步" class="my-2 text-white bg-black" size="large" variant="tonal" :loading
+                                block @click="checkOriginalEmailHandle">
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-card-actions>
+
+            </v-card>
+            <v-form v-if="eamilHandle === 'validateOldEmailCode' || eamilHandle === 'validateNewEmailCode'"
+                class="w-[500px]  p-2  flex opacity-95 flex-col rounded-md bg-white  mx-auto mt-32">
+                <div class="flex flex-col items-center justify-center gap-2">
+                    <span class="text-xl font-semibold ">
+                        验证码
+                    </span>
+                    <span class="text-xs text-gray-500">
+                        已向{{ eamilHandle == 'validateOldEmailCode' ? editEmailForm.oldEmail : editEmailForm.newEmail
+                        }}发送了验证码
+                    </span>
+                </div>
+                <v-row dense>
+                    <v-col cols="12">
+                        <v-otp-input v-model="codeForm"></v-otp-input>
+                    </v-col>
+                    <div class="text-[13px]  flex justify-center w-full text-center">
+                        <span class="w-[320px]">
+                            如果在收件箱中未看到该邮件，请查看垃圾邮件文件夹和广告邮件栏。如果仍未看到，要求
+                            <b class="cursor-pointer" @click="resetSendCode">重新发送</b>。
+                        </span>
+                    </div>
+                    <v-col cols="6">
+                        <v-btn class="my-2 " size="large" variant="elevated" block @click="backToEmail">
+                            返回
+                        </v-btn>
+                    </v-col>
+                    <v-col cols="6">
+                        <v-btn class="my-2 text-white bg-black" size="large" variant="elevated" block
+                            @click="valideCodeBtn">
+                            验证
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-form>
+            <v-card prepend-icon="mdi-account" title="新邮箱" v-if="eamilHandle == 'validateNewEmail'">
+                <v-form class="p-3">
+                    <v-text-field variant="solo-filled" v-model="editEmailForm.newEmail" label="输入新的邮箱" required>
+                    </v-text-field>
+                </v-form>
+                <v-card-actions>
+                    <v-row dense>
+                        <v-col cols="4">
+                            <v-btn text="返回" class="my-2 " size="large" variant="elevated" block @click="backToEmail">
+                            </v-btn>
+                        </v-col>
+                        <v-col cols="8">
+                            <v-btn text="下一步" class="my-2 text-white bg-black" :loading size="large" variant="tonal"
+                                block @click="editNewEmailHandle">
+                            </v-btn>
+                        </v-col>
+                    </v-row>
                 </v-card-actions>
             </v-card>
         </v-dialog>

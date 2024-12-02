@@ -12,13 +12,12 @@ const loginForm = ref<User>({
     username: '',
     password: '',
 })
-const emailForm = ref({
+const forgetForm = ref({
     username: '',
     email: ''
 })
 const codeForm = ref('')
 const newPasswordForm = ref('')
-const indeterminate = ref(false)
 const { $toast } = useNuxtApp()
 
 const handleApiCall = async (apiFunc: Function, payload: any, nextStep?: typeof currentHandle.value) => {
@@ -64,31 +63,29 @@ const keyUpHandler = (e: KeyboardEvent) => {
 };
 
 const valideEmailBtn = async () => {
-    if (emailForm.value.username == null || emailForm.value.username == '') {
+    if (forgetForm.value.username == null || forgetForm.value.username == '') {
         $toast.error("请输入账号")
         return
     }
-    if (emailForm.value.email == null || emailForm.value.email == '') {
+    if (forgetForm.value.email == null || forgetForm.value.email == '') {
         $toast.error("请输入邮箱")
         return
     }
-    indeterminate.value = true
-    handleApiCall(validateEmailApi,emailForm.value,'valideCode').then(()=>{
-        indeterminate.value = false
-    })
-  
+    handleApiCall(validateEmailApi,forgetForm.value,'valideCode')
 }
 const valideCodeBtn = async () => {
-    handleApiCall(verifyCodeApi,codeForm.value,'resetPassword')
+    const payload = {
+        code: codeForm.value,
+        toEmail: forgetForm.value.email, 
+    }
+    handleApiCall(verifyCodeApi,payload,'resetPassword')
   
 }
 const resetPasswordBtn = async () => {
     handleApiCall(resetPasswordApi,newPasswordForm.value,'login')
 }
 const resetSendCode = async () => {
-    handleApiCall(validateEmailApi,emailForm.value,'login').then(()=>{
-        indeterminate.value = false
-    })
+    handleApiCall(validateEmailApi,forgetForm.value,'login')
 }
 const handleBack = (targetStep: typeof currentHandle.value) => currentHandle.value = targetStep
 const backToEmail = () => {
@@ -142,11 +139,11 @@ onUnmounted(() => window.removeEventListener('keyup', keyUpHandler))
             </div>
             <v-row dense>
                 <v-col cols="12">
-                    <v-text-field v-model="emailForm.username" label="账号" required variant="solo" class="mt-10"
+                    <v-text-field v-model="forgetForm.username" label="账号" required variant="solo" class="mt-10"
                         hint="输入账号"></v-text-field>
                 </v-col>
                 <v-col cols="12">
-                    <v-text-field v-model="emailForm.email" label="邮箱" required variant="solo"
+                    <v-text-field v-model="forgetForm.email" label="邮箱" required variant="solo"
                         hint="输入邮箱"></v-text-field>
                 </v-col>
                 <v-col cols="6">
@@ -170,7 +167,7 @@ onUnmounted(() => window.removeEventListener('keyup', keyUpHandler))
                     验证码
                 </span>
                 <span class="text-xs text-gray-500">
-                    已向{{ emailForm.email }}发送了验证码
+                    已向{{ forgetForm.email }}发送了验证码
                 </span>
             </div>
             <v-row dense>
@@ -224,4 +221,5 @@ onUnmounted(() => window.removeEventListener('keyup', keyUpHandler))
         </v-form>
     </div>
 </template>
-<style scoped></style>
+<style scoped>
+</style>

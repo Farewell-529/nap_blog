@@ -69,6 +69,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
                         .content(comment.getContent())
                         .name(comment.getName())
                         .userId(comment.getUserId())
+                        .isAuthor(comment.getIsAuthor())
                         .createDate(comment.getCreateDate())
                         .build()
                 ).toList();
@@ -117,15 +118,15 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         Map<Long, String> articleMap = articleMapper.selectList(null).stream().collect(
                 Collectors.toMap(Article::getId, Article::getTitle)
         );
-//        Map<Long, String> commentsMap = commentsMapper.selectList(null).stream().collect(
-//                Collectors.toMap(Comments::getId, Comments::getName)
-//        );
+        Map<Long, String> commentsMap = commentsMapper.selectList(null).stream().collect(
+                Collectors.toMap(Comments::getId, Comments::getName)
+        );
         List<CommentsBackRes> commentsList = commentsMapper.selectList(page, lqw).stream().map(comment -> {
             CommentsBackRes commentsBackRes = new CommentsBackRes();
             BeanUtils.copyProperties(comment, commentsBackRes);
             commentsBackRes.setArticleName(articleMap.get(comment.getTargetId().longValue()));
             commentsBackRes.setStatus(comment.getStatus());
-//            commentsBackRes.setReplyName(comment.getReplyId() != null ? commentsMap.get(comment.getReplyId().longValue()) : null);
+            commentsBackRes.setReplyName(comment.getReplyId() != null ? commentsMap.get(comment.getReplyId().longValue()) : null);
             return commentsBackRes;
         }).toList();
         return new PageResult<>(commentsList, total);
@@ -193,6 +194,9 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         //检查评论信息是否有空
         if (isInvalidComment(comments)) {
             return Result.error("有未填项");
+        }
+        if(comments.getContent().length()>500){
+            return Result.error("最多评论500字");
         }
         //初始化添加评论的信息
         initializeComment(comments,request);

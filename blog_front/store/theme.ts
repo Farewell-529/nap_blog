@@ -4,14 +4,18 @@ export const themeStore = defineStore('theme', () => {
         isDark.value = !isDark.value
         if (isDark.value) {
             localStorage.setItem("theme", "dark")
+            document.documentElement.classList.add("dark");
         } else {
             localStorage.setItem("theme", "light")
+            document.documentElement.classList.remove("dark");
         }
     }
     const initTheme = () => {
-        const temp = localStorage.getItem("theme")
-        if (temp!=null&&temp == "dark") {
-            isDark.value = true
+        if (localStorage.getItem("theme") === 'dark' || (!localStorage.getItem("theme") &&
+            window.matchMedia("(prefers-color-scheme: dark)"))) {
+                isDark.value = true
+        } else {
+            isDark.value = false
         }
     }
     return {

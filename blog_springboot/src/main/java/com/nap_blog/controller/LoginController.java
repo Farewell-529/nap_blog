@@ -29,12 +29,12 @@ public class LoginController {
 
     @GetMapping("/validateEmail")
     public Result validateEmail(ForgetPasswordQuery forgetPasswordQuery) {
-       return userService.validateEmail(forgetPasswordQuery);
+        return userService.sendEmailValidateCodeForForgetPassword(forgetPasswordQuery);
     }
 
     @GetMapping("/validateCode")
-    public Result validateCode(@RequestParam("code") String code) {
-        return userService.verifyCode(code);
+    public Result validateCode( String code,String toEmail) {
+        return userService.verifyCode(code,toEmail);
     }
 
     @PutMapping("/resetPassword")
@@ -46,6 +46,5 @@ public class LoginController {
     public Result checkPassword(String password,HttpServletRequest request) {
         return userService.checkPassword(password,request);
     }
-
 
 }

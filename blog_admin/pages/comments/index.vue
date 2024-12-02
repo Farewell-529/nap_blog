@@ -10,9 +10,10 @@ const headers = [
     {
         title: '头像',
         key: 'avatar',
-        width: '80px',
+        minWidth: '100px',
         align: 'center',
-        sortable: false
+        sortable: false,
+        nowrap:true
     },
     {
         title: '昵称',
@@ -25,7 +26,7 @@ const headers = [
     {
         title: '内容',
         key: 'content',
-        minWidth: '150px',
+        minWidth: '250px',
         sortable: false
     },
     {
@@ -39,7 +40,7 @@ const headers = [
         title: '网址',
         key: 'url',
         width: '100px',
-        maxWidth: '120px',
+        minWidth: '120px',
         nowrap: true,
         sortable: false
     },
@@ -48,7 +49,8 @@ const headers = [
         align: 'center',
         key: 'ip',
         width: '120px',
-        sortable: false
+        sortable: false,
+        nowrap:true
     },
 
     {
@@ -59,18 +61,36 @@ const headers = [
         sortable: false
     },
     {
+        title: '回复的人',
+        align: 'center',
+        key: 'replyName',
+        width: '50px',
+        sortable: false,
+        nowrap:true
+    },
+    {
         title: '是否隐藏',
         align: 'center',
         key: 'status',
         width: '100px',
-        sortable: false
+        sortable: false,
+        nowrap:true
+    },
+    {
+        title: '是否本人评论',
+        align: 'center',
+        key: 'isAuthor',
+        width: '100px',
+        sortable: false,
+        nowrap:true
     },
     {
         title: '评论日期',
         align: 'center',
         key: 'createDate',
         width: '130px',
-        sortable: false
+        sortable: false,
+        nowrap:true
     },
     {
         title: '操作',
@@ -110,6 +130,7 @@ const CommentsForm = ref<Comments>({
     content: '',
     pid: -1,
     replytId: -1
+
 })
 const blockFrom = ref<Blocked>({
     ip: "",
@@ -124,7 +145,8 @@ const getCommentsList = async () => {
     showCommentsList.value = data.recordList?.map((item: CommentsRes) => {
         return {
             ...item,
-            createDate: formatDateToYYYYMMDD(new Date(item.createDate!))
+            createDate: formatDateToYYYYMMDD(new Date(item.createDate!)),
+            isAuthor: item.isAuthor  === 1 ? '是' : '否'
         }
     })
     loading.value = false
@@ -244,7 +266,7 @@ const clickDatePicker = () => {
     queryParams.value.createDate = formatDateToYYYYMMDD(new Date(rowDate.value))
     dateDialog.value = false
 }
-const clickSwitch = async (item: Comments) => {
+const clickSwitch = async (item: any) => {
     item.status = item.status === 0 ? 1 : (item.status === 1 ? 0 : item.status);
     const { code } = await updateCommentsApi(item);
     // 根据返回码显示提示
@@ -257,7 +279,7 @@ const clickSwitch = async (item: Comments) => {
 
 </script>
 <template>
-    <div class="w-full">
+    <div class="w-full overflow-x-scroll">
         <div class="text-2xl font-semibold mt-10 hover:cursor-pointer ">评论</div>
         <v-data-table-server :headers="headers as any" :items="showCommentsList" @update:options="loadingItem"
             :items-per-page="itemsPerPage" :items-length="total" :show-current-page="false" :loading

@@ -318,14 +318,17 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <div class="flex justify-center w-full">
-            <div id="viewChart" class="min-w-full h-[400px] mb-4 "></div>
-        </div>
         <div class="flex justify-between h-[340px]">
             <div id="category" class="w-[400px] h-[300px]"></div>
             <div id="tagsCloud" class="w-[800px] h-[300px]"></div>
         </div>
+        <!-- <div class="flex justify-center m-w-full"> -->
+            <div id="viewChart" class="w-full h-[400px] mb-4"></div>
+        <!-- </div> -->
+  
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+</style>

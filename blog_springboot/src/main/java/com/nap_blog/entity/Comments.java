@@ -29,6 +29,7 @@ public class Comments {
     private String email;
     private String avatar;
     private String url;
+    private Integer isAuthor;
     private Date createDate;
     @TableField(exist = false)
     private List<Comments> childComments;

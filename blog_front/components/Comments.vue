@@ -17,6 +17,9 @@ const props = defineProps({
         required: true
     }
 })
+// 获取配置
+const config = useRuntimeConfig()
+const isAdmin=ref(false)
 const isReply = ref<number>(0)
 const isSend = ref(false)
 const replyName = ref('')
@@ -29,7 +32,8 @@ const commentsInfo = ref({
     name: '',
     email: '',
     url: '',
-    content: ''
+    content: '',
+    isAuthor:0
 });
 // 加载 localStorage 中的数据
 const loadCommentsInfo = () => {
@@ -46,6 +50,7 @@ const mapComments = (comments: any[]) => {
             content: item.content,
             childComments: item.childComments,
             avatar: item.avatar,
+            isAuthor:item.isAuthor,
             createDate: formatDateWithDay(item.createDate)
         }
     })
@@ -77,6 +82,9 @@ const addComment = async () => {
     if (!validateRole(commentsInfo.value.name, commentsInfo.value.email, commentsInfo.value.url, commentsInfo.value.content)) {
         return;
     }
+    if(commentsInfo.value.email==config.public.BLOG_OWNER_EMAILS&&commentsInfo.value.name==config.public.BLOG_OWNER_NAME){
+        commentsInfo.value.isAuthor=1
+    }
     isSend.value = true
     const { code, msg } = await saveCommentstApi(commentsInfo.value)
     if (code != 200) {
@@ -95,6 +103,10 @@ const addComment = async () => {
 const validateRole = (name: string, email: string, url: string, content: string) => {
     if (name == '') {
         toast.error("得填写昵称")
+        return false
+    }
+    if (content.length>500) {
+        toast.error("最多评论500字")
         return false
     }
     if (content == '') {
@@ -182,7 +194,7 @@ onMounted(() => {
             v-model:commentsInfo="commentsInfo">
         </CommentForm>
 
-        <div v-for="rootComment in commentsShowList">
+        <div v-for="rootComment  in commentsShowList">
             <div class="mt-5 flex items-center ">
                 <div class="size-10 ">
                     <img class="rounded-lg"
@@ -194,12 +206,15 @@ onMounted(() => {
                             class="font-semibold text-sm mr-2 inline-block max-w-52 whitespace-nowrap overflow-hidden text-ellipsis">
                             {{ rootComment.name }}
                         </span>
+                        <span  class="bg-orange-600 text-white text-sm rounded-sm mr-2 font-mono font-semibold" v-show="rootComment.isAuthor==1">
+                            博主
+                        </span>
                         <span class="text-[10px] " style="color: var(--minor-text-color);">{{ rootComment.createDate }}
                         </span>
                     </div>
                     <span class="text-sm w-max   rounded-tl-lg rounded-tr-lg rounded-br-lg px-3 py-2 
                          max-w-[50rem]"
-                        style="color: var(---comment-content-color); background-color: var(---comment-bg-color)">
+                        style="color: var(--comment-content-color); background-color: var(--comment-bg-color)">
                         {{ rootComment.content }}
                     </span>
                     <span class="text-[12px] cursor-pointer font-semibold mt-2 select-none"
@@ -233,7 +248,7 @@ onMounted(() => {
                         </div>
                         <span class="text-sm w-max  rounded-tl-lg rounded-tr-lg rounded-br-lg px-3 py-2 
                             max-w-[47rem]"
-                            style="color: var(---comment-content-color); background-color: var(---comment-bg-color)">
+                            style="color: var(--comment-content-color); background-color: var(--comment-bg-color)">
                             {{ childComment.content }}
                         </span>
                         <span class="text-[12px] cursor-pointer font-semibold mt-2 select-none"

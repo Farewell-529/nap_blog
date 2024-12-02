@@ -125,7 +125,7 @@ public class BlogInfoServiceImpl extends ServiceImpl<BlogInfoMapper, BlogInfo> i
         //查询每个分类的使用次数
         List<CategoryCountRes> categoryCountResList = categoryService.getCategoryCountsList().getRecordList();
         //查询每个标签的使用次数
-        List<TagsCountRes> tagsCountResList = tagsService.getTagsCountsList().getRecordList();
+        List<TagsCountRes> tagsCountResList = tagsService.getTagsCountsListAdmin().getRecordList();
         return HomePageInfoRes.builder()
                 .articleCount(articleCount)
                 .categoryCount(categoryCount)

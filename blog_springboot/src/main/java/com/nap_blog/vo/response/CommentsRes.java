@@ -23,6 +23,7 @@ public class CommentsRes {
     private String name;
     private String content;
     private String avatar;
+    private Integer isAuthor;
     private Date createDate;
     private List<CommentsRes> childComments;
 }

@@ -13,6 +13,7 @@ export interface Comments{
   status?:number,
   url?:string,
   email?:string,
+  isAuthor?:number,
   avatar?:string,
   createDate?:string
 }
@@ -28,6 +29,8 @@ export interface CommentsRes{
   status?:number,
   url?:string,
   email?:string,
+  isAuthor?:number,
+  replyName?:string
   avatar?:string,
   articleName?:string,
   createDate?:string

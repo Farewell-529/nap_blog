@@ -10,6 +10,7 @@ export interface Comments {
     email:string,
     avatar?:string,
     url:string,
+    isAuthor:number,
     createDate?: string,
     childComments?:Array<Comments>
 }
@@ -21,6 +22,7 @@ export interface CommentsRes {
     name?:string,
     content?:string,
     avatar?:string,
+    isAuthor?:number,
     createDate?: string,
     childComments?:Array<CommentsRes>
 }

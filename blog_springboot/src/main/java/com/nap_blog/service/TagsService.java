@@ -18,5 +18,7 @@ public interface TagsService extends IService<Tags> {
 
     List<Tags> getTagListByArticleId(Long articleId);
 
-    PageResult<TagsCountRes> getTagsCountsList();
+    PageResult<TagsCountRes> getTagsCountsListFront();
+
+    PageResult<TagsCountRes> getTagsCountsListAdmin();
 }

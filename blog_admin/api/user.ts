@@ -2,15 +2,15 @@ import request from '~/utils/request'
 import { type Result } from '~/types/Result'
 import { type User } from "~/types/User";
 
-export function getAccountApi():Promise<Result>{
+export function getAccountApi(): Promise<Result> {
    return request('/admin/user', {
       method: 'get'
    })
 }
-export function editAccountApi(user:User):Promise<Result>{
+export function editAccountApi(user: User): Promise<Result> {
    return request('/admin/user/edit', {
       method: 'put',
-      body:user
+      body: user
    })
 }
 export function logout(): Promise<Result> {
@@ -46,16 +46,41 @@ export function uploadImgApi(file: File, articleId: Number): Promise<Result> {
    })
 }
 
-export function checkPasswordApi(password:string): Promise<Result> {
+export function checkPasswordApi(password: string): Promise<Result> {
    return request('/admin/checkPassword', {
       method: 'get',
-      params:{password}
+      params: { password }
    })
- }
+}
 
- export function editPasswordApi(account:{username:string,password:string}): Promise<Result> {
+export function editPasswordApi(account: { username: string, password: string }): Promise<Result> {
    return request('/admin/editPassword', {
       method: 'put',
-      body:account
+      body: account
    })
- }
+}
+export function validateOldEmailApi(email:string): Promise<Result> {
+   return request('/admin/validateOldEmail', {
+      method: 'get',
+      params: {email}
+   })
+}
+export function validateNewEmailApi(email:string): Promise<Result> {
+   return request('/admin/validateNewEmail', {
+      method: 'get',
+      params: {email}
+   })
+}
+export function validateCodeApi(query:{code:string,toEmail:string}): Promise<Result> {
+   const {code,toEmail}=query
+   return request('/admin/validateCode', {
+      method: 'get',
+      params: {code,toEmail}
+   })
+}
+export function editEmail(email:string): Promise<Result> {
+   return request('/admin/editEmail', {
+      method: 'put',
+      body: email
+   })
+}

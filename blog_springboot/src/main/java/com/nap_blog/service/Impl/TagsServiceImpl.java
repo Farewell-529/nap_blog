@@ -67,7 +67,8 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
         // 批量查询每个标签的使用数量
         Map<Long, Integer> useCountMap = articleTagsService.countByTagsIds(tagsIds);
         // 组装结果列表
-        List<TagsBackRes> tagsBackResList = tagsList.stream().map(item -> TagsBackRes.builder().id(item.getId()).tagsName(item.getTagsName()).useCount(useCountMap.getOrDefault(item.getId(), 0)).createDate(item.getCreateDate()).build()).toList();
+        List<TagsBackRes> tagsBackResList = tagsList.stream().map(item -> TagsBackRes.builder()
+                .id(item.getId()).tagsName(item.getTagsName()).useCount(useCountMap.getOrDefault(item.getId(), 0)).createDate(item.getCreateDate()).build()).toList();
         return new PageResult<>(tagsBackResList, total);
     }
 
@@ -108,7 +109,15 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
     }
 
     @Override
-    public PageResult<TagsCountRes> getTagsCountsList() {
+    public PageResult<TagsCountRes> getTagsCountsListFront() {
+      return getTagsCountsList(0);// 用户接口，过滤文章数量为 0 的标签
+    }
+    @Override
+    public PageResult<TagsCountRes> getTagsCountsListAdmin() {
+        return getTagsCountsList(-1);// 管理员接口，返回所有标签
+    }
+
+    public PageResult<TagsCountRes> getTagsCountsList(Integer count) {
         List<Tags> tagsList = tagsMapper.selectList(null);
         // 获取所有标签的ID
         List<Long> tagsIds = tagsList.stream().map(Tags::getId).toList();
@@ -125,13 +134,16 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
                 .collect(Collectors.groupingBy(ArticleTags::getTagsId,
                         //求和
                         Collectors.summingInt(e -> 1)));
-        List<TagsCountRes> TagsCountResList = tagsList.stream().map(item -> {
-            TagsCountRes tagsCountRes = new TagsCountRes();
-            tagsCountRes.setId(item.getId());
-            tagsCountRes.setArticleCount(countMap.getOrDefault(item.getId(), 0));
-            tagsCountRes.setTagsName(item.getTagsName());
-            return tagsCountRes;
-        }).toList();
+        // 构建返回的标签统计列表，过滤掉文章数量为0的标签 
+        List<TagsCountRes> TagsCountResList = tagsList.stream()
+                .filter(item -> count == -1 || countMap.getOrDefault(item.getId(), 0) > count)
+                .map(item -> {
+                    TagsCountRes tagsCountRes = new TagsCountRes();
+                    tagsCountRes.setId(item.getId());
+                    tagsCountRes.setArticleCount(countMap.getOrDefault(item.getId(), 0)); // 使用默认值 0
+                    tagsCountRes.setTagsName(item.getTagsName());
+                    return tagsCountRes;
+                }).toList();
         Long total = tagsMapper.selectCount(null);
         //构建返回数据
         return new PageResult<>(TagsCountResList, total);

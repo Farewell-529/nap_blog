@@ -7,16 +7,8 @@ import { type BloggerInfo } from "~/types/BlogInfo";
 import { blogInfoStore } from "~/store/blogInfo";
 import { themeStore } from "~/store/theme";
 const theme = themeStore()
-const updateClass = () => {
-    if (theme.isDark) {
-        document.documentElement.classList.add("dark");
-    } else {
-        document.documentElement.classList.remove("dark");
-    }
-};
 const clickBtn = () => {
     theme.toggleTheme()
-    updateClass()
 }
 const store = blogInfoStore()
 const userInfo = ref<BloggerInfo>({
@@ -89,11 +81,6 @@ onMounted(() => {
   </div>
 </template>
 <style scoped>
-@font-face {
-    font-family: ZCOOL KuaiLe;
-    src: url('../assets/font/ZCOOLKuaiLe-Regular.ttf') format('truetype');
-}
-
 .router {
     position: relative;
     padding-bottom: 0.5rem;

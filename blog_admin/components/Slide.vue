@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ArrowLeft, ArrowRight, Home, Newspaper, Tags, BookOpenCheck, MessageSquareMore, LayoutDashboard, Aperture, UserRound, SquareMousePointer, ShieldCheck  } from 'lucide-vue-next'
+import { ArrowLeft, ArrowRight, Home, Newspaper, Tags, BookOpenCheck, MessageSquareMore, LayoutDashboard, Aperture, UserRound, SquareMousePointer, ShieldCheck } from 'lucide-vue-next'
 import { blogInfoStore } from '~/store/blogInfo'
+import { getBloggerInfoApi } from "~/api/blog";
+import * as echarts from 'echarts';
 const list = [
     {
         name: '仪表盘',
@@ -56,28 +58,63 @@ const list = [
         icon: UserRound
     }
 ]
+const resizeObserver = ref<ResizeObserver | null>(null);
 const isOpen = ref(true)
+const resizeCharts = () => {
+    const dom = document.getElementById("viewChart");
+    if (dom) {
+        const chartInstance = echarts.getInstanceByDom(dom);
+        if (chartInstance) {
+            chartInstance.resize();
+        }
+    }
+};
 const toggleOpen = () => {
-    isOpen.value = !isOpen.value
-}
+    isOpen.value = !isOpen.value;
+};
 const store = blogInfoStore()
-const blogInfo = computed(() => store.blogInfo)
+const blogInfo = ref()
+const getBlogInfo = async () => {
+    if (!store.blogInfo) {
+        const { data } = await getBloggerInfoApi()
+        store.setBlogInfo(data)
+        blogInfo.value = data
+        return
+    }
+    blogInfo.value = store.blogInfo
+}
+onMounted(() => {
+    getBlogInfo()
+    const sidebar = document.getElementById("slide");
+    if (sidebar) {
+        resizeObserver.value = new ResizeObserver(() => {
+            resizeCharts(); // 侧边栏宽度变化时实时调整图表
+        });
+        //observe 方法用来开始监听目标元素（这里是 sidebar）的尺寸变化,只要 sidebar 的宽度或高度发生变化，回调函数会被触发
+        resizeObserver.value.observe(sidebar);
+    }
+})
+onBeforeUnmount(() => {
+    if (resizeObserver.value) {
+        // 组件销毁时移除监听
+        resizeObserver.value.disconnect();
+    }
+});
 </script>
 <template>
     <div class="mr-12 ">
-        <div class="w-56 h-full transition-all duration-300 overflow-hidden" :class="{ closeSlide: !isOpen }">
+        <div id=slide class="w-56 h-full transition-all duration-300 overflow-hidden" :class="{ closeSlide: !isOpen }">
             <!--  -->
             <div class="w-56 h-full fixed left-0 top-0  bg-[#1d1d1d] text-[#d2d2d2] transition-all duration-300 overflow-hidden"
                 :class="{ closeSlide: !isOpen }">
-                <div class="flex justify-between  p-3 ">
+                <div class="flex justify-between  p-3 items-center">
                     <div v-if="isOpen" class="text-xl font-semibold cursor-pointer h-10"
                         @click="useRouter().push('/blogger')">
                         <span v-if="store.blogInfo?.bloggerName">{{ store.blogInfo?.bloggerName }}</span>
                         <span v-else>加载中...</span>
                     </div>
-                    <div class="text-xl font-semibold cursor-pointer h-10" @click="toggleOpen">
-                        <ArrowLeft v-if="isOpen" />
-                        <ArrowRight v-else />
+                    <div class="text-xl font-semibold cursor-pointer transition-transform duration-300"  :class="{'rotate-180':isOpen}" @click="toggleOpen">
+                        <ArrowLeft />
                     </div>
                 </div>
                 <div v-for="(item, index) in list" :key="index" class="hover:text-black w-48" v-ripple>
@@ -108,10 +145,10 @@ const blogInfo = computed(() => store.blogInfo)
     </div>
 </template>
 <style scoped>
+
 .closeSlide {
     width: 3rem;
     margin-right: -2rem;
-    /* transform: translateX(-15rem); */
 }
 
 .rootNuxtLink {

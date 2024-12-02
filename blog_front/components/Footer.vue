@@ -4,20 +4,12 @@ import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiWhiteBalanceSunny, mdiMoonFull } from '@mdi/js';
 import { themeStore } from "~/store/theme";
 const theme = themeStore()
-const updateClass = () => {
-    if (theme.isDark) {
-        document.documentElement.classList.add("dark");
-    } else {
-        document.documentElement.classList.remove("dark");
-    }
-};
 const clickBtn = () => {
     theme.toggleTheme()
-    updateClass()
+    // updateClass()
 }
 onMounted(() => {
     theme.initTheme(); // 初始化主题
-    updateClass(); // 根据当前主题设置类
 });
 </script>
 <template>
