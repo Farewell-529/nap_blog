@@ -5,11 +5,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.nap_blog.entity.Friend;
 import com.nap_blog.entity.Tags;
+import com.nap_blog.service.CommentsService;
 import com.nap_blog.vo.PageResult;
 import com.nap_blog.vo.query.FriendQuery;
 import com.nap_blog.mapper.FriendMapper;
 import com.nap_blog.service.FriendService;
+import com.nap_blog.vo.response.CommentsRes;
 import com.nap_blog.vo.response.FriendInfo;
+import com.nap_blog.vo.response.FriendsRes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +25,8 @@ import java.util.List;
 public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> implements FriendService {
     @Autowired
     FriendMapper friendMapper;
-
+    @Autowired
+    CommentsService commentsService;
     @Override
     public PageResult<Friend> listFriend(FriendQuery friendQuery) {
         long total = this.count();
@@ -66,12 +70,18 @@ public class FriendServiceImpl extends ServiceImpl<FriendMapper, Friend> impleme
     }
 
     @Override
-    public List<FriendInfo> listFriendFront() {
+    public FriendsRes listFriendFront() {
+        List<CommentsRes> commentsList = commentsService.getCommentsList("friends", 0);
+        return FriendsRes.builder().friendList(listFriendInFOFront()).commentsList(commentsList).build();
+    }
+
+    @Override
+    public List<FriendInfo> listFriendInFOFront() {
         List<Friend> friends = friendMapper.selectList(null);
         return friends.stream().map(friend ->
                 FriendInfo.builder()
                         .id(friend.getId())
-                        .friendName(friend.getFriendName())
+                        .friendName(friend.getFriendName()) 
                         .description(friend.getDescription())
                         .avatarUrl(friend.getAvatarUrl())
                         .url(friend.getUrl())

@@ -19,7 +19,7 @@ const props = defineProps({
 })
 // 获取配置
 const config = useRuntimeConfig()
-const isAdmin=ref(false)
+const isAdmin = ref(false)
 const isReply = ref<number>(0)
 const isSend = ref(false)
 const replyName = ref('')
@@ -33,7 +33,7 @@ const commentsInfo = ref({
     email: '',
     url: '',
     content: '',
-    isAuthor:0
+    isAuthor: 0
 });
 // 加载 localStorage 中的数据
 const loadCommentsInfo = () => {
@@ -50,7 +50,7 @@ const mapComments = (comments: any[]) => {
             content: item.content,
             childComments: item.childComments,
             avatar: item.avatar,
-            isAuthor:item.isAuthor,
+            isAuthor: item.isAuthor,
             createDate: formatDateWithDay(item.createDate)
         }
     })
@@ -82,8 +82,8 @@ const addComment = async () => {
     if (!validateRole(commentsInfo.value.name, commentsInfo.value.email, commentsInfo.value.url, commentsInfo.value.content)) {
         return;
     }
-    if(commentsInfo.value.email==config.public.BLOG_OWNER_EMAILS&&commentsInfo.value.name==config.public.BLOG_OWNER_NAME){
-        commentsInfo.value.isAuthor=1
+    if (commentsInfo.value.email == config.public.BLOG_OWNER_EMAILS && commentsInfo.value.name == config.public.BLOG_OWNER_NAME) {
+        commentsInfo.value.isAuthor = 1
     }
     isSend.value = true
     const { code, msg } = await saveCommentstApi(commentsInfo.value)
@@ -105,7 +105,7 @@ const validateRole = (name: string, email: string, url: string, content: string)
         toast.error("得填写昵称")
         return false
     }
-    if (content.length>500) {
+    if (content.length > 500) {
         toast.error("最多评论500字")
         return false
     }
@@ -189,31 +189,32 @@ onMounted(() => {
 })
 </script>
 <template>
-    <div class="w-[60rem] ml-[3.75rem] ">
+    <div class="w-[60rem] ">
         <CommentForm id="defaultCommentForm" v-show="isReply == 0" @addComment="addComment" :isSend
             v-model:commentsInfo="commentsInfo">
         </CommentForm>
 
-        <div v-for="rootComment  in commentsShowList">
+        <div v-for="rootComment in commentsShowList">
             <div class="mt-5 flex items-center ">
                 <div class="size-10 ">
                     <img class="rounded-lg"
-                        :src="'https://www.gravatar.com/avatar/' + rootComment.avatar + '?d=mysteryman'" alt="">
+                        :src="'https://gravatar.webp.se/avatar/' + rootComment.avatar + '?d=identicon'" alt="">
                 </div>
                 <div class="ml-3 flex flex-col">
                     <div>
                         <span
-                            class="font-semibold text-sm mr-2 inline-block max-w-52 whitespace-nowrap overflow-hidden text-ellipsis">
+                            class="font-semibold  text-lg mr-2 inline-block max-w-52 whitespace-nowrap overflow-hidden text-ellipsis font-mono">
                             {{ rootComment.name }}
                         </span>
-                        <span  class="bg-orange-600 text-white text-sm rounded-sm mr-2 font-mono font-semibold" v-show="rootComment.isAuthor==1">
+                        <span class="bg-orange-600 text-white text-sm rounded-sm mr-2 font-mono font-semibold"
+                            v-show="rootComment.isAuthor == 1">
                             博主
                         </span>
                         <span class="text-[10px] " style="color: var(--minor-text-color);">{{ rootComment.createDate }}
                         </span>
                     </div>
-                    <span class="text-sm w-max   rounded-tl-lg rounded-tr-lg rounded-br-lg px-3 py-2 
-                         max-w-[50rem]"
+                    <span class="text-sm w-max   rounded-tl-lg rounded-tr-lg rounded-br-lg px-2 py-1 font-bold 
+                         max-w-[50rem] whitespace-pre font-mono"
                         style="color: var(--comment-content-color); background-color: var(--comment-bg-color)">
                         {{ rootComment.content }}
                     </span>
@@ -231,7 +232,7 @@ onMounted(() => {
                 <div class="mt-3 flex items-center ml-10 ">
                     <div class="size-9">
                         <img class="rounded-lg"
-                            :src="'https://www.gravatar.com/avatar/' + childComment.avatar + '?d=mysteryman'" alt="">
+                            :src="'https://gravatar.loli.net/avatar/' + childComment.avatar + '?d=identicon'" alt="">
                     </div>
                     <div class="ml-3 flex flex-col">
                         <div>
@@ -242,7 +243,8 @@ onMounted(() => {
                             <span class="text-[10px]  ml-2" style="color: var(--minor-text-color);">
                                 {{ formatDateWithDay(childComment.createDate!) }}
                             </span>
-                            <span v-if="childComment.replyName" class="font-semibold text-[14px]" style="color: var(--text-color);">
+                            <span v-if="childComment.replyName" class="font-semibold text-[14px]"
+                                style="color: var(--text-color);">
                                 @{{ childComment.replyName }}
                             </span>
                         </div>

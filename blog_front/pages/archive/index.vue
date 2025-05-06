@@ -82,7 +82,7 @@ onMounted(() => {
     background-color: var(--btn-bg-color);
     /* 初始状态下，宽度为 0，元素不可见 */
     transform: scaleX(0);
-    transform-origin: bottom right;
+    transform-origin: bottom left;
     /* 添加过渡效果 */
     transition: transform 0.2s ease-in-out;
 

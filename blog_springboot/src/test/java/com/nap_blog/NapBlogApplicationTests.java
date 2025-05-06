@@ -9,6 +9,8 @@ import com.nap_blog.utils.IpUtil;
 import com.nap_blog.utils.JwtUtils;
 import com.nap_blog.utils.SensitiveWordUtil;
 import com.nap_blog.vo.query.VisitsQuery;
+import com.nap_blog.vo.response.BloggerInfoRes;
+import com.nap_blog.vo.response.CommentsRes;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -25,7 +28,8 @@ class MybatisTests {
     private TagsService tagsService;
     @Autowired
     private ArticleService articleService;
-
+    @Autowired
+    CommentsService commentsService;
     @Autowired
     ImgService imgService;
     @Autowired
@@ -37,11 +41,13 @@ class MybatisTests {
     @Autowired
     BlockedService blockedService;
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    BlogInfoService blogInfoService;
+
     @Test
     void test1() {
-        String rowPassword="156746861117";
-        String encode = passwordEncoder.encode("15674686117");
-        System.out.println(encode);
+        List<CommentsRes> commentsList = commentsService.getCommentsList("frineds", 0);
+        System.out.println(commentsList);
     }
 
 

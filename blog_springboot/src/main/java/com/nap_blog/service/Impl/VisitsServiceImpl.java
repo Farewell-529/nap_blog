@@ -58,7 +58,6 @@ public class VisitsServiceImpl extends ServiceImpl<VisitsMapper, Visits> impleme
         System.out.println("已经执行了" + l);
         // 设置过期时间
         redisTemplate.expire(visitKey, 1, TimeUnit.HOURS);
-
     }
 
     @Override

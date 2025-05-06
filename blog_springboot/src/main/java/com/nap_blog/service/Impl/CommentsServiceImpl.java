@@ -51,14 +51,14 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
     EmailUtil emailUtil;
 
     @Override
-    public List<CommentsRes> getCommentsList(String targetType, Integer articleId) {
+    public List<CommentsRes> getCommentsList(String targetType, Integer targetId) {
         Map<Long, String> commentsMap = commentsMapper.selectList(null).stream().collect(
                 Collectors.toMap(Comments::getId, Comments::getName)
         );
         List<Comments> allComments = commentsMapper.selectList(new LambdaQueryWrapper<Comments>()
                 .eq(Comments::getTargetType, targetType)
-                .eq(Comments::getTargetId, articleId)
-                .eq(Comments::getStatus,1));
+                .eq(Comments::getTargetId, targetId)
+                .eq(Comments::getStatus, 1));
 
         List<CommentsRes> rootComments = allComments.stream().filter(item -> item.getPid() == -1)
                 .map(comment -> CommentsRes.builder()
@@ -107,8 +107,8 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
             LocalDate localDate = LocalDate.parse(commentsQuery.getCreateDate());
             LocalDateTime startOfDay = localDate.atStartOfDay();
             LocalDateTime startOfNextDay = localDate.plusDays(1).atStartOfDay();
-            lqw.ge(Comments::getCreateDate,startOfDay);
-            lqw.lt(Comments::getCreateDate,startOfNextDay);
+            lqw.ge(Comments::getCreateDate, startOfDay);
+            lqw.lt(Comments::getCreateDate, startOfNextDay);
         }
         lqw.eq(Comments::getTargetType, commentsQuery.getTargetType());
         int current = (commentsQuery.getCurrent() == null) ? 1 : commentsQuery.getCurrent();
@@ -188,23 +188,29 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
     @Override
     public Result saveComments(Comments comments, HttpServletRequest request) throws MessagingException {
         Blocked isExist = blockedService.checkBlocked(request.getRemoteAddr());
-        if(isExist.getStatus()==1){
+        if (isExist != null && isExist.getStatus() == 1) {
             return Result.error("你违反了评论规则，暂时无法评论");
         }
         //检查评论信息是否有空
         if (isInvalidComment(comments)) {
             return Result.error("有未填项");
         }
-        if(comments.getContent().length()>500){
+        if (comments.getContent().length() > 500) {
             return Result.error("最多评论500字");
         }
         //初始化添加评论的信息
-        initializeComment(comments,request);
-
+        initializeComment(comments, request);
+        String commentTitle;
+        //是友链的评论
+        if (comments.getTargetId() == 0) {
+            commentTitle="友链消息";
+        }else{
+            //文章评论
+             commentTitle = articleMapper.selectById(comments.getTargetId()).getTitle();
+        }
+        emailUtil.sendDefaultCommentEmail(comments, commentTitle);
         commentsMapper.insert(comments);
-        String articleTitle = articleMapper.selectById(comments.getTargetId()).getTitle();
         //给自己发送邮箱
-        emailUtil.sendDefaultCommentEmail(comments, articleTitle);
         //被回复者的信息
         Comments replyComment = commentsMapper.selectOne(new LambdaQueryWrapper<Comments>()
                 .eq(Comments::getId, comments.getReplyId()));
@@ -212,26 +218,26 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         Comments parentComment = commentsMapper.selectOne(new LambdaQueryWrapper<Comments>()
                 .eq(Comments::getId, comments.getPid()));
         if (replyComment != null) {
-            emailUtil.sendReplyCommentEmail(replyComment.getEmail(), comments, articleTitle);
+            emailUtil.sendReplyCommentEmail(replyComment.getEmail(), comments, commentTitle);
         }
 
         if (parentComment != null) {
             // 确保不重复发送给同一个人
             if (replyComment == null || !replyComment.getEmail().equals(parentComment.getEmail())) {
-                emailUtil.sendParentCommentEmail(parentComment.getEmail(), comments, articleTitle);
+                emailUtil.sendParentCommentEmail(parentComment.getEmail(), comments, commentTitle);
             }
         }
         return Result.success("评论成功");
     }
 
-    private void initializeComment(Comments comments,HttpServletRequest request) {
+    private void initializeComment(Comments comments, HttpServletRequest request) {
         comments.setCreateDate(new Date());
         try {
             comments.setAvatar(AvatarUtil.getGravatarUrl(comments.getEmail()));
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("头像生成失败", e);
         }
-        if(comments.getStatus()==null)comments.setStatus(1);
+        if (comments.getStatus() == null) comments.setStatus(1);
         comments.setTargetId(Optional.ofNullable(comments.getTargetId()).orElse(-1));
         comments.setPid(Optional.ofNullable(comments.getPid()).orElse(-1));
         comments.setReplyId(Optional.ofNullable(comments.getReplyId()).orElse(-1));

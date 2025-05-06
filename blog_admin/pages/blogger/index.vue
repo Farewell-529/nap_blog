@@ -201,11 +201,17 @@ const editPasswordClose = () => {
     accountDialog.value = false
 }
 const resetSendCode = () => {
-    handleApiCall(validateOldEmailApi, editEmailForm.value.oldEmail, "validateOldEmailCode")
+    if (eamilHandle.value === 'validateOldEmailCode') {
+        handleApiCall(validateOldEmailApi, editEmailForm.value.oldEmail, "validateOldEmailCode")
+    }
+    if (eamilHandle.value === 'validateNewEmailCode') {
+        handleApiCall(validateNewEmailApi, editEmailForm.value.newEmail, "validateNewEmailCode")
+        console.log(editEmailForm.value.newEmail);
+    }
 }
-const checkOriginalBackHandle=()=>{
-    emailDialog.value=false
-    editEmailForm.value.oldEmail=''
+const checkOriginalBackHandle = () => {
+    emailDialog.value = false
+    editEmailForm.value.oldEmail = ''
 }
 const backToEmail = () => {
     eamilHandle.value = 'validateOldEmail'
@@ -222,16 +228,18 @@ const valideCodeBtn = async () => {
         return
     }
     query.toEmail = editEmailForm.value.newEmail
-    handleApiCall(validateCodeApi, query, "editEmail")
+    handleApiCall(validateCodeApi, query, "validateOldEmail")
     await editEmail(editEmailForm.value.newEmail)
     emailDialog.value = false
     codeForm.value = ''
 }
+watch(eamilHandle, (newVal) => {
+    console.log(newVal);
+})
 const editNewEmailHandle = () => {
     loading.value = true
     handleApiCall(validateNewEmailApi, editEmailForm.value.newEmail, "validateNewEmailCode").then(() => {
         loading.value = false
-        editEmailForm.value.newEmail = ''
     })
 }
 onMounted(() => {

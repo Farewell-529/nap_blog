@@ -53,7 +53,7 @@ const list = [
         icon: Aperture
     },
     {
-        name: '个人信息',
+        name: '网站信息',
         url: '/blogger',
         icon: UserRound
     }

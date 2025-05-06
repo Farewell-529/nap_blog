@@ -144,7 +144,7 @@ public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags> implements Ta
                     tagsCountRes.setTagsName(item.getTagsName());
                     return tagsCountRes;
                 }).toList();
-        Long total = tagsMapper.selectCount(null);
+        Long total = (long)TagsCountResList.size();
         //构建返回数据
         return new PageResult<>(TagsCountResList, total);
     }

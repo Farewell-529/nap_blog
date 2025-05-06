@@ -10,15 +10,17 @@ const theme = themeStore()
 const clickBtn = () => {
     theme.toggleTheme()
 }
+// 获取配置
+const config = useRuntimeConfig()
 const store = blogInfoStore()
-const userInfo = ref<BloggerInfo>({
+const blogInfo = ref<BloggerInfo>({
     bloggerName: "",
     motto: '',
     bio: '',
     avatar: '',
     github_url: '',
     x_url: '',
-    bilibili_url: ''
+    email: ''
 })
 const list = [
     {
@@ -52,33 +54,35 @@ const list = [
         icon: mdiArchive
     }
 ]
-const getUserInfo = async () => {
+const getblogInfo = async () => {
     const { data } = await getBloggerInfoApi()
     store.setBlogInfo(data)
-    userInfo.value = { ...store.blogInfo! }
+    blogInfo.value = { ...store.blogInfo! }
 }
 onMounted(() => {
-    getUserInfo()
+    getblogInfo()
 })
 </script>
 <template>
-  <div class="text-xs">
-    <div class="flex  flex-col items-center my-10 relative">
-        <div class="w-36 h-8  flex justify-center items-center cursor-pointer mb-3 text-xl bloggerName" 
-         @click="clickBtn">
-            {{ userInfo.bloggerName }}
+    <div class="text-xs">
+        <div class="flex  flex-col items-center my-10 relative">
+          
+            <div class="w-36 h-8  flex justify-center items-center cursor-pointer mb-3 text-xl bloggerName"
+                @click="clickBtn">
+                {{ blogInfo.bloggerName }}
+            </div>
+          
+            <div class="my-2">
+                {{ blogInfo.motto }}
+            </div>
         </div>
-        <div class="my-2">
-            {{ userInfo.motto }}
+        <div class="flex justify-center gap-8 ">
+            <NuxtLink :to="item.url" class="cursor-pointer  router" v-for="item in list" :key="item.name">
+                <svg-icon type="mdi" :path="item.icon" class="mb-2" />
+                <span>{{ item.name }}</span>
+            </NuxtLink>
         </div>
     </div>
-    <div class="flex justify-center gap-8 ">
-        <NuxtLink :to="item.url" class="cursor-pointer  router " v-for="item in list">
-            <svg-icon type="mdi" :path="item.icon" class="mb-2" />
-            <span>{{ item.name }}</span>
-        </NuxtLink>
-    </div>
-  </div>
 </template>
 <style scoped>
 .router {
@@ -86,12 +90,14 @@ onMounted(() => {
     padding-bottom: 0.5rem;
     transition: border-bottom 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
-.bloggerName{
+
+.bloggerName {
     background-color: var(--btn-bg-color);
     color: var(--btn-text-color);
     border: solid 2px var(--btn-border-color);
     transition: all 0.3s;
 }
+
 .bloggerName:hover {
     background-color: var(--bg-color);
     color: var(--text-color);

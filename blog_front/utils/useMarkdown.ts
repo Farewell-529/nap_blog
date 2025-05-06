@@ -63,11 +63,13 @@ export const useMarkdown = () => {
         })
             .use(mathjax3)
             .use(mermaid)
+            //它分析文档中的标题（例如 #、##、### 等），并为每个标题自动生成一个唯一的锚点 ID。
             .use(anchor, {
                 level: [1, 2, 3],
                 permalinkSymbol: '§',
                 slugify
             })
+            //用于自动生成文档的目录,只需要插入[TOC]就可以生成文档目录
             .use(tocDoneRight, {
                 slugify,
                 listClass: 'toc-list',

@@ -61,7 +61,7 @@ onMounted(() => {
                 <div class="flex items-center pr-2 mr-2 border-r-2 " style="border-color:var(--border-color)">
                     <svg-icon type="mdi" :path="item.calenderIcon" class="w-5 mr-1" />
                     <span class="">
-                        发表于{{ item.createDate }}
+                        发布于{{ item.createDate }}
                     </span>
                 </div>
                 <div class="flex items-center pr-2 mr-2 border-r-2 " style="border-color:var(--border-color)"

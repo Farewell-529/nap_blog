@@ -89,7 +89,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         //将使用这个分类的文章的分类id改为-1
         List<Long> articleIds = articleMapper.selectList(new LambdaQueryWrapper<Article>()
                 .in(Article::getCategoryId, ids)).stream().map(Article::getId).toList();
-        articleMapper.setCategoryIds(articleIds);
+       if(!articleIds.isEmpty()) {
+           articleMapper.setCategoryIds(articleIds);
+       }
         categoryMapper.deleteBatchIds(ids);
     }
 
@@ -127,7 +129,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
             categoryCountRes.setArticleCount(countMap.get(item.getId()));
             return categoryCountRes;
         }).toList();
-        Long total = categoryMapper.selectCount(null);
+        Long total = (long)categoryCountResList.size();
         return new PageResult<>(categoryCountResList, total);
     }
 

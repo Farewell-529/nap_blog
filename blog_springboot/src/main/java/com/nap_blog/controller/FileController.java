@@ -29,16 +29,16 @@ public class FileController {
     BlogInfoMapper blogInfoMapper;
     @PostMapping("/uploadImg")
     public Result uploadImg(@RequestParam("file") MultipartFile file,@RequestParam("articleId") String articleId) {
-        String pre = "C:\\Users\\Farewell\\Desktop\\Blog\\upload\\img\\";
+        String pre = "C:\\Users\\Farewell\\Desktop\\Nap_Blog\\upload\\img\\";
         String fileName= uploadFile(file,pre);
         imgService.saveImg(Long.parseLong(articleId),fileName);
-        return Result.success(fileName);
+        return Result.success((Object) fileName);
     }
     @PostMapping("/user/uploadImg")
     public Result userUploadImg(@RequestParam("file") MultipartFile file) {
-        String pre = "C:\\Users\\Farewell\\Desktop\\Blog\\upload\\user\\img\\";
+        String pre = "C:\\Users\\Farewell\\Desktop\\Nap_Blog\\upload\\img\\";
         String fileName= uploadFile(file,pre);
-        return Result.success(fileName);
+        return Result.success((Object)fileName);
     }
     @PostMapping("/user/uploadAvatar")
     public Result userUploadAvatar(@RequestParam("file") MultipartFile file) {
@@ -59,7 +59,7 @@ public class FileController {
         oldAvatar.setValue(fileName);
         oldAvatar.setUpdateDate(new Date());
         blogInfoMapper.updateById(oldAvatar);
-        return Result.success(fileName);
+        return Result.success((Object)fileName);
     }
 
     public String uploadFile(MultipartFile file, String pre){
@@ -82,5 +82,4 @@ public class FileController {
         }
         return fileName;
     }
-
 }

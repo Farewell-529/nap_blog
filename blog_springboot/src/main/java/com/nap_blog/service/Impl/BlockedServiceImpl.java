@@ -27,11 +27,13 @@ public class BlockedServiceImpl extends ServiceImpl<BlockedMapper, Blocked> impl
 
     @Override
     public PageResult<Blocked> getBlockedList(BlockedQuery blockedQuery) {
+        //获得黑名单总数
         long total = this.count();
         if (total == 0) {
             return new PageResult<>();
         }
         LambdaQueryWrapper<Blocked> lqw = new LambdaQueryWrapper<>();
+        //判断是否又查询条件
         if (blockedQuery.getKeyword() != null && !blockedQuery.getKeyword().trim().isEmpty()) {
             lqw.like(Blocked::getIp, blockedQuery.getKeyword());
         }
@@ -44,6 +46,7 @@ public class BlockedServiceImpl extends ServiceImpl<BlockedMapper, Blocked> impl
         }
         int current = (blockedQuery.getCurrent() == null) ? 1 : blockedQuery.getCurrent();
         int size = (blockedQuery.getSize() == null) ? 10 : blockedQuery.getSize();
+        //创造分页对象
         Page<Blocked> page = new Page<>(current, size);
         List<Blocked> blockedList = blockedMapper.selectList(page,lqw);
         return new PageResult<>(blockedList,total);

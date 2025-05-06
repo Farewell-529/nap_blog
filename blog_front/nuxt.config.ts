@@ -2,13 +2,26 @@
 export default defineNuxtConfig({
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
-    
     head: {
       charset: 'utf-8',
       script: [
         {
-          src:  '/js/initTheme.js'
-         }
+          hid: 'theme-script',
+          innerHTML: `
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            if (theme === 'dark') {
+              document.documentElement.classList.add('dark');
+              document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+              document.documentElement.classList.remove('dark');
+              document.documentElement.setAttribute('data-theme', 'light');
+            }
+          `,
+          type: 'text/javascript',
+          tagPosition: 'head',
+          id: 'theme-script'
+        }
       ],
     },
   },

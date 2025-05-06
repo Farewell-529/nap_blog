@@ -1,13 +1,13 @@
 <script setup lang="ts">
-// import 'github-markdown-css/github-markdown.css';
+import 'github-markdown-css/github-markdown.css';
 import '~/assets/css/markdown.css';
-import "~/assets/css/main.css"
 import mediumZoom from 'medium-zoom'
 // @ts-ignore
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiCheckboxMarkedCircleOutline, mdiArrowUpDropCircleOutline } from '@mdi/js';
 import { useMarkdown } from '~/utils/useMarkdown';
 import { themeStore } from "~/store/theme";
+import { defineProps } from 'vue';
 const theme = themeStore()
 const { initializeMarkdown, handleCopyButtonClick } = useMarkdown();
 const scrollPercent = ref(0)
@@ -19,7 +19,7 @@ const props = defineProps({
     content: String
 })
 // 为 TOC 中的所有链接添加点击事件监听器
- const addTocJump = () => {
+const addTocJump = () => {
     document.querySelectorAll('.toc-container a').forEach(anchor => {
         anchor.addEventListener('click', (event) => {
             event.preventDefault();
@@ -38,7 +38,7 @@ const props = defineProps({
     });
 }
 
- const highlightTOC = () => {
+const highlightTOC = () => {
     const tocLinks = document.querySelectorAll('.toc-container a');
     const scrollPosition = window.scrollY + 150; // 滚动位置的偏移量，用于调整高亮位置
     let currentActiveLink: Element | null = null;
@@ -88,6 +88,7 @@ const initHandle = async (content: string) => {
     if (!content) return;  // 如果 content 为空，直接返回
     const md = await initializeMarkdown();
     renderContent.value = md.render(content);
+    //在文档中添加 [TOC] 标记时，Markdown 工具会自动扫描文档中的标题，并根据标题的级别创建目录。
     toc.value = md.render('\n[toc]\n' + content).match(/<nav class="toc-container">.*<\/nav>/s)?.[0] || '';
     nextTick(() => {
         mediumZoom(document.querySelectorAll('img'));
@@ -112,29 +113,10 @@ const topHandle = () => {
     });
 }
 
-const loadingMarkdownCss = async (isDark: boolean) => {
-    // 查找现有的 markdown 样式链接并删除
-    const existingLink = document.querySelector('link[href*="github-markdown-css"]');
-    if (existingLink) {
-        existingLink.remove();
-    }
-
-    // 创建新的 <link> 标签，并加载正确的 CSS 文件
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = isDark 
-        ? '/_nuxt/node_modules/.pnpm/github-markdown-css@5.6.1/node_modules/github-markdown-css/github-markdown-dark.css'
-        : '/_nuxt/node_modules/.pnpm/github-markdown-css@5.6.1/node_modules/github-markdown-css/github-markdown.css';
-    link.setAttribute('data-markdown-style', 'true');
-    document.head.appendChild(link);
-};
-watch(theme,()=>{
-    loadingMarkdownCss(theme.isDark)
-})
 onMounted(() => {
     window.addEventListener('scroll', calculateScrollPercent)
     document.addEventListener('click', handleCopyButtonClick);
-    loadingMarkdownCss(theme.isDark)
+    // loadingMarkdownCss(theme.isDark)
 })
 // 在组件卸载时移除事件
 onBeforeUnmount(() => {
@@ -143,7 +125,7 @@ onBeforeUnmount(() => {
 });
 </script>
 <template>
-    <div>
+    <div class="ml-14">
         <div class="article-container">
             <div v-html="renderContent" class="markdown-body"></div>
             <div class="slide-container font-mono" v-show="isToc">
@@ -162,10 +144,11 @@ onBeforeUnmount(() => {
                 </button>
             </div>
         </div>
-        <slot>
+        <slot name="copyright">
         </slot>
+        <slot name="comments">
+        </slot>
+     
     </div>
 </template>
-<style scoped>
-
-</style>
+<style scoped></style>

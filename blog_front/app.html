@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html {{ HTML_ATTRS }}>
+  <head {{ HEAD_ATTRS }}>
+    {{ HEAD }}
+    <!-- 👇插入主题预设脚本，避免刷新闪白 -->
+    <script>
+        const theme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        if (theme === 'dark') {
+            document.documentElement.classList.add("dark");
+            document.documentElement.setAttribute("data-theme", "dark")
+            console.log(11);
+        }else{
+            document.documentElement.classList.remove("dark");
+            document.documentElement.setAttribute("data-theme", "light")
+        }
+    </script>
+  </head>
+  <body {{ BODY_ATTRS }}>
+    <h1>111</h1>
+    {{ APP }}
+  </body>
+</html>

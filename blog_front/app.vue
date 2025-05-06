@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { Toaster} from 'vue-sonner'
+import { Toaster } from 'vue-sonner'
 </script>
 <template>
   <div>
-      <Nav></Nav>
-      <Toaster position="top-right" />
-      <NuxtPage class="flex flex-col items-center mt-10 mx-auto"/>
-      <Footer></Footer>
+    <Nav></Nav>
+    <Toaster position="top-right" />
+    <NuxtPage class="flex flex-col items-center mt-10 mx-auto" />
+    <Footer></Footer>
   </div>
 </template>
 

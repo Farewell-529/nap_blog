@@ -326,7 +326,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             } else {
                 articleTags.setTagsId(selecedtTags.getId());
             }
-            articleTags.setArticleId(article.getId());
+            articleTags.setArticleId(article.getId()); 
             article.setViewCount(article.getViewCount() != null ? article.getViewCount() : 0);
             articleTagsService.save(articleTags);
         }

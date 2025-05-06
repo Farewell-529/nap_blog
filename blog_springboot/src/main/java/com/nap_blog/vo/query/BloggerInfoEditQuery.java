@@ -16,5 +16,5 @@ public class BloggerInfoEditQuery {
     private String Motto;
     private String Github_url;
     private String X_url;
-    private String Bilibili_url;
+    private String Email;
 }

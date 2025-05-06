@@ -11,5 +11,5 @@ export interface BloggerInfo{
     github_url:string,
     motto:string,
     x_url:string,
-    bilibili_url:string
+    email:string
 }

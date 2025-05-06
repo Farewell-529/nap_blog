@@ -13,7 +13,7 @@ import java.util.List;
 public interface ArticleService extends IService<Article> {
     void saveArticle(Article article);
 
-    void publishArticle(Article Article);
+    void publishArticle(Article article);
 
     void publishArticleList(List<Integer> articleIds);
 

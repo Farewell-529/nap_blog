@@ -2,7 +2,7 @@
 import { type Comments } from "~/types/Comments";
 // @ts-ignore
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiClose } from '@mdi/js';
+import { mdiClose,mdiSend  } from '@mdi/js';
 import "~/assets/css/main.css"
 const isClient = ref(false);
 const props = defineProps({
@@ -44,7 +44,7 @@ onMounted(() => {
                 v-model="commentsInfo.url" />
         </div>
         <div class="content">
-            <textarea class="w-full h-[80%] resize-none focus:outline-none bg-transparent" placeholder="说些什么吧"
+            <textarea class="w-full h-[80%] resize-none focus:outline-none bg-transparent font-mono" placeholder="说些什么吧"
                 v-model="commentsInfo.content">
             </textarea>
             <div class="w-full flex justify-between ">
@@ -59,9 +59,9 @@ onMounted(() => {
                 <span >
                     {{ currentLength }}/{{ maxLength }}
                 </span>
-                <div class="ml-auto w-max">
+                <div class="ml-auto w-max flex">
                     <button v-if="!isSend" type="button" class="send" @click="addComment">
-                        发送
+                        发送 
                     </button>
                     <button v-else type="button" class="send">
                         发送中...

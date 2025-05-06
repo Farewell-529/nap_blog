@@ -321,7 +321,7 @@ const clickSwitch = async (item: any) => {
             <template v-slot:item.avatar="{ item }">
                 <div class="w-[100%] flex justify-center">
                     <img class="size-11 my-2 rounded-lg"
-                        :src="'https://www.gravatar.com/avatar/' + item.avatar + '?d=mysteryman'" alt="">
+                        :src="'https://gravatar.loli.net/avatar/' + item.avatar + '?d=identicon'" alt="">
                 </div>
             </template>
             <template v-slot:item.status="{ item }">

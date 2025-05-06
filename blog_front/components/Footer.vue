@@ -16,8 +16,10 @@ onMounted(() => {
     <div>
         <div class="fixed bottom-5 right-5">
             <span @click="clickBtn">
-                <svg-icon id="svgIcon" v-if="theme.isDark" size="35" type="mdi" :path="mdiMoonFull" class="cursor-pointer icon" />
-                <svg-icon id="svgIcon" v-else size="35" type="mdi" :path="mdiWhiteBalanceSunny" class="cursor-pointer icon " />
+                <svg-icon id="svgIcon" v-if="theme.isDark" size="35" type="mdi" :path="mdiMoonFull"
+                    class="cursor-pointer icon" />
+                <svg-icon id="svgIcon" v-else size="35" type="mdi" :path="mdiWhiteBalanceSunny"
+                    class="cursor-pointer icon " />
             </span>
         </div>
     </div>
@@ -26,6 +28,7 @@ onMounted(() => {
 .icon {
     transition: transform 0.3s ease;
 }
+
 .icon:hover {
     transform: rotate(180deg) scale(1.1);
 }

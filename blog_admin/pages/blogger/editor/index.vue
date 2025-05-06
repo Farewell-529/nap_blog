@@ -13,7 +13,7 @@ const bloggerInfo = ref<BloggerInfo>({
     avatar: '',
     github_url: '',
     x_url: '',
-    bilibili_url: ''
+    email: ''
 })
 const form = ref<BloggerInfo>({
     bloggerName: "",
@@ -22,10 +22,9 @@ const form = ref<BloggerInfo>({
     avatar: '',
     github_url: '',
     x_url: '',
-    bilibili_url: ''
+    email: ''
 
 })
-const editFormArr = ref<Array<BlogInfo>>([])
 const rules = [
     (value: any) => {
         return !value || !value.length || value[0].size < 2000000 || '头像大小应该小于 2 MB!'
@@ -129,7 +128,7 @@ onMounted(() => {
                                 <v-text-field v-model="form.github_url" label="github" required></v-text-field>
                             </v-col>
                             <v-col cols="12" md="12" sm="6">
-                                <v-text-field v-model="form.bilibili_url" label="哔哩哔哩" required></v-text-field>
+                                <v-text-field v-model="form.email" label="邮箱" required></v-text-field>
                             </v-col>
                             <v-col cols="12" md="12" sm="6">
                                 <v-file-input :rules="rules" v-model="avatarFile"

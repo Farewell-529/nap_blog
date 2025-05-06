@@ -11,10 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FriendInfo {
-    private Long id;
-    private String friendName;
-    private String url;
-    private String avatarUrl;
-    private String description;
+public class FriendsRes {
+    private List<FriendInfo> friendList;
+    private List<CommentsRes> commentsList;
 }
