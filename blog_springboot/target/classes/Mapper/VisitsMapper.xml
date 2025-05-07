@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.nap_blog.mapper.VisitsMapper">
+
+
+
+    <select id="getViewsChartByDays" resultType="com.nap_blog.vo.response.ViewsChartRes">
+    <![CDATA[
+        WITH RECURSIVE date_series AS (
+            SELECT DATE(NOW()) AS viewTime, 0 AS n
+            UNION ALL
+            SELECT DATE(NOW() - INTERVAL (n + 1) DAY), n + 1
+            FROM date_series
+            WHERE n + 1 < #{day}
+        )
+        SELECT
+            ds.viewTime AS viewTime,
+            COALESCE(v.PageViews, 0) AS PageViews,
+            COALESCE(v.Visitors, 0) AS Visitors
+        FROM date_series ds
+                 LEFT JOIN (
+            SELECT
+                DATE(visit_time) AS viewTime,
+                COUNT(*) AS PageViews,
+                COUNT(DISTINCT ip) AS Visitors
+            FROM
+                visits
+            WHERE
+                visit_time >= NOW() - INTERVAL #{day} DAY
+            GROUP BY
+                DATE(visit_time)
+        ) v ON ds.viewTime = v.viewTime
+        ORDER BY
+            viewTime ASC;
+        ]]>
+</select>
+    <select id="getTodayViewCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM visits
+        WHERE DATE(visit_time) = CURDATE()
+    </select>
+
+
+    <select id="getYesterdayViewCount" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM visits
+        WHERE DATE(visit_time) = CURDATE() - INTERVAL 1 DAY
+    </select>
+
+
+</mapper>
