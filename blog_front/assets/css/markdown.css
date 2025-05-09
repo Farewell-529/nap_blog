@@ -69,13 +69,11 @@
 
 .markdown-body {
     box-sizing: border-box;
-    width: 100%;
+    width: 50rem;
     margin-right: 20px;
     transition: color, background-color, 0.3s;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-    /* background-color: var(--bg-color) !important; */
-
-    /* color: var(--text-color) !important; */
+  
 }
 
 @media (max-width: 767px) {

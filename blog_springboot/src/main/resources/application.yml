@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/nap_blog?characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: root
-    password: 123456
+    password: 
   servlet:
     multipart:
       max-file-size: 2MB
@@ -15,11 +15,11 @@ spring:
   web:
     resources:
       static-locations:
-        file:C:\\Users\\Farewell\\Desktop\\Nap_Blog\\upload\\avatar\\,file:C:\\Users\\Farewell\\Desktop\\Nap_Blog\\upload\\
+        file:C:\\Users\\***\\Desktop\\Nap_Blog\\upload\\avatar\\,file:C:\\Users\\***\\Desktop\\Nap_Blog\\upload\\
   mail:
-    username: nap_zzz@126.com
-    password: HUXxzNpqpp94ymM9
-    host: smtp.126.com
+    username: ***@gmail.com
+    password: ***
+    host: smtp.gmail.com
   data:
     redis:
       host: localhost
@@ -31,7 +31,7 @@ mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
 #邮件格式模板
 email:
-  from: nap_zzz@126.com
+  from: ***@gmail.com
   subject:
     defaultCommentSubject: 标题:《%s》有新评论
     replyCommentSubject: 你在nap博客评论的标题为:《%s》的文章有回复

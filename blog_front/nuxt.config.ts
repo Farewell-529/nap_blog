@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     head: {
       charset: 'utf-8',
       script: [
+        // 插入主题预设脚本，避免刷新闪白
         {
           hid: 'theme-script',
           innerHTML: `
