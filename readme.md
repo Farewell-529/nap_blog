@@ -15,13 +15,13 @@ Nap`s Blog
 - 黑名单管理(对违反规则的ip进行封禁、无法再次评论)
 - 浏览量查看(支持ip显示、城市显示)
 - 网站信息编辑(如修改联系方式、修改密码、修改邮箱、修改自述等)
-  ![image](https://github.com/user-attachments/assets/30120526-404f-4d47-ba74-475db77d6469)
+  ![demo](https://github.com/user-attachments/assets/53ab4a3f-352c-4dbf-8057-408c536deb8e)
+
 ## 前台展示
 - 支持暗黑模式切换
 - 支持文章和友链的免登录评论
 - 支持文章侧面标题导航
-  ![image](https://github.com/user-attachments/assets/245c91da-b8c0-45ab-94d6-b3e4f55fe850)
-  ![image](https://github.com/user-attachments/assets/dbe29e62-6d3b-4933-a336-7466754c4a8e)
+![demo](https://github.com/user-attachments/assets/e1c44926-1159-4fad-9a03-7a50c6ed8de5)
 # 技术栈
 ## 前端
 - Nuxt.js
